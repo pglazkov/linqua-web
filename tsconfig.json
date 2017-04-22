@@ -10,6 +10,9 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
     "typeRoots": [
       "node_modules/@types"
     ],
