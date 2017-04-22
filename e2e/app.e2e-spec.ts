@@ -1,10 +1,10 @@
-import { AngularCliEjectedStarterPage } from './app.po';
+import { LinquaPage } from './app.po';
 
-describe('angular-cli-ejected-starter App', () => {
-  let page: AngularCliEjectedStarterPage;
+describe('linqua App', () => {
+  let page: LinquaPage;
 
   beforeEach(() => {
-    page = new AngularCliEjectedStarterPage();
+    page = new LinquaPage();
   });
 
   it('should display message saying app works', () => {

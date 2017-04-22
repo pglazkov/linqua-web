@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class AngularCliEjectedStarterPage {
+export class LinquaPage {
   navigateTo() {
     return browser.get('/');
   }
