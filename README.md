@@ -1,34 +1,8 @@
-# Angular CLI (ejected) Starter
+# Linqua
+## Vacabulary training tool
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0, using the following command:
+Whenever you learn a foreign language you usually write down new words/phrases that you need to learn and then come back and go through the list periodically until learned. Linqua is an app with a very simple and intuitive interface that allows you to do just that. Some of the additional features include:
 
-```
-ng new angular-cli-ejected-starter --skip-install --skip-git --skip-commit --directory=. --style=scss --routing=true
-```
-
-After that Angular CLI was "ejected" using `ng eject` and further customized to add support production builds, etc.
-
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/wwwroot` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Automatic translation to English when you add a word or phrase in a foreign language;
+Go through your words in random order one by one;
+Showing random words on a Live Tile on your phone's home screen (so you learn the words just by glancing at the live tile without having to open the app every time).
