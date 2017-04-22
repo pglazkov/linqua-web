@@ -12,7 +12,8 @@ const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/p
 const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
 
-const distPath = 'dist';
+const srcPath = './src/client';
+const distPath = helpers.root('dist', 'wwwroot');
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "main"];
 const baseHref = "";
@@ -29,18 +30,18 @@ module.exports = function (args = {}) {
     target: 'web',
     devtool: isDev ? 'cheap-module-source-map' : undefined,
     entry: {
-      'main': './src/main.ts',
-      'polyfills': './src/polyfills.ts',
-      'styles': './src/styles.scss'
+      'main': helpers.root(srcPath, 'main.ts'),
+      'polyfills': helpers.root(srcPath, 'polyfills.ts'),
+      'styles': helpers.root(srcPath, 'styles.scss')
     },
     output: {
-      path: helpers.root(distPath),
+      path: distPath,
       filename: '[name].bundle.js',
       chunkFilename: '[name].[chunkhash].chunk.js',
     },
     resolve: {
       extensions: ['.ts', '.js', '.json'],
-      modules: [helpers.root('src'), helpers.root('node_modules')]      
+      modules: [helpers.root(srcPath), helpers.root('node_modules')]      
     },
     module: {
       rules: [
@@ -62,7 +63,7 @@ module.exports = function (args = {}) {
         },
         {
           exclude: [
-            helpers.root('src', 'styles.scss')
+            helpers.root(srcPath, 'styles.scss')
           ],
           test: /\.css$/,
           use: [
@@ -73,7 +74,7 @@ module.exports = function (args = {}) {
         },
         {
           exclude: [
-            helpers.root('src', 'styles.scss')
+            helpers.root(srcPath, 'styles.scss')
           ],
           test: /\.scss$|\.sass$/,
           use: [
@@ -85,7 +86,7 @@ module.exports = function (args = {}) {
         },
         {
           include: [
-            helpers.root('src', 'styles.scss')
+            helpers.root(srcPath, 'styles.scss')
           ],
           test: /\.css$/,
           use: ExtractTextPlugin.extract({
@@ -99,7 +100,7 @@ module.exports = function (args = {}) {
         },
         {
           include: [
-            helpers.root('src', 'styles.scss')
+            helpers.root(srcPath, 'styles.scss')
           ],
           test: /\.scss$|\.sass$/,
           use: ExtractTextPlugin.extract({
@@ -137,7 +138,7 @@ module.exports = function (args = {}) {
     },
     plugins: (() => {
       var plugins = [
-        new CleanWebpackPlugin([helpers.root(distPath)], {
+        new CleanWebpackPlugin([distPath], {
           verbose: false
         }),
 
@@ -148,7 +149,7 @@ module.exports = function (args = {}) {
             'favicon.ico'
           ],
           globOptions: {
-            cwd: helpers.root('src'),
+            cwd: helpers.root(srcPath),
             dot: true,
             ignore: '**/.gitkeep'
           }
@@ -156,7 +157,7 @@ module.exports = function (args = {}) {
         new ProgressPlugin(),
 
         new HtmlWebpackPlugin({
-          template: helpers.root('src', 'index.html'),
+          template: helpers.root(srcPath, 'index.html'),
           filename: './index.html',
           hash: false,
           inject: true,
@@ -257,14 +258,14 @@ module.exports = function (args = {}) {
             'environments\\environment.ts': isDev ? 'environments\\environment.ts' : 'environments\\environment.prod.ts'
           },
           exclude: [],
-          tsConfigPath: helpers.root('src', 'tsconfig.app.json'),
+          tsConfigPath: helpers.root(srcPath, 'tsconfig.app.json'),
           skipCodeGeneration: !isAot
         }),
 
         // Provides context to Angular's use of System.import. See: https://github.com/angular/angular/issues/11580
         new ContextReplacementPlugin(
           /angular(\\|\/)core(\\|\/)@angular/,
-          helpers.root('src'), // location of your src
+          helpers.root(srcPath),
           {
             // your Angular Async Route paths relative to this root directory
           }

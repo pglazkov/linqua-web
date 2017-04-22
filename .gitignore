@@ -234,11 +234,7 @@ _Pvt_Extensions
 .fake/
 
 # compiled output
-/wwwroot/dist
-/wwwroot/serverdist
-/wwwroot/dll_dev
-/wwwroot/coverage
-/aot_temp
+/dist/wwwroot
 /tmp
 
 # dependencies
