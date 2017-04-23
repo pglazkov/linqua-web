@@ -9,7 +9,7 @@
     "build:prod": "webpack --env.prod --env.aot",
     "build:prod:analyze": "npm run build:prod -- --env.analyze",
     "tslint": "tslint",
-    "lint": "npm run tslint -- --type-check --project tsconfig.json \"src/**/*.ts\"",
+    "lint": "npm run tslint -- --type-check --project tsconfig.json",
     "test": "karma start",
     "test:watch": "npm run test -- --auto-watch --no-single-run",
     "protractor": "protractor",
