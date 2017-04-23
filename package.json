@@ -13,7 +13,9 @@
     "protractor": "protractor",
     "e2e": "npm-run-all -p -r start protractor",
     "pree2e": "webdriver-manager update --standalone false --gecko false --quiet",
-    "ci": "npm run build && npm run test && npm run e2e && npm run build:prod"
+    "ci": "npm run build && npm run test && npm run e2e && npm run build:prod",
+    "predeploy": "npm run build:prod",
+    "deploy": "firebase deploy"
   },
   "private": true,
   "dependencies": {
