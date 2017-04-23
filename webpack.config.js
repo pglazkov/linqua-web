@@ -41,7 +41,7 @@ module.exports = function (args = {}) {
     },
     resolve: {
       extensions: ['.ts', '.js', '.json'],
-      modules: [helpers.root(srcPath), helpers.root('node_modules')]      
+      modules: [helpers.root(srcPath), nodeModules]
     },
     module: {
       rules: [
@@ -49,13 +49,18 @@ module.exports = function (args = {}) {
           enforce: 'pre',
           test: /\.ts$/,
           use: 'tslint-loader',
-          exclude: /(node_modules)/,
+          exclude: [
+            nodeModules,
+            helpers.root('src', 'client', '$$_gendir') // Exluce AOT temporary directory from TSLint (it fails when type checking is enabled)
+          ],
         },
         {
           enforce: 'pre',
           test: /\.js$/,
           loader: 'source-map-loader',
-          exclude: /(node_modules)/
+          exclude: [
+            nodeModules
+          ]
         },
         {
           test: /\.ts$/,
