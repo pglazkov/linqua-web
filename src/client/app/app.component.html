@@ -1,4 +1,8 @@
 <h1>
   {{title}}
 </h1>
+
+<div> {{ (af.auth | async)?.auth?.displayName }} </div>
+<button (click)="login()">Login With Facebook</button>
+
 <router-outlet></router-outlet>
