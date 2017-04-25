@@ -73,7 +73,7 @@ module.exports = function (args = {}) {
           test: /\.css$/,
           use: [
             'exports-loader?module.exports.toString()',
-            'css-loader?{"sourceMap":false,"importLoaders":1}',
+            'css-loader?{"importLoaders":1}',
             'postcss-loader'
           ]
         },
@@ -84,7 +84,7 @@ module.exports = function (args = {}) {
           test: /\.scss$|\.sass$/,
           use: [
             'exports-loader?module.exports.toString()',
-            'css-loader?{"sourceMap":false,"importLoaders":1}',
+            'css-loader?{"importLoaders":1}',
             'postcss-loader',
             'sass-loader'
           ]
@@ -96,7 +96,7 @@ module.exports = function (args = {}) {
           test: /\.css$/,
           use: ExtractTextPlugin.extract({
             use: [
-              'css-loader?{"sourceMap":false,"importLoaders":1}',
+              'css-loader?{"importLoaders":1}',
               'postcss-loader'
             ],
             fallback: 'style-loader',
@@ -110,7 +110,7 @@ module.exports = function (args = {}) {
           test: /\.scss$|\.sass$/,
           use: ExtractTextPlugin.extract({
             use: [
-              'css-loader?{"sourceMap":false,"importLoaders":1}',
+              'css-loader?{"importLoaders":1}',
               'postcss-loader',
               'sass-loader'
             ],
@@ -209,7 +209,7 @@ module.exports = function (args = {}) {
         new LoaderOptionsPlugin({
           debug: isDev,
           minimize: !isDev,
-          sourceMap: false,
+          sourceMap: isDev,
           options: {
             postcss: [
               autoprefixer(),
@@ -237,11 +237,8 @@ module.exports = function (args = {}) {
               })
             ],
             sassLoader: {
-              sourceMap: false,
+              sourceMap: isDev,
               includePaths: []
-            },
-            lessLoader: {
-              sourceMap: false
             },
             tslint: {
               typeCheck: true,    
