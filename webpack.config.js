@@ -7,7 +7,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const postcssUrl = require('postcss-url');
 
-const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin } = require('webpack');
+const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
@@ -250,9 +250,6 @@ module.exports = function (args = {}) {
 
         new AotPlugin({
           mainPath: 'main.ts',
-          hostReplacementPaths: {
-            'environments\\environment.ts': isDev ? 'environments\\environment.ts' : 'environments\\environment.prod.ts'
-          },
           exclude: [],
           tsConfigPath: helpers.root(srcPath, 'tsconfig.app.json'),
           skipCodeGeneration: !isAot
@@ -270,6 +267,11 @@ module.exports = function (args = {}) {
 
       if (!isDev) {
         plugins = plugins.concat([
+          new NormalModuleReplacementPlugin(
+            /environment\.ts/,
+            'environment.prod.ts'
+          ),
+
           new OptimizeJsPlugin({
             sourceMap: false
           }),
