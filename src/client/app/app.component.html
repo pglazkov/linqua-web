@@ -1,8 +1,18 @@
-<h1>
-  {{title}}
-</h1>
-
-<div> {{ (af.auth | async)?.auth?.displayName }} </div>
-<button (click)="login()">Login With Facebook</button>
-
-<router-outlet></router-outlet>
+<div class="containerX">
+  <div class="colorNested box" fxLayout="column">
+    <header fxLayout="row" fxLayoutAlign="center">
+      <h1 fxFlexAlign="center">linqua</h1>           
+    </header>
+    <main fxLayout="row" fxLayout.xs="column" fxFlex>
+      <nav fxFlex="1 6 20%" fxFlexOrder fxFlexOrder.xs="2">
+        
+      </nav>
+      <article fxFlex="3 1 60%" fxFlexOrder fxFlexOrder.xs="1"> 
+        <router-outlet></router-outlet>
+      </article>
+      <aside fxFlex="1 6 20%" fxFlexOrder fxFlexOrder.xs="3">         
+      </aside>
+    </main>
+    <footer></footer>
+  </div>
+</div>

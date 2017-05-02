@@ -1,0 +1,34 @@
+<div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" fxFlex>
+  <section [ngSwitch]="getIsLoggedIn() | async" fxFlexAlign="center">
+    <div *ngSwitchCase="true">
+      <md-card *ngIf="getUser() | async; let user">
+        <md-card-header>
+            <img md-card-avatar [src]="user.avatarUrl || 'assets/generic-avatar.png'">
+            <md-card-title>{{ user.name }}</md-card-title>
+            <md-card-subtitle>{{ user.email || '(no email)' }}</md-card-subtitle>
+        </md-card-header>        
+        <md-card-content>
+            <p>You are logged in using <strong>{{ user.provider }}</strong></p>
+        </md-card-content>
+        <md-card-actions>
+          <button md-raised-button (click)="logout()">
+            Logout
+          </button>
+        </md-card-actions>
+      </md-card>     
+    </div>      
+
+    <div *ngSwitchCase="false">
+      <h3>Choose login option:</h3>
+      <md-card>
+        <button md-raised-button (click)="login(providers.Google)">
+          <img width="30" src="assets/google-logo.png" />Use My Google Account
+        </button>
+
+        <button md-raised-button (click)="login(providers.Facebook)">
+          <img width="30" src="assets/facebook-logo.png" />Use My Facebook Account
+        </button>
+      </md-card>
+    </div>   
+  </section>  
+</div>

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,15 +9,12 @@ import { AngularFire, AuthProviders, AuthMethods } from 'angularfire2';
 export class AppComponent {
   title = 'app works!';
 
-  constructor(public af: AngularFire) {
-    this.af.auth.subscribe(auth => console.log(auth));
+  constructor(private router: Router) {  
+    
   }
-  
+
   login() {
-    this.af.auth.login({
-      provider: AuthProviders.Facebook,
-      method: AuthMethods.Popup,
-    });
+    this.router.navigate(['/login']);
   }
 }
 
