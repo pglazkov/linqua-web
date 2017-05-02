@@ -339,8 +339,14 @@ module.exports = function (args = {}) {
       clearImmediate: false,
       setImmediate: false
     },
+
     performance: {
       hints: false
+    },
+
+    devServer: {
+      port: 4200,
+      historyApiFallback: true
     }
   };
 };
