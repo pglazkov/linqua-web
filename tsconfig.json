@@ -19,12 +19,7 @@
       "es2016",
       "dom"
     ],
-    "baseUrl": "src/client/app",
-    "paths": {
-      "environment": [
-        "../environments/environment.ts"
-      ]
-    }
+    "baseUrl": "src/client"
   },
   "exclude": [
     "node_modules",
