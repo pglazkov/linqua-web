@@ -8,7 +8,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { 
   MdToolbarModule, 
   MdButtonModule, 
-  MdCardModule 
+  MdCardModule,
 } from '@angular/material';
 
 export let MD_MODULES: any = [

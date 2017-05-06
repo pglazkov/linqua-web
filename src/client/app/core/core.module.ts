@@ -1,6 +1,6 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService, AuthGuard } from 'shared';
+import { AuthService, AuthGuard } from 'app/shared';
 
 @NgModule({
   imports: [

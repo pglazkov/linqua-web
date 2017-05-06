@@ -1,18 +1,7 @@
-.colorNested, .containerX {
-  height: 100%;  
+:host {
+  height: 100%
 }
 
 header {
   font-family: 'Arima Madurai', cursive;
-}
-
-article, nav, aside, header, footer {
-  margin: 4px;
-  padding: 5px;  
-}
-
-main > article {  
-}
-
-main > nav, main > aside {  
 }

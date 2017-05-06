@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthMethods, AuthProviders } from 'angularfire2';
-import { AuthService } from 'shared';
-import { Router } from '@angular/router';
+import { AuthService } from 'app/shared';
+import { Router, ActivatedRoute } from '@angular/router';
+
+export enum AuthProviders {
+  facebook,
+  google
+}
 
 @Component({
   selector: 'app-login-view',
@@ -11,8 +15,11 @@ import { Router } from '@angular/router';
 export class LoginViewComponent implements OnInit {
 
   providers = AuthProviders;
+  errorMessage: string | undefined;
+  loginErrorRetryPayload: any;
 
-  constructor(public af: AuthService, private router: Router) { }
+  constructor(public af: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {     
+  }
 
   ngOnInit() {
   }
@@ -26,15 +33,32 @@ export class LoginViewComponent implements OnInit {
   }
 
   async login(provider: AuthProviders) {
-    const success = await this.af.login(provider, AuthMethods.Popup);
+    const authResult = await this.getLoginFunctionForProvider(provider)();
 
-    if (success) {
-      this.router.navigate([this.af.redirectUrl]);
+    const redirectUrl = this.activatedRoute.snapshot.queryParams['redirectUrl'];
+
+    if (authResult.success && redirectUrl) {
+      this.router.navigate([redirectUrl]);
+    }
+    else {
+      this.errorMessage = authResult.error;
+      this.loginErrorRetryPayload = authResult.errorRetryPayload;
     }
   }
 
   logout() {
     return this.af.logout();
+  }
+
+  private getLoginFunctionForProvider(provider: AuthProviders) {
+    switch (provider) {
+      case AuthProviders.facebook:
+        return () => this.af.loginWithFacebook(this.loginErrorRetryPayload);
+      case AuthProviders.google:
+        return () => this.af.loginWithGoogle(this.loginErrorRetryPayload);
+      default:
+        throw new Error(`Provider "${provider}" is not supported.`);
+    }
   }
 
 }

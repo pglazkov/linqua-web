@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.error-message-container {
+  background: #f44336;
+  color: #fff;
+  padding: 1em;
+  border-radius: 3px;
+}
