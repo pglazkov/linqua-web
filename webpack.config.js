@@ -71,15 +71,6 @@ module.exports = function (args = {}) {
       rules: [
         {
           enforce: 'pre',
-          test: /\.ts$/,
-          use: 'tslint-loader',
-          exclude: [
-            nodeModules,
-            helpers.root('src', 'client', '$$_gendir') // Exluce AOT temporary directory from TSLint (it fails when type checking is enabled)
-          ],
-        },
-        {
-          enforce: 'pre',
           test: /\.js$/,
           loader: 'source-map-loader',
           exclude: [
@@ -238,10 +229,6 @@ module.exports = function (args = {}) {
             sassLoader: {
               sourceMap: isDev,
               includePaths: []
-            },
-            tslint: {
-              typeCheck: true,    
-              tsConfigFile: helpers.root(srcPath, 'tsconfig.app.json'),
             },
             context: ''
           }
