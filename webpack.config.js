@@ -1,20 +1,16 @@
 const helpers = require('./webpack.helpers');
-const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const DllBundlesPlugin = require('webpack-dll-bundles-plugin').DllBundlesPlugin;
-const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 
-const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin, NamedModulesPlugin } = require('webpack');
+const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
 
 const srcPath = './src/client';
-const dllPath = helpers.root('dist', 'dll');
 const distPath = helpers.root('dist', 'wwwroot');
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "main"];
@@ -73,15 +69,6 @@ module.exports = function (args = {}) {
     },
     module: {
       rules: [
-        {
-          enforce: 'pre',
-          test: /\.ts$/,
-          use: 'tslint-loader',
-          exclude: [
-            nodeModules,
-            helpers.root('src', 'client', '$$_gendir') // Exluce AOT temporary directory from TSLint (it fails when type checking is enabled)
-          ],
-        },
         {
           enforce: 'pre',
           test: /\.js$/,
@@ -243,10 +230,6 @@ module.exports = function (args = {}) {
               sourceMap: isDev,
               includePaths: []
             },
-            tslint: {
-              typeCheck: true,    
-              tsConfigFile: helpers.root(srcPath, 'tsconfig.app.json'),
-            },
             context: ''
           }
         }),
@@ -267,25 +250,6 @@ module.exports = function (args = {}) {
           }
         )
       ];
-
-      if (isDev) {
-        let dllConfig = require('./webpack.dev.dll.js');
-
-        plugins = plugins.concat([
-          new DllBundlesPlugin({
-            bundles: dllConfig.bundles,
-            dllDir: dllPath,
-            webpackConfig: dllConfig.webpackConfig
-          }),
-
-          new AddAssetHtmlPlugin([
-            { filepath: path.join(dllPath, DllBundlesPlugin.resolveFile('polyfills')) },
-            { filepath: path.join(dllPath, DllBundlesPlugin.resolveFile('vendor')) }
-          ]),
-
-          new NamedModulesPlugin()
-        ]);
-      }
 
       if (!isDev) {
         plugins = plugins.concat([
