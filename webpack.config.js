@@ -15,6 +15,33 @@ const distPath = helpers.root('dist', 'wwwroot');
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "main"];
 
+const stats = {
+  assets: true,
+  cached: false,
+  cachedAssets: false,
+  children: false,
+  chunks: true,
+  chunkModules: false,
+  chunkOrigins: false,
+  colors: true,
+  depth: false,
+  entrypoints: false,
+  errors: true,
+  errorDetails: true,
+  hash: false,
+  maxModules: 0,
+  modules: false,
+  performance: true,
+  providedExports: false,
+  publicPath: false,
+  reasons: true,
+  source: false,
+  timings: true,
+  usedExports: true,
+  version: true,
+  warnings: true
+};
+
 module.exports = function (args = {}) {
   let isDev = !args.prod;
   let isAot = args.aot;  
@@ -25,6 +52,7 @@ module.exports = function (args = {}) {
   return {
     target: 'web',
     devtool: isDev ? 'cheap-module-source-map' : undefined,
+    stats: stats,
     entry: {
       'main': helpers.root(srcPath, 'main.ts'),
       'polyfills': helpers.root(srcPath, 'polyfills.ts'),
@@ -317,7 +345,8 @@ module.exports = function (args = {}) {
 
     devServer: {
       port: 4200,
-      historyApiFallback: true
+      historyApiFallback: true,
+      stats: stats
     }
   };
 };
