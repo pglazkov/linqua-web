@@ -4,8 +4,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const autoprefixer = require('autoprefixer');
-const postcssUrl = require('postcss-url');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
@@ -17,6 +15,33 @@ const distPath = helpers.root('dist', 'wwwroot');
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "main"];
 
+const stats = {
+  assets: true,
+  cached: false,
+  cachedAssets: false,
+  children: false,
+  chunks: true,
+  chunkModules: false,
+  chunkOrigins: false,
+  colors: true,
+  depth: false,
+  entrypoints: false,
+  errors: true,
+  errorDetails: true,
+  hash: false,
+  maxModules: 0,
+  modules: false,
+  performance: true,
+  providedExports: false,
+  publicPath: false,
+  reasons: true,
+  source: false,
+  timings: true,
+  usedExports: true,
+  version: true,
+  warnings: true
+};
+
 module.exports = function (args = {}) {
   let isDev = !args.prod;
   let isAot = args.aot;  
@@ -27,6 +52,7 @@ module.exports = function (args = {}) {
   return {
     target: 'web',
     devtool: isDev ? 'cheap-module-source-map' : undefined,
+    stats: stats,
     entry: {
       'main': helpers.root(srcPath, 'main.ts'),
       'polyfills': helpers.root(srcPath, 'polyfills.ts'),
@@ -209,9 +235,6 @@ module.exports = function (args = {}) {
           minimize: !isDev,
           sourceMap: isDev,
           options: {
-            postcss: [
-              autoprefixer()
-            ],
             sassLoader: {
               sourceMap: isDev,
               includePaths: []
@@ -322,7 +345,8 @@ module.exports = function (args = {}) {
 
     devServer: {
       port: 4200,
-      historyApiFallback: true
+      historyApiFallback: true,
+      stats: stats
     }
   };
 };
