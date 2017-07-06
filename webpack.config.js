@@ -4,6 +4,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
@@ -253,7 +254,11 @@ module.exports = function (args = {}) {
           {
             // your Angular Async Route paths relative to this root directory
           }
-        )
+        ),
+
+        new CircularDependencyPlugin({
+          exclude: /(\\|\/)node_modules(\\|\/)/
+        })
       ];
 
       if (!isDev) {
