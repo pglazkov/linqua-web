@@ -14,7 +14,7 @@ const { AotPlugin } = require('@ngtools/webpack');
 const srcPath = './src/client';
 const distPath = helpers.root('dist', 'wwwroot');
 const nodeModules = helpers.root('node_modules');
-const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "main"];
+const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "common", "main"];
 
 const stats = {
   assets: true,
