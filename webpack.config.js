@@ -4,6 +4,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
@@ -20,7 +21,7 @@ const stats = {
   cached: false,
   cachedAssets: false,
   children: false,
-  chunks: true,
+  chunks: false,
   chunkModules: false,
   chunkOrigins: false,
   colors: true,
@@ -190,6 +191,11 @@ module.exports = function (args = {}) {
           excludeChunks: [],
           title: 'Webpack App',
           xhtml: true,
+          minify: !isDev ? {
+            caseSensitive: true,
+            collapseWhitespace: true,
+            keepClosingSlash: true
+          } : false,
           chunksSortMode: function sort(left, right) {
             let leftIndex = entryPoints.indexOf(left.names[0]);
             let rightindex = entryPoints.indexOf(right.names[0]);
@@ -205,6 +211,11 @@ module.exports = function (args = {}) {
           }
         }),
         new BaseHrefWebpackPlugin({}),
+        new CommonsChunkPlugin({
+          async: 'common',
+          children: true,
+          minChunks: 2
+        }),
         new CommonsChunkPlugin({
           name: 'inline',
           minChunks: null
@@ -248,7 +259,11 @@ module.exports = function (args = {}) {
           {
             // your Angular Async Route paths relative to this root directory
           }
-        )
+        ),
+
+        new CircularDependencyPlugin({
+          exclude: /(\\|\/)node_modules(\\|\/)/
+        })
       ];
 
       if (!isDev) {
