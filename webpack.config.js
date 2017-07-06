@@ -191,6 +191,11 @@ module.exports = function (args = {}) {
           excludeChunks: [],
           title: 'Webpack App',
           xhtml: true,
+          minify: !isDev ? {
+            caseSensitive: true,
+            collapseWhitespace: true,
+            keepClosingSlash: true
+          } : false,
           chunksSortMode: function sort(left, right) {
             let leftIndex = entryPoints.indexOf(left.names[0]);
             let rightindex = entryPoints.indexOf(right.names[0]);
