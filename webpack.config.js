@@ -20,7 +20,7 @@ const stats = {
   cached: false,
   cachedAssets: false,
   children: false,
-  chunks: true,
+  chunks: false,
   chunkModules: false,
   chunkOrigins: false,
   colors: true,
