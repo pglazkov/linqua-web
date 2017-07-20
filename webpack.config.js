@@ -7,6 +7,7 @@ const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const AutoDllPlugin = require('autodll-webpack-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
@@ -15,6 +16,7 @@ const { AotPlugin } = require('@ngtools/webpack');
 
 const srcPath = './src/client';
 const distPath = helpers.root('dist', 'wwwroot');
+const dllPath = './dll';
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "common", "main"];
 
@@ -263,23 +265,32 @@ module.exports = function (args = {}) {
       ];
 
       if (isDev) {
-        // Separate modules from node_modules into a vendor chunk.
-        const nodeModules = path.resolve('node_modules');
-        // Resolves all symlink to get the actual node modules folder.
-        const realNodeModules = fs.realpathSync(nodeModules);
-        // --aot puts the generated *.ngfactory.ts in src/$$_gendir/node_modules.
-        const genDirNodeModules = path.resolve(srcPath, '$$_gendir', 'node_modules');
-
-        plugins.push(new CommonsChunkPlugin({
-          name: 'vendor',
-          chunks: ['main'],
-          minChunks: module => {
-            return module.resource
-                && (   module.resource.startsWith(nodeModules)
-                    || module.resource.startsWith(genDirNodeModules)
-                    || module.resource.startsWith(realNodeModules));
-          }
-        }));
+        plugins = plugins.concat([
+          new AutoDllPlugin({
+            debug: true,
+            inject: true,
+            context: helpers.root(),
+            filename: '[name]_[hash].js',
+            path: dllPath,
+            entry: {
+              polyfills: [
+                'core-js/es6/reflect',
+                'core-js/es7/reflect',
+                'zone.js/dist/zone',
+              ],
+              vendor: [
+                '@angular/platform-browser',
+                '@angular/platform-browser-dynamic',
+                '@angular/core',
+                '@angular/common',
+                '@angular/forms',
+                '@angular/http',
+                '@angular/router',
+                'rxjs',
+              ]
+            }
+          })
+        ]);
       }
 
       if (!isDev) {
