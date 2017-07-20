@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const helpers = require('./webpack.helpers');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -5,14 +7,16 @@ const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const AutoDllPlugin = require('autodll-webpack-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
-const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
+const { CommonsChunkPlugin, UglifyJsPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
 
 const srcPath = './src/client';
 const distPath = helpers.root('dist', 'wwwroot');
+const dllPath = './dll';
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "common", "main"];
 
@@ -45,10 +49,10 @@ const stats = {
 
 module.exports = function (args = {}) {
   let isDev = !args.prod;
-  let isAot = args.aot;  
+  let isAot = args.aot;
   let analyze = args.analyze;
 
-  console.log(`WEBPACK ENV: ${JSON.stringify(args)}`);  
+  console.log(`WEBPACK ENV: ${JSON.stringify(args)}`);
 
   return {
     target: 'web',
@@ -212,20 +216,14 @@ module.exports = function (args = {}) {
         }),
         new BaseHrefWebpackPlugin({}),
         new CommonsChunkPlugin({
+          name: 'main',
           async: 'common',
           children: true,
           minChunks: 2
         }),
         new CommonsChunkPlugin({
           name: 'inline',
-          minChunks: null
-        }),
-        new CommonsChunkPlugin({
-          name: 'vendor',
-          minChunks: (module) => module.resource && module.resource.startsWith(nodeModules),
-          chunks: [
-            'main'
-          ]
+          minChunks: Infinity
         }),
         new ExtractTextPlugin({
           filename: '[name].bundle.css',
@@ -266,12 +264,43 @@ module.exports = function (args = {}) {
         })
       ];
 
+      if (isDev) {
+        plugins = plugins.concat([
+          new AutoDllPlugin({
+            debug: true,
+            inject: true,
+            context: helpers.root(),
+            filename: '[name]_[hash].js',
+            path: dllPath,
+            entry: {
+              polyfills: [
+                'core-js/es6/reflect',
+                'core-js/es7/reflect',
+                'zone.js/dist/zone',
+              ],
+              vendor: [
+                '@angular/platform-browser',
+                '@angular/platform-browser-dynamic',
+                '@angular/core',
+                '@angular/common',
+                '@angular/forms',
+                '@angular/http',
+                '@angular/router',
+                'rxjs',
+              ]
+            }
+          })
+        ]);
+      }
+
       if (!isDev) {
         plugins = plugins.concat([
           new NormalModuleReplacementPlugin(
             /environment\.ts/,
             'environment.prod.ts'
           ),
+
+          new ModuleConcatenationPlugin(),
 
           new OptimizeJsPlugin({
             sourceMap: false
