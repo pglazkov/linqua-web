@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "webpack",
+    "build": "webpack --display-optimization-bailout",
     "build:analyze": "npm run build -- --env.analyze",
     "build:prod": "webpack --env.prod --env.aot",
     "build:prod:analyze": "npm run build:prod -- --env.analyze",

@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const helpers = require('./webpack.helpers');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -8,7 +10,7 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
-const { CommonsChunkPlugin, UglifyJsPlugin } = require('webpack').optimize;
+const { CommonsChunkPlugin, UglifyJsPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
 
 const srcPath = './src/client';
@@ -45,10 +47,10 @@ const stats = {
 
 module.exports = function (args = {}) {
   let isDev = !args.prod;
-  let isAot = args.aot;  
+  let isAot = args.aot;
   let analyze = args.analyze;
 
-  console.log(`WEBPACK ENV: ${JSON.stringify(args)}`);  
+  console.log(`WEBPACK ENV: ${JSON.stringify(args)}`);
 
   return {
     target: 'web',
@@ -212,20 +214,14 @@ module.exports = function (args = {}) {
         }),
         new BaseHrefWebpackPlugin({}),
         new CommonsChunkPlugin({
+          name: 'main',
           async: 'common',
           children: true,
           minChunks: 2
         }),
         new CommonsChunkPlugin({
           name: 'inline',
-          minChunks: null
-        }),
-        new CommonsChunkPlugin({
-          name: 'vendor',
-          minChunks: (module) => module.resource && module.resource.startsWith(nodeModules),
-          chunks: [
-            'main'
-          ]
+          minChunks: Infinity
         }),
         new ExtractTextPlugin({
           filename: '[name].bundle.css',
@@ -266,12 +262,34 @@ module.exports = function (args = {}) {
         })
       ];
 
+      if (isDev) {
+        // Separate modules from node_modules into a vendor chunk.
+        const nodeModules = path.resolve('node_modules');
+        // Resolves all symlink to get the actual node modules folder.
+        const realNodeModules = fs.realpathSync(nodeModules);
+        // --aot puts the generated *.ngfactory.ts in src/$$_gendir/node_modules.
+        const genDirNodeModules = path.resolve(srcPath, '$$_gendir', 'node_modules');
+
+        plugins.push(new CommonsChunkPlugin({
+          name: 'vendor',
+          chunks: ['main'],
+          minChunks: module => {
+            return module.resource
+                && (   module.resource.startsWith(nodeModules)
+                    || module.resource.startsWith(genDirNodeModules)
+                    || module.resource.startsWith(realNodeModules));
+          }
+        }));
+      }
+
       if (!isDev) {
         plugins = plugins.concat([
           new NormalModuleReplacementPlugin(
             /environment\.ts/,
             'environment.prod.ts'
           ),
+
+          new ModuleConcatenationPlugin(),
 
           new OptimizeJsPlugin({
             sourceMap: false
