@@ -7,7 +7,6 @@ const OptimizeJsPlugin = require('optimize-js-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
-const AutoDllPlugin = require('autodll-webpack-plugin');
 
 const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplacementPlugin, NormalModuleReplacementPlugin } = require('webpack');
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
@@ -16,7 +15,6 @@ const { AotPlugin } = require('@ngtools/webpack');
 
 const srcPath = './src/client';
 const distPath = helpers.root('dist', 'wwwroot');
-const dllPath = './dll';
 const nodeModules = helpers.root('node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "common", "main"];
 
@@ -263,35 +261,6 @@ module.exports = function (args = {}) {
           exclude: /(\\|\/)node_modules(\\|\/)/
         })
       ];
-
-      if (isDev) {
-        plugins = plugins.concat([
-          new AutoDllPlugin({
-            debug: true,
-            inject: true,
-            context: helpers.root(),
-            filename: '[name]_[hash].js',
-            path: dllPath,
-            entry: {
-              polyfills: [
-                'core-js/es6/reflect',
-                'core-js/es7/reflect',
-                'zone.js/dist/zone',
-              ],
-              vendor: [
-                '@angular/platform-browser',
-                '@angular/platform-browser-dynamic',
-                '@angular/core',
-                '@angular/common',
-                '@angular/forms',
-                '@angular/http',
-                '@angular/router',
-                'rxjs',
-              ]
-            }
-          })
-        ]);
-      }
 
       if (!isDev) {
         plugins = plugins.concat([
