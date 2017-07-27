@@ -145,11 +145,6 @@ module.exports = function (args = {}) {
           test: /\.(jpg|png|gif)$/,
           use: 'file-loader'
         },
-
-        {
-          test: /\.json$/,
-          use: 'json-loader'
-        },
         {
           test: /\.(eot|svg)$/,
           use: 'file-loader?name=[name].[hash:20].[ext]'
