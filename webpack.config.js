@@ -12,6 +12,7 @@ const { NoEmitOnErrorsPlugin, LoaderOptionsPlugin, ProgressPlugin, ContextReplac
 const { GlobCopyWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
 const { CommonsChunkPlugin, UglifyJsPlugin, ModuleConcatenationPlugin } = require('webpack').optimize;
 const { AotPlugin } = require('@ngtools/webpack');
+const { NamedLazyChunksWebpackPlugin } = require('./webpack.plugins');
 
 const srcPath = './src/client';
 const distPath = helpers.root('dist', 'wwwroot');
@@ -63,7 +64,7 @@ module.exports = function (args = {}) {
     },
     output: {
       path: distPath,
-      filename: '[name].bundle.js',
+      filename: '[name].[chunkhash].bundle.js',
       chunkFilename: '[name].[chunkhash].chunk.js',
     },
     resolve: {
@@ -143,11 +144,6 @@ module.exports = function (args = {}) {
         {
           test: /\.(jpg|png|gif)$/,
           use: 'file-loader'
-        },
-
-        {
-          test: /\.json$/,
-          use: 'json-loader'
         },
         {
           test: /\.(eot|svg)$/,
@@ -259,7 +255,9 @@ module.exports = function (args = {}) {
 
         new CircularDependencyPlugin({
           exclude: /(\\|\/)node_modules(\\|\/)/
-        })
+        }),
+
+        new NamedLazyChunksWebpackPlugin()
       ];
 
       if (!isDev) {
@@ -320,7 +318,15 @@ module.exports = function (args = {}) {
 
       if (analyze) {
         plugins = plugins.concat([
-          new BundleAnalyzerPlugin()
+          new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            reportFilename: 'report.html',
+            openAnalyzer: false,
+            generateStatsFile: true,
+            statsFilename: 'stats.json',
+            statsOptions: null,
+            logLevel: 'info'
+          })
         ]);
       }
 
