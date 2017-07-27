@@ -7,6 +7,26 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeViewComponent implements OnInit {
 
+  entries: { text: string }[] = [
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' },
+    { text: 'word' }
+  ];
+
   constructor() { }
 
   ngOnInit() {

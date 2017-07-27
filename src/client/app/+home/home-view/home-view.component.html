@@ -1,3 +1,5 @@
-<p>
-  App Works!
-</p>
+<div class="entry-list">
+  <md-card *ngFor="let entry of entries" class="entry-card">
+    {{ entry.text }}
+  </md-card>
+</div>

@@ -1,11 +1,40 @@
 :host {
   display: flex;
   flex: 1;
+  flex-direction: column;
 }
 
-.error-message-container {
+.error-message {
   background: #f44336;
   color: #fff;
   padding: 1em;
   border-radius: 3px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+section {
+  display: flex;
+  flex: 1;
+  align-self: center;
+
+  .login-buttons-card {
+    display: flex;
+
+    button + button {
+      margin-left: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .login-buttons-card {
+      flex-direction: column;
+
+      button + button {
+        margin-left: 0px;
+        margin-top: 20px;
+      }
+    }
+  }
 }

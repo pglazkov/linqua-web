@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.entry-list {
+  flex: 1;
+  padding: 10px;
+}
+
+.entry-card + .entry-card {
+  margin-top: 10px;
+}

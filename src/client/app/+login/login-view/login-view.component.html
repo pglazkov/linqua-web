@@ -1,40 +1,36 @@
-<div fxLayout="column" fxLayoutGap="20px" fxFlex>
-  <div fxFlex="0 0 auto" fxLayoutAlign="center" class="error-message-container" *ngIf="errorMessage">    
-    {{ errorMessage }}
-  </div>  
-
-  <div fxLayout="row" fxLayoutAlign="center" fxFlex="1 1 auto">
-    <section [ngSwitch]="getIsLoggedIn() | async">
-      <div *ngSwitchCase="true">
-        <md-card *ngIf="getUser() | async; let user">
-          <md-card-header>
-              <img md-card-avatar [src]="user.avatarUrl || 'assets/generic-avatar.png'">
-              <md-card-title>{{ user.name }}</md-card-title>
-              <md-card-subtitle>{{ user.email || '(no email)' }}</md-card-subtitle>
-          </md-card-header>        
-          <md-card-content>
-              <p>You are logged in using <strong>{{ user.provider }}</strong></p>
-          </md-card-content>
-          <md-card-actions>
-            <button md-raised-button (click)="logout()">
-              Logout
-            </button>
-          </md-card-actions>
-        </md-card>     
-      </div>      
-
-      <div *ngSwitchCase="false" fxLayout="column">
-        <md-card fxFlexAlign="center" fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
-          <button md-raised-button (click)="login(providers.google)">
-            <img width="30" src="assets/google-logo.png" /> Login with Google
-          </button>
-
-          <button md-raised-button (click)="login(providers.facebook)">
-            <img width="30" src="assets/facebook-logo.png" /> Login with Facebook
-          </button>
-        </md-card>
-      </div>   
-    </section>  
-  </div>
+<div class="error-message" *ngIf="errorMessage">
+  {{ errorMessage }}
 </div>
+
+<section [ngSwitch]="getIsLoggedIn() | async">
+  <div *ngSwitchCase="true" class="logged-in">
+    <md-card *ngIf="getUser() | async; let user">
+      <md-card-header>
+        <img md-card-avatar [src]="user.avatarUrl || 'assets/generic-avatar.png'">
+        <md-card-title>{{ user.name }}</md-card-title>
+        <md-card-subtitle>{{ user.email || '(no email)' }}</md-card-subtitle>
+      </md-card-header>
+      <md-card-content>
+        <p>You are logged in using <strong>{{ user.provider }}</strong></p>
+      </md-card-content>
+      <md-card-actions>
+        <button md-raised-button (click)="logout()">
+          Logout
+        </button>
+      </md-card-actions>
+    </md-card>
+  </div>
+
+  <div *ngSwitchCase="false" class="not-logged-in">
+    <md-card class="login-buttons-card">
+      <button md-raised-button (click)="login(providers.google)">
+        <img width="30" src="assets/google-logo.png" /> Login with Google
+      </button>
+
+      <button md-raised-button (click)="login(providers.facebook)">
+        <img width="30" src="assets/facebook-logo.png" /> Login with Facebook
+      </button>
+    </md-card>
+  </div>
+</section>
 

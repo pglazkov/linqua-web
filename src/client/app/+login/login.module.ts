@@ -2,12 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginRoutingModule } from './login-routing.module';
 import { LoginViewComponent } from './login-view/login-view.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 // MATERIAL DESIGN MODULES
-import { 
-  MdToolbarModule, 
-  MdButtonModule, 
+import {
+  MdToolbarModule,
+  MdButtonModule,
   MdCardModule,
 } from '@angular/material';
 
@@ -21,7 +20,6 @@ export let MD_MODULES: any = [
   imports: [
     CommonModule,
     LoginRoutingModule,
-    FlexLayoutModule,
     ...MD_MODULES
   ],
   declarations: [LoginViewComponent]
