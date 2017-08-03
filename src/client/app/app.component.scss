@@ -1,8 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  height: 100%
+  height: 100vh;
 }
 
 header {
@@ -14,8 +13,9 @@ header {
 main {
   flex: 1;
   display: flex;
+  flex-direction: column;
 
   router-outlet {
-    flex: 0;
+    flex: none;
   }
 }
