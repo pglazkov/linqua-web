@@ -220,7 +220,7 @@ module.exports = function (args = {}) {
           minChunks: Infinity
         }),
         new ExtractTextPlugin({
-          filename: '[name].bundle.css',
+          filename: '[name].[contenthash].bundle.css',
           disable: isDev
         }),
 
