@@ -1,5 +1,12 @@
 <div class="entry-list">
   <md-card *ngFor="let entry of entries" class="entry-card">
-    {{ entry.text }}
+    <span class="entry-card__main-test">{{ entry.text }}</span>
+    <button md-icon-button class="entry-card__delete-button"><md-icon>delete</md-icon></button>
   </md-card>
+</div>
+<div class="separator"></div>
+<div class="new-entry">
+  <md-input-container class="new-entry__input-container">
+    <input mdInput class="new-entry__input" placeholder="new entry">
+  </md-input-container>
 </div>

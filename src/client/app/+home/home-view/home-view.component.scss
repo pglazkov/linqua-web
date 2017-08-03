@@ -11,6 +11,7 @@
 .entry-list {
   flex: 1;
   padding: 10px;
+  overflow-y: auto;
 }
 
 @media (min-width: $screen-tablet) {
@@ -22,4 +23,42 @@
 
 .entry-card + .entry-card {
   margin-top: 10px;
+}
+
+.entry-card {
+  display: flex;
+  align-items: center;
+
+  .entry-card__main-test {
+    flex: 1 1 auto;
+  }
+  .entry-card__delete-button {
+    flex: 0 0 auto;
+  }
+}
+
+.separator {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height:3px;
+  background: rgba(0,0,0,.12);
+}
+
+.new-entry {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: $screen-tablet) {
+    width: 500px;
+    align-self: center;
+  }
+
+  @media (max-width: $screen-tablet) {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .new-entry__input-container {
+
+  }
 }

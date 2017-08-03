@@ -6,6 +6,8 @@ import {
   MdListModule,
   MdButtonModule,
   MdCardModule,
+  MdIconModule,
+  MdInputModule
 } from '@angular/material';
 
 @NgModule({
@@ -14,7 +16,9 @@ import {
     HomeRoutingModule,
     MdListModule,
     MdButtonModule,
-    MdCardModule
+    MdCardModule,
+    MdIconModule,
+    MdInputModule
   ],
   declarations: [HomeViewComponent]
 })
