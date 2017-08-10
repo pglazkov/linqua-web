@@ -48,6 +48,8 @@
 .new-entry {
   display: flex;
   flex-direction: column;
+  padding-top: 10px;
+  padding-bottom: 15px;
 
   @media (min-width: $screen-tablet) {
     width: 500px;
@@ -59,7 +61,7 @@
     margin-right: 10px;
   }
 
-  .new-entry__input-container {
-
+  .new-entry__add-new-button {
+    align-self: center;
   }
 }

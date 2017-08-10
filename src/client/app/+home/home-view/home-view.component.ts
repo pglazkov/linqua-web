@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MdDialog } from '@angular/material';
+import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
 
 @Component({
   selector: 'app-home-view',
@@ -27,9 +29,16 @@ export class HomeViewComponent implements OnInit {
     { text: 'word' }
   ];
 
-  constructor() { }
+  constructor(private dialog: MdDialog) { }
 
   ngOnInit() {
   }
 
+  addNewEntry() {
+    this.dialog.open(EntryEditorDialogComponent).afterClosed().subscribe(result => {
+      if (result) {
+        this.entries.unshift({text: result});
+      }
+    });
+  }
 }

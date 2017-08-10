@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+}
+
+.entry-form {
+  display: flex;
+  flex-direction: column;
+
+  .entry-form__foreign-text-input {
+
+  }
+
+  .entry-form__translation-input {
+
+  }
+
+  .entry-form__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+}
