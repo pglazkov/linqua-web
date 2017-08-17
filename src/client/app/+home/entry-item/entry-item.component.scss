@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry-card {
+  display: flex;
+  align-items: center;
+
+  .entry-card__content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+
+    .entry-card__content__original-text {
+
+    }
+
+    .entry-card__content__translation {
+      margin-top: 8px;
+    }
+  }
+
+  .entry-card__toolbox {
+    flex: 0 0 auto;
+
+    .entry-card__toolbox__delete-button {
+
+    }
+  }
+}

@@ -13,28 +13,16 @@
   padding: 10px;
   overflow-y: scroll; /* has to be scroll, not auto */
   -webkit-overflow-scrolling: touch;
+
+  .entry-list__entry-item + .entry-list__entry-item {
+    margin-top: 10px;
+  }
 }
 
 @media (min-width: $screen-tablet) {
   .entry-list {
     width: 500px;
     align-self: center;
-  }
-}
-
-.entry-card + .entry-card {
-  margin-top: 10px;
-}
-
-.entry-card {
-  display: flex;
-  align-items: center;
-
-  .entry-card__main-test {
-    flex: 1 1 auto;
-  }
-  .entry-card__delete-button {
-    flex: 0 0 auto;
   }
 }
 

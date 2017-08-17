@@ -19,7 +19,10 @@
       "es2016",
       "dom"
     ],
-    "baseUrl": "src/client"
+    "baseUrl": "src/client",
+    "paths": {
+      "shared": [ "app/shared" ]
+    }
   },
   "exclude": [
     "node_modules",

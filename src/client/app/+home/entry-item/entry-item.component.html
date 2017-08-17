@@ -1,0 +1,11 @@
+<md-card class="entry-card">
+  <div class="entry-card__content">
+    <span class="entry-card__content__original-text">{{ entry.originalText }}</span>
+    <span class="entry-card__content__translation mat-caption">{{ entry.translation }}</span>
+  </div>
+
+  <div class="entry-card__toolbox">
+    <button md-icon-button class="entry-card__toolbox__edit-button" (click)="edit()"><md-icon>edit</md-icon></button>
+    <button md-icon-button class="entry-card__toolbox__delete-button" (click)="delete()"><md-icon>delete</md-icon></button>
+  </div>
+</md-card>

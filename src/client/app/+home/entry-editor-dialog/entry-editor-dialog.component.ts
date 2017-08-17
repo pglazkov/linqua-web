@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MdDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Entry } from 'shared';
 
 @Component({
   selector: 'app-entry-editor-dialog',
@@ -12,9 +13,14 @@ export class EntryEditorDialogComponent {
 
   constructor(private dialogRef: MdDialogRef<EntryEditorDialogComponent>, private fb: FormBuilder) {
     this.entryForm = fb.group({
-      foreignText: ['', Validators.required],
+      originalText: ['', Validators.required],
       translation: ['']
     });
+  }
+
+  setEntry(entry: Entry) {
+    this.entryForm.setValue({ originalText: entry.originalText, translation: entry.translation });
+    this.entryForm.markAsPristine();
   }
 
   onSubmit() {
@@ -22,6 +28,6 @@ export class EntryEditorDialogComponent {
       return;
     }
 
-    this.dialogRef.close(this.entryForm.value.foreignText);
+    this.dialogRef.close(this.entryForm.value);
   }
 }

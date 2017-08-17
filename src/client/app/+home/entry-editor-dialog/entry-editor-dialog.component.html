@@ -1,6 +1,6 @@
 <form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
   <md-input-container class="entry-form__foreign-text-input">
-    <input mdInput placeholder="word/phrase to translate" formControlName="foreignText">
+    <input mdInput placeholder="word/phrase to translate" formControlName="originalText">
   </md-input-container>
 
   <md-input-container class="entry-form__translation-input">
@@ -8,7 +8,7 @@
   </md-input-container>
 
   <div class="entry-form__footer">
-    <button md-button type="button" [disabled]="!entryForm.value.foreignText">translate</button>
+    <button md-button type="button" [disabled]="!entryForm.value.originalText">translate</button>
     <button md-raised-button button type="submit" [disabled]="!entryForm.valid">done</button>
   </div>
 </form>
