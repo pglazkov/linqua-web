@@ -26,30 +26,8 @@
   }
 }
 
-.separator {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  height:3px;
-  background: rgba(0,0,0,.12);
-}
-
-.new-entry {
-  display: flex;
-  flex-direction: column;
-  padding-top: 10px;
-  padding-bottom: 15px;
-
-  @media (min-width: $screen-tablet) {
-    width: 500px;
-    align-self: center;
-  }
-
-  @media (max-width: $screen-tablet) {
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .new-entry__add-new-button {
-    align-self: center;
-  }
+.new-entry-fab {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
 }
