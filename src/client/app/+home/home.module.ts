@@ -7,7 +7,8 @@ import {
   MdCardModule,
   MdIconModule,
   MdInputModule,
-  MdDialogModule
+  MdDialogModule,
+  MdMenuModule
 } from '@angular/material';
 
 import { HomeViewComponent } from './home-view/home-view.component';
@@ -26,6 +27,7 @@ import { EntryItemComponent } from './entry-item/entry-item.component';
     MdIconModule,
     MdInputModule,
     MdDialogModule,
+    MdMenuModule,
     ReactiveFormsModule
   ],
   declarations: [
