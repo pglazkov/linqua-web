@@ -1,7 +1,41 @@
-<header>
-  <h1>linqua</h1>
-</header>
-<main>
-  <router-outlet></router-outlet>
-</main>
-<footer></footer>
+<md-sidenav-container class="container">
+  <md-sidenav #sidenav mode="over" opened="false" color="primary">
+    <md-toolbar class="toolbar" color="primary">
+      <div class="header">
+        <span class="app-name">linqua</span>
+      </div>
+    </md-toolbar>
+
+    <md-card *ngIf="getUser() | async; let user">
+      <md-card-header>
+        <img md-card-avatar [src]="user.avatarUrl || 'assets/generic-avatar.png'">
+        <md-card-title>{{ user.name }}</md-card-title>
+        <md-card-subtitle>{{ user.email || '(no email)' }}</md-card-subtitle>
+      </md-card-header>
+      <md-card-content>
+        <p>You are logged in using <strong>{{ user.provider }}</strong></p>
+      </md-card-content>
+      <md-card-actions>
+        <button md-raised-button (click)="logout()">
+          Logout
+        </button>
+      </md-card-actions>
+    </md-card>
+  </md-sidenav>
+
+  <md-toolbar class="toolbar" color="primary">
+    <button md-icon-button class="toolbar__menu-button" (click)="sidenav.toggle()" *ngIf="getIsLoggedIn() | async">
+      <md-icon>menu</md-icon>
+    </button>
+
+    <header class="header">
+      <h1 class="app-name">linqua</h1>
+    </header>
+  </md-toolbar>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer></footer>
+</md-sidenav-container>

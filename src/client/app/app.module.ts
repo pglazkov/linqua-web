@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
 import { CoreModule } from './core/core.module';
+import { MdButtonModule, MdCardModule, MdIconModule, MdSidenavModule, MdToolbarModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,11 @@ import { CoreModule } from './core/core.module';
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
+    MdButtonModule,
+    MdIconModule,
+    MdToolbarModule,
+    MdCardModule,
+    MdSidenavModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
