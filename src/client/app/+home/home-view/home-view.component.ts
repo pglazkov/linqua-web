@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MdDialog } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
 import { Entry } from 'shared';
@@ -46,6 +46,8 @@ export class HomeViewComponent implements OnInit {
     new Entry({ originalText: 'word', translation: 'translation' })
   ];
 
+  @ViewChild('list') listElement: ElementRef;
+
   constructor(private dialog: MdDialog) { }
 
   ngOnInit() {
@@ -56,6 +58,8 @@ export class HomeViewComponent implements OnInit {
       if (result) {
         const entry = new Entry(result);
         entry.isNew = true;
+
+        this.listElement.nativeElement.scrollTop = 0;
 
         this.entries.unshift(entry);
       }
