@@ -1,8 +1,8 @@
 <md-sidenav-container class="container">
   <md-sidenav #sidenav mode="over" opened="false" color="primary">
     <md-toolbar class="toolbar" color="primary">
-      <div class="header">
-        <span class="app-name">linqua</span>
+      <div class="toolbar__header">
+        <span class="app-name">LINQUA</span>
       </div>
     </md-toolbar>
 
@@ -24,13 +24,19 @@
   </md-sidenav>
 
   <md-toolbar class="toolbar" color="primary">
-    <button md-icon-button class="toolbar__menu-button" (click)="sidenav.toggle()" *ngIf="getIsLoggedIn() | async">
-      <md-icon>menu</md-icon>
-    </button>
+    <div class="toolbar__side-content">
+      <button md-icon-button (click)="sidenav.toggle()" *ngIf="getIsLoggedIn() | async">
+        <md-icon>menu</md-icon>
+      </button>
+    </div>
 
-    <header class="header">
-      <h1 class="app-name">linqua</h1>
+    <header class="toolbar__header">
+      <a class="app-name" md-button routerLink="/">LINQUA</a>
     </header>
+
+    <div class="toolbar__side-content">
+
+    </div>
   </md-toolbar>
 
   <main>

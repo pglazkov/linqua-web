@@ -7,11 +7,21 @@
 .container {
   height: 100%;
 
-  .header {
-    flex: 1;
+  .toolbar {
+    .toolbar__side-content {
+      flex: 0 0 40px;
+      display: flex;
+    }
 
-    .app-name {
-      font-family: 'Arima Madurai', cursive;
+    .toolbar__header {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+
+      .app-name {
+        font-family: 'Arima Madurai', cursive;
+        font-size: 18px;
+      }
     }
   }
 
@@ -33,12 +43,6 @@
   ::ng-deep.mat-sidenav-content {
     display: flex;
     flex-direction: column;
-  }
-
-  .toolbar {
-    .toolbar__menu-button {
-      margin-right: 10px;
-    }
   }
 }
 
