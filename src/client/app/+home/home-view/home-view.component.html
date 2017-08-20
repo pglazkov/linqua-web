@@ -1,5 +1,12 @@
 <div class="entry-list">
-  <app-entry-item class="entry-list__entry-item" *ngFor="let entry of entries" [entry]="entry" (editRequest)="onEditRequested(entry)" (deleteRequest)="onDeleteRequested(entry)"></app-entry-item>
+  <app-entry-item
+    class="entry-list__entry-item"
+    *ngFor="let entry of entries" [entry]="entry"
+    (editRequest)="onEditRequested(entry)"
+    (deleteRequest)="onDeleteRequested(entry)"
+    [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
+    (@entryCardEnterLeave.done)="entry.isNew = false">
+  </app-entry-item>
 </div>
 
 <button md-fab (click)="addNewEntry()" class="new-entry-fab"><md-icon>add</md-icon></button>
