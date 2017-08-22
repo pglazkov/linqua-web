@@ -17,12 +17,12 @@
   .entry-list__entry-item + .entry-list__entry-item {
     margin-top: 10px;
   }
-}
 
-@media (min-width: $screen-tablet) {
-  .entry-list {
-    width: 700px;
-    align-self: center;
+  @media (min-width: $screen-tablet) {
+    .entry-list__entry-item {
+      width: 700px;
+      margin: auto;
+    }
   }
 }
 
