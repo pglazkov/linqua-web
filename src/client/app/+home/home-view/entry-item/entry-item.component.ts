@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Entry } from 'shared';
+import { EntryViewModel } from '../entry.vm';
 
 @Component({
   selector: 'app-entry-item',
@@ -7,7 +7,7 @@ import { Entry } from 'shared';
   styleUrls: ['./entry-item.component.scss']
 })
 export class EntryItemComponent implements OnInit {
-  @Input() entry: Entry;
+  @Input() entry: EntryViewModel;
 
   @Output() editRequest = new EventEmitter();
   @Output() deleteRequest = new EventEmitter();

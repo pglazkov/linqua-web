@@ -13,7 +13,6 @@ export class Entry implements EntryConfig {
   translation?: string;
   addedOn?: Date;
   updatedOn?: Date;
-  isNew?: boolean;
 
   constructor(prototype?: EntryConfig) {
     if (prototype) {

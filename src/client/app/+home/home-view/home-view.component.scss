@@ -14,12 +14,21 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  .entry-list__entry-item + .entry-list__entry-item {
+  .entry-list__list-item ::ng-deep.mat-list-item-content {
+    height: auto;
+    padding: 0;
+  }
+
+  .entry-list__list-item + .entry-list__list-item {
     margin-top: 10px;
   }
 
+  .entry-list__group-header {
+    box-sizing: border-box;
+  }
+
   @media (min-width: $screen-tablet) {
-    .entry-list__entry-item {
+    .entry-list__list-item, .entry-list__group-header {
       width: 700px;
       margin: auto;
     }

@@ -3,6 +3,7 @@ import { MdDialog } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
 import { Entry } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 
 @Component({
   selector: 'app-home-view',
@@ -26,24 +27,29 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 })
 export class HomeViewComponent implements OnInit {
 
-  entries: Entry[] = [
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' }),
-    new Entry({ originalText: 'word', translation: 'translation' })
+  entries: EntryViewModel[] = [
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' }),
+    new EntryViewModel({ originalText: 'word', translation: 'translation' })
+  ];
+
+  groups: EntryTimeGroupViewModel[] = [
+    { date: new Date(Date.UTC(2017, 7, 1)), entries: this.entries.slice(0, 8) },
+    { date: new Date(Date.UTC(2017, 7, 8)), entries: this.entries.slice(8, 15) }
   ];
 
   @ViewChild('list') listElement: ElementRef;
@@ -56,12 +62,14 @@ export class HomeViewComponent implements OnInit {
   addNewEntry() {
     this.dialog.open(EntryEditorDialogComponent).afterClosed().subscribe((result: Entry) => {
       if (result) {
-        const entry = new Entry(result);
+        const entry = new EntryViewModel(result);
         entry.isNew = true;
 
-        this.listElement.nativeElement.scrollTop = 0;
+        const group = this.findOrCreateTimeGroupForEntry(entry);
 
-        this.entries.unshift(entry);
+        group.entries.unshift(entry);
+
+        this.listElement.nativeElement.scrollTop = 0;
       }
     });
   }
@@ -77,11 +85,37 @@ export class HomeViewComponent implements OnInit {
     });
   }
 
-  onDeleteRequested(entry: Entry) {
-    const entryIndex = this.entries.findIndex(x => x.equals(entry));
+  onDeleteRequested(entry: EntryViewModel, group: EntryTimeGroupViewModel) {
+    const entryIndex = group.entries.findIndex(x => x.equals(entry));
 
     if (entryIndex >= 0) {
-      this.entries.splice(entryIndex, 1);
+      group.entries.splice(entryIndex, 1);
     }
+
+    if (group.entries.length === 0) {
+      this.groups.splice(this.groups.indexOf(group), 1);
+    }
+  }
+
+  private findOrCreateTimeGroupForEntry(entry: EntryViewModel) {
+    let entryDate = entry.addedOn;
+    if (!entryDate) {
+      entryDate = new Date();
+    }
+
+    const dateWithoutTime = new Date(entryDate);
+    dateWithoutTime.setHours(0, 0, 0, 0);
+
+    let group = this.groups.find(g => g.date.getTime() === dateWithoutTime.getTime());
+
+    if (!group) {
+      group = new EntryTimeGroupViewModel();
+      group.date = dateWithoutTime;
+      group.entries = [];
+
+      this.groups.unshift(group);
+    }
+
+    return group;
   }
 }

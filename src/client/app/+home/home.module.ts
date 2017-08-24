@@ -15,7 +15,7 @@ import { HomeViewComponent } from './home-view/home-view.component';
 import { HomeRoutingModule } from './home-routing.module';
 import { EntryEditorDialogComponent } from './entry-editor-dialog/entry-editor-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EntryItemComponent } from './entry-item/entry-item.component';
+import { EntryItemComponent } from './home-view/entry-item/entry-item.component';
 
 @NgModule({
   imports: [
