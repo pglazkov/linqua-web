@@ -1,6 +1,7 @@
 import { uniqueId } from '../util';
 
 export interface EntryConfig {
+  id?: string;
   originalText: string;
   translation?: string;
   addedOn?: Date;
@@ -17,10 +18,6 @@ export class Entry implements EntryConfig {
   constructor(prototype?: EntryConfig) {
     if (prototype) {
       Object.assign(this, prototype);
-    }
-
-    if (!this.id) {
-      this.id = uniqueId();
     }
 
     if (!this.addedOn) {

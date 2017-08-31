@@ -9,6 +9,8 @@ import 'rxjs/add/operator/timeoutWith';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishReplay';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/first';
 
 export { Subscription } from 'rxjs/Subscription';
 export { Observable } from 'rxjs/Observable';

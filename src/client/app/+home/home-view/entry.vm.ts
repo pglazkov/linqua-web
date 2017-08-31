@@ -35,7 +35,7 @@ export class EntryViewModel {
 
   isNew?: boolean;
 
-  private model: Entry;
+  readonly model: Entry;
 
   constructor(entry: Entry | EntryConfig) {
     this.model = (entry instanceof Entry) ? entry : new Entry(entry);
@@ -50,4 +50,12 @@ export class EntryViewModel {
 export class EntryTimeGroupViewModel {
   date: Date;
   entries: EntryViewModel[];
+
+  deleteEntry(entry: EntryViewModel) {
+    const entryIndex = this.entries.findIndex(x => x.equals(entry));
+
+    if (entryIndex >= 0) {
+      this.entries.splice(entryIndex, 1);
+    }
+  }
 }

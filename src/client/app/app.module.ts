@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
 import { CoreModule } from './core/core.module';
 import { MdButtonModule, MdCardModule, MdIconModule, MdSidenavModule, MdToolbarModule } from '@angular/material';
+import { StorageModule } from 'shared';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,6 @@ import { MdButtonModule, MdCardModule, MdIconModule, MdSidenavModule, MdToolbarM
     MdSidenavModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireDatabaseModule,
     AngularFireAuthModule,
     CoreModule
   ],
