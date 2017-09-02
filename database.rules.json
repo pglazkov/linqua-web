@@ -2,8 +2,17 @@
   "rules": {
     ".read": "auth != null",
     ".write": "auth != null",
-    "entries": {
-      ".indexOn": "addedOn"
+    "users": {
+      "$user_id": {
+        // grants write access to the owner of this user account
+        // whose uid must exactly match the key ($user_id)
+        ".read": "$user_id === auth.uid",
+        ".write": "$user_id === auth.uid",
+
+        "entries": {
+          ".indexOn": "addedOn"
+        }
+      }
     }
   }
 }

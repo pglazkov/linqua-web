@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/Observable';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 interface FirebaseEntry {
   $key?: string;
@@ -14,12 +15,12 @@ interface FirebaseEntry {
 @Injectable()
 export class EntryStorageService {
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(private dbService: AngularFireDatabase, private authService: AngularFireAuth) {
 
   }
 
   getEntries(): Observable<Entry[]> {
-    return this.db.list('/entries', {
+    return this.dbService.list(`/users/${this.authService.auth.currentUser.uid}/entries`, {
       query: {
         limitToLast: 50,
         orderByChild: 'addedOn'
@@ -45,15 +46,15 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined
     };
 
-    const entryKey = entry.id || this.db.database.ref().child('entries').push().key;
+    const entryKey = entry.id || this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid).child('entries').push().key;
 
     const updates: { [key: string]: any } = {};
     updates['/entries/' + entryKey] = entryData;
 
-    this.db.database.ref().update(updates);
+    this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid).update(updates);
   }
 
   delete(id: string): void {
-    this.db.list('/entries').remove(id);
+    this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid + '/entries').child(id).remove();
   }
 }
