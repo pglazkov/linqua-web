@@ -1,21 +1,36 @@
-<md-list #list class="entry-list">
-  <ng-container *ngIf="listVm">
-    <ng-container *ngFor="let group of listVm.groups">
-      <div class="entry-list__group-header">
-        <h3 md-subheader>{{ group.date | date }}</h3>
-      </div>
+<ng-container *ngIf="listVm; else loading">
 
-      <md-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
-                    [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-                    (@entryCardEnterLeave.done)="entry.isNew = false">
-        <app-entry-item mat-line
-                        [entry]="entry"
-                        (editRequest)="onEditRequested(entry)"
-                        (deleteRequest)="onDeleteRequested(entry, group)">
-        </app-entry-item>
-      </md-list-item>
-    </ng-container>
+  <ng-container *ngIf="listVm.groups.length > 0; else empty">
+    <md-list #list class="entry-list">
+      <ng-container *ngFor="let group of listVm.groups">
+        <div class="entry-list__group-header">
+          <h3 md-subheader>{{ group.date | date }}</h3>
+        </div>
+
+        <md-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
+                      [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
+                      (@entryCardEnterLeave.done)="entry.isNew = false">
+          <app-entry-item mat-line
+                          [entry]="entry"
+                          (editRequest)="onEditRequested(entry)"
+                          (deleteRequest)="onDeleteRequested(entry, group)">
+          </app-entry-item>
+        </md-list-item>
+      </ng-container>
+    </md-list>
   </ng-container>
-</md-list>
+
+  <ng-template #empty>
+    <div class="empty-list-container mat-typography">
+      <p class="mat-body-2">It is lonely here...</p>
+      <p>Start by adding a word or phrase in a foreign language that you would like to learn.</p>
+    </div>
+  </ng-template>
+
+</ng-container>
+
+<ng-template #loading>
+  <md-spinner class="loading-spinner" mode="indeterminate"></md-spinner>
+</ng-template>
 
 <button md-fab (click)="addNewEntry()" class="new-entry-fab"><md-icon>add</md-icon></button>

@@ -8,7 +8,8 @@ import {
   MdIconModule,
   MdInputModule,
   MdDialogModule,
-  MdMenuModule
+  MdMenuModule,
+  MdProgressSpinnerModule
 } from '@angular/material';
 
 import { HomeViewComponent } from './home-view/home-view.component';
@@ -29,6 +30,7 @@ import { StorageModule } from 'shared';
     MdInputModule,
     MdDialogModule,
     MdMenuModule,
+    MdProgressSpinnerModule,
     ReactiveFormsModule,
     StorageModule
   ],

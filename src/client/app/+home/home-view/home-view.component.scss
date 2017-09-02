@@ -35,6 +35,16 @@
   }
 }
 
+.loading-spinner {
+  margin: auto;
+}
+
+.empty-list-container {
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+}
+
 .new-entry-fab {
   position: absolute;
   bottom: 20px;
