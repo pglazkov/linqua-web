@@ -16,14 +16,14 @@ export class ObservableCache<T> {
   get(): Observable<T> {
     if (!this.cachedValueSubject) {
       this.cachedValueSubject = new ReplaySubject<T>();
-      
+
       this.underlyingSubscription = this.observableGetter().take(1).subscribe(this.cachedValueSubject);
     }
 
     return this.cachedValueSubject;
   }
 
-  invalidate() {    
+  invalidate() {
     this.cachedValueSubject = undefined;
   }
 

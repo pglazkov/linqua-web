@@ -3,6 +3,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { UserInfo } from 'firebase/app';
 
 interface FirebaseEntry {
   $key?: string;
@@ -19,8 +20,18 @@ export class EntryStorageService {
 
   }
 
+  private get currentUser(): UserInfo {
+    const result = this.authService.auth.currentUser;
+
+    if (!result) {
+      throw new Error('User is not logged in.');
+    }
+
+    return result;
+  }
+
   getEntries(): Observable<Entry[]> {
-    return this.dbService.list(`/users/${this.authService.auth.currentUser.uid}/entries`, {
+    return this.dbService.list(`/users/${this.currentUser.uid}/entries`, {
       query: {
         limitToLast: 50,
         orderByChild: 'addedOn'
@@ -46,15 +57,15 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined
     };
 
-    const entryKey = entry.id || this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid).child('entries').push().key;
+    const entryKey = entry.id || this.dbService.database.ref('/users/' + this.currentUser.uid).child('entries').push().key;
 
     const updates: { [key: string]: any } = {};
     updates['/entries/' + entryKey] = entryData;
 
-    this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid).update(updates);
+    this.dbService.database.ref('/users/' + this.currentUser.uid).update(updates);
   }
 
   delete(id: string): void {
-    this.dbService.database.ref('/users/' + this.authService.auth.currentUser.uid + '/entries').child(id).remove();
+    this.dbService.database.ref('/users/' + this.currentUser.uid + '/entries').child(id).remove();
   }
 }

@@ -49,7 +49,9 @@ export class HomeViewComponent implements OnInit, OnDestroy {
   }
 
   addNewEntry() {
-    if (this.listVm === undefined) {
+    const listVm = this.listVm;
+
+    if (listVm === undefined) {
       return;
     }
 
@@ -58,7 +60,7 @@ export class HomeViewComponent implements OnInit, OnDestroy {
         const entry = new EntryViewModel(result);
         entry.isNew = true;
 
-        this.listVm.addEntry(entry);
+        listVm.addEntry(entry);
 
         this.listElement.nativeElement.scrollTop = 0;
 

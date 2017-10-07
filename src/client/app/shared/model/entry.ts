@@ -12,7 +12,7 @@ export class Entry implements EntryConfig {
   id: string;
   originalText: string;
   translation?: string;
-  addedOn?: Date;
+  addedOn: Date;
   updatedOn?: Date;
 
   constructor(prototype?: EntryConfig) {
