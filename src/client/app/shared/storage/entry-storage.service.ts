@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireDatabase, DatabaseSnapshot } from 'angularfire2/database';
 import { Entry } from '../model';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'shared';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UserInfo } from 'firebase/app';
 
 interface FirebaseEntry {
-  $key?: string;
   originalText: string;
   translation?: string;
   addedOn?: number;
@@ -31,22 +30,28 @@ export class EntryStorageService {
   }
 
   getEntries(): Observable<Entry[]> {
-    return this.dbService.list(`/users/${this.currentUser.uid}/entries`, {
-      query: {
-        limitToLast: 50,
-        orderByChild: 'addedOn'
-      }
-    }).first().map((entries: FirebaseEntry[]) => {
-      return entries.map(x => {
-        return new Entry({
-          id: x.$key,
-          originalText: x.originalText,
-          translation: x.translation,
-          addedOn: x.addedOn ? new Date(x.addedOn) : undefined,
-          updatedOn: x.updatedOn ? new Date(x.updatedOn) : undefined
+    return this.dbService.list<any>(
+      `/users/${this.currentUser.uid}/entries`,
+      ref => ref.limitToLast(50).orderByChild('addedOn'))
+      .snapshotChanges()
+      .first()
+      .map(snapshots => {
+        return snapshots.map(snapshot => {
+          const x = (snapshot.payload as DatabaseSnapshot).val() as FirebaseEntry;
+
+          if (!snapshot.key) {
+            throw new Error('Expected Firebase entry to have a key, but the value of the "key" property is null or undefined.');
+          }
+
+          return new Entry({
+            id: snapshot.key,
+            originalText: x.originalText,
+            translation: x.translation,
+            addedOn: x.addedOn ? new Date(x.addedOn) : undefined,
+            updatedOn: x.updatedOn ? new Date(x.updatedOn) : undefined
+          });
         });
       });
-    });
   }
 
   addOrUpdate(entry: Entry): void {
