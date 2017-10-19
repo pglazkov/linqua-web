@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MdDialog } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
 import { Entry, EntryStorageService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
@@ -34,7 +34,7 @@ export class HomeViewComponent implements OnInit, OnDestroy {
 
   private readonly ngUnsubscribe: Subject<void> = new Subject<void>();
 
-  constructor(private dialog: MdDialog, private storage: EntryStorageService) {
+  constructor(private dialog: MatDialog, private storage: EntryStorageService) {
   }
 
   ngOnInit() {

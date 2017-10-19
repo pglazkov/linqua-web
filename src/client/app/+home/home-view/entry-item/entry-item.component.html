@@ -1,22 +1,22 @@
-<md-card class="entry-card">
+<mat-card class="entry-card">
   <div class="entry-card__content">
     <span class="entry-card__content__original-text">{{ entry.originalText }}</span>
     <span class="entry-card__content__translation mat-caption">{{ entry.translation }}</span>
   </div>
 
   <div class="entry-card__toolbox">
-    <button md-icon-button [mdMenuTriggerFor]="menu">
-      <md-icon>more_vert</md-icon>
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
     </button>
-    <md-menu #menu="mdMenu">
-      <button md-menu-item (click)="edit()">
-        <md-icon>edit</md-icon>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="edit()">
+        <mat-icon>edit</mat-icon>
         <span>edit</span>
       </button>
-      <button md-menu-item (click)="delete()">
-        <md-icon>delete</md-icon>
+      <button mat-menu-item (click)="delete()">
+        <mat-icon>delete</mat-icon>
         <span>delete</span>
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
-</md-card>
+</mat-card>

@@ -4,33 +4,33 @@
 
 <section [ngSwitch]="getIsLoggedIn() | async">
   <div *ngSwitchCase="true" class="logged-in">
-    <md-card *ngIf="getUser() | async; let user">
-      <md-card-header>
-        <img md-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
-        <md-card-title>{{ user.displayName }}</md-card-title>
-        <md-card-subtitle>{{ user.displayName || '(no email)' }}</md-card-subtitle>
-      </md-card-header>
-      <md-card-content>
+    <mat-card *ngIf="getUser() | async; let user">
+      <mat-card-header>
+        <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
+        <mat-card-title>{{ user.displayName }}</mat-card-title>
+        <mat-card-subtitle>{{ user.displayName || '(no email)' }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
         <p>You are logged in using <strong>{{ user.providerId }}</strong></p>
-      </md-card-content>
-      <md-card-actions>
-        <button md-raised-button (click)="logout()">
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="logout()">
           Logout
         </button>
-      </md-card-actions>
-    </md-card>
+      </mat-card-actions>
+    </mat-card>
   </div>
 
   <div *ngSwitchCase="false" class="not-logged-in">
-    <md-card class="login-buttons-card">
-      <button md-raised-button (click)="login(providers.google)">
+    <mat-card class="login-buttons-card">
+      <button mat-raised-button (click)="login(providers.google)">
         <img width="30" src="assets/google-logo.png" /> Login with Google
       </button>
 
-      <button md-raised-button (click)="login(providers.facebook)">
+      <button mat-raised-button (click)="login(providers.facebook)">
         <img width="30" src="assets/facebook-logo.png" /> Login with Facebook
       </button>
-    </md-card>
+    </mat-card>
   </div>
 </section>
 

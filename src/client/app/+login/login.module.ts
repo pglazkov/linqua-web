@@ -5,15 +5,15 @@ import { LoginViewComponent } from './login-view/login-view.component';
 
 // MATERIAL DESIGN MODULES
 import {
-  MdToolbarModule,
-  MdButtonModule,
-  MdCardModule,
+  MatToolbarModule,
+  MatButtonModule,
+  MatCardModule,
 } from '@angular/material';
 
 export let MD_MODULES: any = [
-  MdToolbarModule,
-  MdButtonModule,
-  MdCardModule
+  MatToolbarModule,
+  MatButtonModule,
+  MatCardModule
 ];
 
 @NgModule({

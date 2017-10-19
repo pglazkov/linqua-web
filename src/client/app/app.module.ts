@@ -11,7 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
 import { CoreModule } from './core/core.module';
-import { MdButtonModule, MdCardModule, MdIconModule, MdSidenavModule, MdToolbarModule } from '@angular/material';
+import { MatButtonModule, MatCardModule, MatIconModule, MatSidenavModule, MatToolbarModule } from '@angular/material';
 import { StorageModule } from 'shared';
 
 @NgModule({
@@ -23,11 +23,11 @@ import { StorageModule } from 'shared';
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
-    MdButtonModule,
-    MdIconModule,
-    MdToolbarModule,
-    MdCardModule,
-    MdSidenavModule,
+    MatButtonModule,
+    MatIconModule,
+    MatToolbarModule,
+    MatCardModule,
+    MatSidenavModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,

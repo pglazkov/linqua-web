@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
-  MdListModule,
-  MdButtonModule,
-  MdCardModule,
-  MdIconModule,
-  MdInputModule,
-  MdDialogModule,
-  MdMenuModule,
-  MdProgressSpinnerModule
+  MatListModule,
+  MatButtonModule,
+  MatCardModule,
+  MatIconModule,
+  MatInputModule,
+  MatDialogModule,
+  MatMenuModule,
+  MatProgressSpinnerModule
 } from '@angular/material';
 
 import { HomeViewComponent } from './home-view/home-view.component';
@@ -23,14 +23,14 @@ import { StorageModule } from 'shared';
   imports: [
     CommonModule,
     HomeRoutingModule,
-    MdListModule,
-    MdButtonModule,
-    MdCardModule,
-    MdIconModule,
-    MdInputModule,
-    MdDialogModule,
-    MdMenuModule,
-    MdProgressSpinnerModule,
+    MatListModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatInputModule,
+    MatDialogModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
     ReactiveFormsModule,
     StorageModule
   ],

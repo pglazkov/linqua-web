@@ -1,13 +1,13 @@
 <ng-container *ngIf="listVm; else loading">
 
   <ng-container *ngIf="listVm.groups.length > 0; else empty">
-    <md-list #list class="entry-list">
+    <mat-list #list class="entry-list">
       <ng-container *ngFor="let group of listVm.groups">
         <div class="entry-list__group-header">
-          <h3 md-subheader>{{ group.date | date }}</h3>
+          <h3 mat-subheader>{{ group.date | date }}</h3>
         </div>
 
-        <md-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
+        <mat-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
                       [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
                       (@entryCardEnterLeave.done)="entry.isNew = false">
           <app-entry-item mat-line
@@ -15,9 +15,9 @@
                           (editRequest)="onEditRequested(entry)"
                           (deleteRequest)="onDeleteRequested(entry, group)">
           </app-entry-item>
-        </md-list-item>
+        </mat-list-item>
       </ng-container>
-    </md-list>
+    </mat-list>
   </ng-container>
 
   <ng-template #empty>
@@ -30,7 +30,7 @@
 </ng-container>
 
 <ng-template #loading>
-  <md-spinner class="loading-spinner" mode="indeterminate"></md-spinner>
+  <mat-spinner class="loading-spinner" mode="indeterminate"></mat-spinner>
 </ng-template>
 
-<button md-fab (click)="addNewEntry()" class="new-entry-fab"><md-icon>add</md-icon></button>
+<button mat-fab (click)="addNewEntry()" class="new-entry-fab"><mat-icon>add</mat-icon></button>

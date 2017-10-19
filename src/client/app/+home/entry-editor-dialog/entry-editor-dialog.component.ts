@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MdDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Entry } from 'shared';
 
@@ -11,7 +11,7 @@ import { Entry } from 'shared';
 export class EntryEditorDialogComponent {
   entryForm: FormGroup;
 
-  constructor(private dialogRef: MdDialogRef<EntryEditorDialogComponent>, private fb: FormBuilder) {
+  constructor(private dialogRef: MatDialogRef<EntryEditorDialogComponent>, private fb: FormBuilder) {
     this.entryForm = fb.group({
       originalText: ['', Validators.required],
       translation: ['']

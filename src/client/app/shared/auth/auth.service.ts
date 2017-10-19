@@ -81,6 +81,9 @@ export class AuthService implements OnDestroy {
 
       const providerData = state.providerData[0];
 
+      if (!providerData) {
+        return undefined;
+      }
 
       return providerData;
     });

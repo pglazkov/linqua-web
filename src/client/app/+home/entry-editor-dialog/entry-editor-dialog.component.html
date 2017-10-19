@@ -1,14 +1,14 @@
 <form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
-  <md-input-container class="entry-form__foreign-text-input">
-    <input mdInput placeholder="word/phrase to translate" formControlName="originalText">
-  </md-input-container>
+  <mat-input-container class="entry-form__foreign-text-input">
+    <input matInput placeholder="word/phrase to translate" formControlName="originalText">
+  </mat-input-container>
 
-  <md-input-container class="entry-form__translation-input">
-    <input mdInput placeholder="translation" formControlName="translation">
-  </md-input-container>
+  <mat-input-container class="entry-form__translation-input">
+    <input matInput placeholder="translation" formControlName="translation">
+  </mat-input-container>
 
   <div class="entry-form__footer">
-    <button md-button type="button" [disabled]="!entryForm.value.originalText">translate</button>
-    <button md-raised-button button type="submit" [disabled]="!entryForm.valid">done</button>
+    <button mat-button type="button" [disabled]="!entryForm.value.originalText">translate</button>
+    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid">done</button>
   </div>
 </form>
