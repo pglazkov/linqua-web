@@ -17,7 +17,7 @@ import { HomeRoutingModule } from './home-routing.module';
 import { EntryEditorDialogComponent } from './entry-editor-dialog/entry-editor-dialog.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EntryItemComponent } from './home-view/entry-item/entry-item.component';
-import { StorageModule } from 'shared';
+import { StorageModule, TranslationModule } from 'shared';
 
 @NgModule({
   imports: [
@@ -32,7 +32,8 @@ import { StorageModule } from 'shared';
     MatMenuModule,
     MatProgressSpinnerModule,
     ReactiveFormsModule,
-    StorageModule
+    StorageModule,
+    TranslationModule
   ],
   declarations: [
     HomeViewComponent,

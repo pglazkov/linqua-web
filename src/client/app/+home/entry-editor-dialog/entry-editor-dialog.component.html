@@ -8,7 +8,10 @@
   </mat-input-container>
 
   <div class="entry-form__footer">
-    <button mat-button type="button" [disabled]="!entryForm.value.originalText">translate</button>
-    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid">done</button>
+    <button mat-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()">
+      <mat-spinner class="entry-form__footer__translation-spinner" *ngIf="isTranslating" color="accent" [diameter]="30" [strokeWidth]="2"></mat-spinner>
+      <span *ngIf="!isTranslating">translate</span>
+    </button>
+    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating">done</button>
   </div>
 </form>
