@@ -9,8 +9,8 @@ import { Subject } from 'rxjs/Subject';
 
 @Component({
   selector: 'app-home-view',
-  templateUrl: './home-view.component.html',
-  styleUrls: ['./home-view.component.scss'],
+  templateUrl: './entry-list.component.html',
+  styleUrls: ['./entry-list.component.scss'],
   animations: [
     trigger('entryCardEnterLeave', [
       state('in', style({ opacity: 1, height: '*' })),
@@ -27,7 +27,7 @@ import { Subject } from 'rxjs/Subject';
     ])
   ]
 })
-export class HomeViewComponent implements OnInit, OnDestroy {
+export class EntryListComponent implements OnInit, OnDestroy {
   listVm: EntryListViewModel | undefined;
 
   @ViewChild('list', {read: ElementRef}) listElement: ElementRef;

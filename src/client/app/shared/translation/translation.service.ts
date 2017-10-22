@@ -46,7 +46,7 @@ export class TranslationService {
           .timeout(timeoutInMilliseconds)
           .toPromise() as Translation;
       }
-      catch(e) {
+      catch (e) {
         await this.db.object(`/translations/${text}`).remove();
         throw e;
       }

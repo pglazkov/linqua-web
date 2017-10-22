@@ -1,0 +1,52 @@
+@import "../../variables";
+
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.entry-list {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  .entry-list__list-item ::ng-deep.mat-list-item-content {
+    height: auto;
+    padding: 0;
+  }
+
+  .entry-list__list-item + .entry-list__list-item {
+    margin-top: 10px;
+  }
+
+  .entry-list__group-header {
+    box-sizing: border-box;
+  }
+
+  @media (min-width: $screen-tablet) {
+    .entry-list__list-item, .entry-list__group-header {
+      width: 700px;
+      margin: auto;
+    }
+  }
+}
+
+.loading-spinner {
+  margin: auto;
+}
+
+.empty-list-container {
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+}
+
+.new-entry-fab {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}

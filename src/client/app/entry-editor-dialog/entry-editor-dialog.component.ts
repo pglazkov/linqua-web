@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Entry, TranslationService } from 'shared';
-import { tryCatch } from 'rxjs/util/tryCatch';
 
 @Component({
   selector: 'app-entry-editor-dialog',
@@ -40,12 +39,11 @@ export class EntryEditorDialogComponent {
     this.isTranslating = true;
     this.entryForm.controls['translation'].disable();
 
-    try
-    {
+    try {
       const translation = await this.translationService.translate(originalText);
       this.entryForm.controls['translation'].setValue(translation.en);
     }
-    catch(e) {
+    catch (e) {
       this.translationError = true;
       console.error(e);
     }
