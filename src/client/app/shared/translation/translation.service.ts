@@ -3,10 +3,12 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Translation } from './translation';
 import 'rxjs/add/operator/first';
 import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/timeout';
+
+const timeoutInMilliseconds = 10000;
 
 @Injectable()
 export class TranslationService {
-
   constructor(private db: AngularFireDatabase) {
 
   }
@@ -26,21 +28,28 @@ export class TranslationService {
 
     const existingTranslation = await this.db.object(`translations/${text}`).query.once('value');
 
-    if (existingTranslation && existingTranslation.val()) {
+    if (existingTranslation && existingTranslation.val() && existingTranslation.val().en) {
       result = existingTranslation.val();
     }
     else {
       // Add an empty value and let the cloud function do the translation
       await this.db.object(`/translations/${text}`).set({ en: ''});
 
-      // Wait for the translation
-      result = await this.db.object(`translations/${text}`)
-        .valueChanges()
-        .filter((v: Translation) => {
-          return !!v.en;
-        })
-        .first()
-        .toPromise() as Translation;
+      try {
+        // Wait for the translation
+        result = await this.db.object(`translations/${text}`)
+          .valueChanges()
+          .filter((v: Translation) => {
+            return !!v.en;
+          })
+          .first()
+          .timeout(timeoutInMilliseconds)
+          .toPromise() as Translation;
+      }
+      catch(e) {
+        await this.db.object(`/translations/${text}`).remove();
+        throw e;
+      }
     }
 
     return result;

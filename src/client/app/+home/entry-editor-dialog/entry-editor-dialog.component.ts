@@ -12,6 +12,7 @@ import { tryCatch } from 'rxjs/util/tryCatch';
 export class EntryEditorDialogComponent {
   entryForm: FormGroup;
   isTranslating: boolean;
+  translationError: boolean;
 
   constructor(
       private dialogRef: MatDialogRef<EntryEditorDialogComponent>,
@@ -35,6 +36,7 @@ export class EntryEditorDialogComponent {
       return;
     }
 
+    this.translationError = false;
     this.isTranslating = true;
     this.entryForm.controls['translation'].disable();
 
@@ -42,6 +44,10 @@ export class EntryEditorDialogComponent {
     {
       const translation = await this.translationService.translate(originalText);
       this.entryForm.controls['translation'].setValue(translation.en);
+    }
+    catch(e) {
+      this.translationError = true;
+      console.error(e);
     }
     finally {
       this.isTranslating = false;

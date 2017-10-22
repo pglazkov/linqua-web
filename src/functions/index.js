@@ -3,16 +3,15 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 const request = require('request-promise');
-const xmldoc = require('xmldoc');
 
 exports.translate = functions.database.ref('/translations/{translationId}').onWrite(event => {
   // Only run when the object is created
   if (event.data.previous.exists()) {
-    return;
+    return Promise.resolve(true);
   }
   // Do nothing on deletion
   if (!event.data.exists()) {
-    return;
+    return Promise.resolve(true);
   }
 
   const snapshot = event.data;
@@ -20,26 +19,34 @@ exports.translate = functions.database.ref('/translations/{translationId}').onWr
   const targetLang = 'en';
 
   const options = {
-    uri: 'http://api.microsofttranslator.com/v2/http.svc/translate',
+    uri: 'https://www.googleapis.com/language/translate/v2',
     qs: {
-      text: key,
-      to: targetLang
+      key: functions.config().firebase.apiKey,
+      q: key,
+      target: targetLang
     },
-    headers: {
-      'Ocp-Apim-Subscription-Key': functions.config().translateapi.key
-    },
-    json: false,
+    json: true,
     resolveWithFullResponse: true
   };
 
-  let translation = {}
+  console.log("Request to Translate API: " + JSON.stringify(options));
+
   return request(options).then(
     response => {
+      console.log('Response from Translate API: ' + JSON.stringify(response));
+
       if (response.statusCode === 200) {
-        let bodyDoc = new xmldoc.XmlDocument(response.body);
-        translation[targetLang] = bodyDoc.val;
+        let translation = {};
+
+        let firstTranslation = response.body.data.translations[0];
+
+        translation.detectedSourceLanguage = firstTranslation.detectedSourceLanguage;
+        translation[targetLang] = firstTranslation.translatedText;
+
         return admin.database().ref(`/translations/${key}`).update(translation);
       }
-      else throw response.body;
+      else {
+        throw response.body;
+      }
     });
 });
