@@ -13,6 +13,6 @@
       <span *ngIf="!isTranslating && !translationError">translate</span>
       <span *ngIf="!isTranslating && translationError">retry</span>
     </button>
-    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating">done</button>
+    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating">save</button>
   </div>
 </form>

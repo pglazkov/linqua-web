@@ -2,9 +2,12 @@
 
   <ng-container *ngIf="listVm.groups.length > 0; else empty">
     <mat-list #list class="entry-list">
-      <ng-container *ngFor="let group of listVm.groups">
-        <div class="entry-list__group-header">
-          <h3 mat-subheader>{{ group.date | date }}</h3>
+      <div class="entry-list__group" *ngFor="let group of listVm.groups">
+        <div class="entry-list__group__header">
+          <h3 mat-subheader>
+            {{ group.date | date }}
+          </h3>
+          <mat-divider></mat-divider>
         </div>
 
         <mat-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
@@ -16,7 +19,7 @@
                           (deleteRequest)="onDeleteRequested(entry, group)">
           </app-entry-item>
         </mat-list-item>
-      </ng-container>
+      </div>
     </mat-list>
   </ng-container>
 

@@ -1,4 +1,4 @@
-@import "../../variables";
+@import "../../styles/variables";
 
 :host {
   display: flex;
@@ -23,14 +23,31 @@
     margin-top: 10px;
   }
 
-  .entry-list__group-header {
-    box-sizing: border-box;
-  }
-
-  @media (min-width: $screen-tablet) {
-    .entry-list__list-item, .entry-list__group-header {
+  .entry-list__group {
+    @media (min-width: $screen-tablet) {
       width: 700px;
       margin: auto;
+    }
+
+    margin-bottom: 10px;
+
+    &:last-child {
+      margin-bottom: 90px;
+    }
+
+    .entry-list__group__header {
+      display: flex;
+      h3 {
+        color: mat-color($primary);
+      }
+
+      .mat-divider {
+        flex: 1;
+        align-self: center;
+        margin-top: -8px;
+        margin-right: 16px;
+        background: mat-color($primary);
+      }
     }
   }
 }
