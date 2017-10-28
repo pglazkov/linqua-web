@@ -1,0 +1,10 @@
+{
+  "indexes": [
+//    {
+//      "collectionId": "entries",
+//      "fields": [
+//        { "fieldPath": "addedOn", "mode": "DESCENDING" }
+//      ]
+//    }
+  ]
+}

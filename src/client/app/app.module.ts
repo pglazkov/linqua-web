@@ -28,6 +28,7 @@ import { StorageModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { EntryListComponent, EntryItemComponent } from './entry-list';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 const materialModules = [
   MatListModule,
@@ -64,6 +65,7 @@ const materialModules = [
     TranslationModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule,
     AngularFireAuthModule,
     CoreModule
   ],

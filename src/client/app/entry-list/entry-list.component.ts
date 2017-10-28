@@ -62,7 +62,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
         listVm.addEntry(entry);
 
-        this.listElement.nativeElement.scrollTop = 0;
+        if (this.listElement) {
+          this.listElement.nativeElement.scrollTop = 0;
+        }
 
         this.storage.addOrUpdate(entry.model);
       }

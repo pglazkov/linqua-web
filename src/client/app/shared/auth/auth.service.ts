@@ -3,6 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import AuthErrorCodes from './firebase-auth-error-codes';
 import { Observable, ObservableCache } from '../rx';
 import { UserInfo, auth } from 'firebase/app';
+import { HttpHeaders } from '@angular/common/http';
 
 export interface AuthResult {
   success: boolean;
@@ -40,6 +41,16 @@ export class AuthService implements OnDestroy {
 
   loginWithGoogle(retryPayload?: any) {
     return this.login(new auth.GoogleAuthProvider(), retryPayload);
+  }
+
+  getAuthToken() {
+    const user = this.af.auth.currentUser;
+
+    if (!user) {
+      throw new Error('User is not authenticated.');
+    }
+
+    return user.getIdToken();
   }
 
   private async login(provider: auth.AuthProvider, retryPayload?: any): Promise<AuthResult> {

@@ -1,10 +1,10 @@
 {
-  "database": {
-    "rules": "database.rules.json"
-  },
   "hosting": {
     "public": "dist/wwwroot",
     "rewrites": [
+      {
+        "source": "/api/**", "function": "main"
+      },
       {
         "source": "**",
         "destination": "/index.html"
@@ -13,5 +13,9 @@
   },
   "functions": {
     "source": "src/functions"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   }
 }

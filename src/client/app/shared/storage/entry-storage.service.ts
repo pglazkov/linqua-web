@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, DatabaseSnapshot } from 'angularfire2/database';
 import { Entry } from '../model';
-import { Observable } from 'shared';
+import { Observable } from 'rxjs/observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UserInfo } from 'firebase/app';
+import { AngularFirestore } from 'angularfire2/firestore';
 
 interface FirebaseEntry {
   originalText: string;
@@ -15,7 +15,7 @@ interface FirebaseEntry {
 @Injectable()
 export class EntryStorageService {
 
-  constructor(private dbService: AngularFireDatabase, private authService: AngularFireAuth) {
+  constructor(private db: AngularFirestore, private authService: AngularFireAuth) {
 
   }
 
@@ -30,31 +30,30 @@ export class EntryStorageService {
   }
 
   getEntries(): Observable<Entry[]> {
-    return this.dbService.list<any>(
-      `/users/${this.currentUser.uid}/entries`,
-      ref => ref.limitToLast(50).orderByChild('addedOn'))
+    return this.db.collection<any>('users')
+      .doc(this.currentUser.uid)
+      .collection<any>('entries', ref => {
+        return ref.orderBy('addedOn', 'desc');
+      })
       .snapshotChanges()
       .first()
-      .map(snapshots => {
-        return snapshots.map(snapshot => {
-          const x = (snapshot.payload as DatabaseSnapshot).val() as FirebaseEntry;
-
-          if (!snapshot.key) {
-            throw new Error('Expected Firebase entry to have a key, but the value of the "key" property is null or undefined.');
-          }
+      .map(actions => {
+        return actions.map(a => {
+          const data = a.payload.doc.data() as FirebaseEntry;
+          const id = a.payload.doc.id;
 
           return new Entry({
-            id: snapshot.key,
-            originalText: x.originalText,
-            translation: x.translation,
-            addedOn: x.addedOn ? new Date(x.addedOn) : undefined,
-            updatedOn: x.updatedOn ? new Date(x.updatedOn) : undefined
+            id: id,
+            originalText: data.originalText,
+            translation: data.translation,
+            addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
+            updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
           });
         });
       });
   }
 
-  addOrUpdate(entry: Entry): void {
+  async addOrUpdate(entry: Entry): Promise<void> {
     const entryData: FirebaseEntry = {
       originalText: entry.originalText,
       translation: entry.translation,
@@ -62,15 +61,27 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined
     };
 
-    const entryKey = entry.id || this.dbService.database.ref('/users/' + this.currentUser.uid).child('entries').push().key;
+    const collectionRef = this.db
+      .collection<any>('users')
+      .doc(this.currentUser.uid)
+      .collection<any>('entries');
 
-    const updates: { [key: string]: any } = {};
-    updates['/entries/' + entryKey] = entryData;
-
-    this.dbService.database.ref('/users/' + this.currentUser.uid).update(updates);
+    if (entry.id) {
+      await collectionRef.doc(entry.id).set(entryData);
+    }
+    else {
+      const newEntryRef = await collectionRef.add(entryData);
+      entry.id = newEntryRef.id;
+    }
   }
 
-  delete(id: string): void {
-    this.dbService.database.ref('/users/' + this.currentUser.uid + '/entries').child(id).remove();
+  async delete(id: string): Promise<void> {
+
+    await this.db
+      .collection<any>('users')
+      .doc(this.currentUser.uid)
+      .collection('entries')
+      .doc(id)
+      .delete();
   }
 }

@@ -33,7 +33,9 @@
 </ng-container>
 
 <ng-template #loading>
-  <mat-spinner class="loading-spinner" mode="indeterminate"></mat-spinner>
+  <div class="loading-spinner-container">
+    <mat-spinner mode="indeterminate"></mat-spinner>
+  </div>
 </ng-template>
 
 <button mat-fab (click)="addNewEntry()" class="new-entry-fab"><mat-icon>add</mat-icon></button>

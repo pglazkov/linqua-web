@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "https://linqua-app.com",
+    "secure": true,
+    "changeOrigin": true
+  }
+}
