@@ -26,7 +26,8 @@
   .entry-list__group {
     @media (min-width: $screen-tablet) {
       width: 700px;
-      margin: auto;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     margin-bottom: 10px;
