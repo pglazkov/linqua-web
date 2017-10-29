@@ -1,29 +1,52 @@
+@import "../../styles/variables";
+
 :host {
   display: flex;
   flex-direction: column;
   min-width: 250px;
+
+  @media (min-width: $screen-tablet) {
+    min-width: 350px;
+  }
 }
 
 .entry-form {
   display: flex;
   flex-direction: column;
 
-  .entry-form__foreign-text-input {
+  textarea {
+    resize: none;
+  }
+
+  .foreign-text-input {
     width: 100%;
   }
 
-  .entry-form__translation-input {
+  .translation-input {
     width: 100%;
+
+    .translation-spinner {
+      text-align: right;
+      top: 8px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      display: none;
+    }
   }
 
-  .entry-form__footer {
+  .translate-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 15px;
+  }
+
+  .footer {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 10px;
-
-    .entry-form__footer__translation-spinner {
-      margin: auto;
-    }
   }
 }

@@ -1,18 +1,22 @@
 <form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
-  <mat-input-container class="entry-form__foreign-text-input">
-    <input matInput placeholder="word/phrase to translate" formControlName="originalText">
-  </mat-input-container>
+  <mat-form-field class="foreign-text-input">
+    <textarea matInput matTextareaAutosize placeholder="word/phrase to translate" formControlName="originalText"></textarea>
+  </mat-form-field>
 
-  <mat-input-container class="entry-form__translation-input">
-    <input matInput placeholder="translation" formControlName="translation">
-  </mat-input-container>
-
-  <div class="entry-form__footer">
-    <button mat-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? undefined : 'warn'">
-      <mat-spinner class="entry-form__footer__translation-spinner" *ngIf="isTranslating" color="accent" [diameter]="30" [strokeWidth]="2"></mat-spinner>
-      <span *ngIf="!isTranslating && !translationError">translate</span>
-      <span *ngIf="!isTranslating && translationError">retry</span>
+  <div class="translate-container">
+    <button mat-raised-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? 'primary' : 'warn'">
+      <mat-icon>translate</mat-icon>
+      <span *ngIf="!translationError">translate</span>
+      <span *ngIf="translationError">retry</span>
     </button>
-    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating">save</button>
+  </div>
+
+  <mat-form-field class="translation-input">
+    <textarea matInput matTextareaAutosize placeholder="translation" formControlName="translation"></textarea>
+    <mat-spinner matSuffix class="translation-spinner" *ngIf="isTranslating" color="accent" [diameter]="25" [strokeWidth]="2"></mat-spinner>
+  </mat-form-field>
+
+  <div class="footer">
+    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating" [color]="entryForm.get('translation')?.value ? 'accent' : undefined">save</button>
   </div>
 </form>

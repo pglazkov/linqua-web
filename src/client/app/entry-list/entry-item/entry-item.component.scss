@@ -8,21 +8,27 @@
   align-items: center;
   margin: 2px;
 
-  .entry-card__content {
+  .content {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    width: 100%;
 
-    .entry-card__content__original-text {
+    span {
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .original-text {
       font-weight: 500;
     }
 
-    .entry-card__content__translation {
+    .translation {
       margin-top: 8px;
     }
   }
 
-  .entry-card__toolbox {
+  .toolbox {
     flex: 0 0 auto;
   }
 }
