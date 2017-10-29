@@ -22,7 +22,7 @@
   </div>
 
   <div *ngSwitchCase="false" class="not-logged-in">
-    <mat-card class="login-buttons-card">
+    <mat-card *ngIf="!isHandlingSignInResult" class="login-buttons-card">
       <button mat-raised-button (click)="login(providers.google)">
         <img width="30" src="assets/google-logo.png" /> Login with Google
       </button>
@@ -30,6 +30,10 @@
       <button mat-raised-button (click)="login(providers.facebook)">
         <img width="30" src="assets/facebook-logo.png" /> Login with Facebook
       </button>
+    </mat-card>
+
+    <mat-card *ngIf="isHandlingSignInResult" class="handling-signin-card">
+      Signing in...
     </mat-card>
   </div>
 </section>

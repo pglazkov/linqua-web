@@ -30,6 +30,12 @@ section {
     }
   }
 
+  .handling-signin-card {
+    display: flex;
+    min-width: 350px;
+    justify-content: center;
+  }
+
   @media (max-width: $screen-phone) {
     .login-buttons-card {
       flex-direction: column;

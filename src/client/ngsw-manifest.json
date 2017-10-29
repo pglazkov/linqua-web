@@ -1,0 +1,8 @@
+{
+  "external": {
+    "urls": [
+      {"url": "https://fonts.googleapis.com/css?family=Arima+Madurai:500"},
+      {"url": "https://fonts.googleapis.com/css?family=Roboto:300,400,500"}
+    ]
+  }
+}

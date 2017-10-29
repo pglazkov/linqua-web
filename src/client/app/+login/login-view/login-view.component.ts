@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'shared';
+import { AuthResult, AuthService } from 'shared';
 import { Router, ActivatedRoute } from '@angular/router';
 
 export enum AuthProviders {
@@ -16,12 +16,23 @@ export class LoginViewComponent implements OnInit {
 
   providers = AuthProviders;
   errorMessage: string | undefined;
-  loginErrorRetryPayload: any;
+  isHandlingSignInResult = false;
 
   constructor(public af: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.isHandlingSignInResult = true;
+    try {
+      const authResult = await this.af.handleLoginResultIfNeeded();
+
+      if (authResult) {
+        this.continueLogin(authResult);
+      }
+    }
+    finally {
+      this.isHandlingSignInResult = false;
+    }
   }
 
   get isLoggedIn() {
@@ -32,9 +43,20 @@ export class LoginViewComponent implements OnInit {
     return this.af.user;
   }
 
-  async login(provider: AuthProviders) {
-    const authResult = await this.getLoginFunctionForProvider(provider)();
+  login(provider: AuthProviders): void {
+    switch (provider) {
+      case AuthProviders.facebook:
+        this.af.loginWithFacebook();
+        break;
+      case AuthProviders.google:
+        this.af.loginWithGoogle();
+        break;
+      default:
+        throw new Error(`Provider "${provider}" is not supported.`);
+    }
+  }
 
+  continueLogin(authResult: AuthResult) {
     const redirectUrl = this.activatedRoute.snapshot.queryParams['redirectUrl'];
 
     if (authResult.success && redirectUrl) {
@@ -42,23 +64,10 @@ export class LoginViewComponent implements OnInit {
     }
     else {
       this.errorMessage = authResult.error;
-      this.loginErrorRetryPayload = authResult.errorRetryPayload;
     }
   }
 
   logout() {
     return this.af.logout();
   }
-
-  private getLoginFunctionForProvider(provider: AuthProviders) {
-    switch (provider) {
-      case AuthProviders.facebook:
-        return () => this.af.loginWithFacebook(this.loginErrorRetryPayload);
-      case AuthProviders.google:
-        return () => this.af.loginWithGoogle(this.loginErrorRetryPayload);
-      default:
-        throw new Error(`Provider "${provider}" is not supported.`);
-    }
-  }
-
 }
