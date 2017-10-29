@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/observable';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { UserInfo } from 'firebase/app';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { AuthService } from '../auth';
 
 interface FirebaseEntry {
   originalText: string;
@@ -15,23 +14,13 @@ interface FirebaseEntry {
 @Injectable()
 export class EntryStorageService {
 
-  constructor(private db: AngularFirestore, private authService: AngularFireAuth) {
+  constructor(private db: AngularFirestore, private authService: AuthService) {
 
-  }
-
-  private get currentUser(): UserInfo {
-    const result = this.authService.auth.currentUser;
-
-    if (!result) {
-      throw new Error('User is not logged in.');
-    }
-
-    return result;
   }
 
   getEntries(): Observable<Entry[]> {
     return this.db.collection<any>('users')
-      .doc(this.currentUser.uid)
+      .doc(this.authService.userId)
       .collection<any>('entries', ref => {
         return ref.orderBy('addedOn', 'desc');
       })
@@ -63,7 +52,7 @@ export class EntryStorageService {
 
     const collectionRef = this.db
       .collection<any>('users')
-      .doc(this.currentUser.uid)
+      .doc(this.authService.userId)
       .collection<any>('entries');
 
     if (entry.id) {
@@ -75,11 +64,10 @@ export class EntryStorageService {
     }
   }
 
-  async delete(id: string): Promise<void> {
-
-    await this.db
+  delete(id: string): Promise<void> {
+    return this.db
       .collection<any>('users')
-      .doc(this.currentUser.uid)
+      .doc(this.authService.userId)
       .collection('entries')
       .doc(id)
       .delete();

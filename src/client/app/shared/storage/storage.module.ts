@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { EntryStorageService } from './entry-storage.service';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 @NgModule({
   imports: [
-    AngularFireDatabaseModule
+    AngularFirestoreModule
   ],
   exports: [],
   declarations: [],

@@ -10,11 +10,11 @@ export class AppComponent {
   constructor(private af: AuthService) {
   }
 
-  getUser() {
-    return this.af.loggedInUser;
+  get user() {
+    return this.af.user;
   }
 
-  getIsLoggedIn() {
+  get isLoggedIn() {
     return this.af.isLoggedIn;
   }
 

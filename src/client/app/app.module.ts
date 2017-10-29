@@ -4,12 +4,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { AngularFireModule } from 'angularfire2';
-import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
-import { CoreModule } from './core/core.module';
 
 import {
   MatButtonModule,
@@ -24,11 +22,10 @@ import {
   MatToolbarModule
 } from '@angular/material';
 
-import { StorageModule, TranslationModule } from 'shared';
+import { AuthModule, StorageModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { EntryListComponent, EntryItemComponent } from './entry-list';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 const materialModules = [
   MatListModule,
@@ -65,9 +62,7 @@ const materialModules = [
     TranslationModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFirestoreModule,
-    AngularFireAuthModule,
-    CoreModule
+    AuthModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent],

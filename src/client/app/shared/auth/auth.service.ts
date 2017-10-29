@@ -1,9 +1,8 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
-import AuthErrorCodes from './firebase-auth-error-codes';
-import { Observable, ObservableCache } from '../rx';
-import { UserInfo, auth } from 'firebase/app';
-import { HttpHeaders } from '@angular/common/http';
+import { AuthErrorCodes } from './firebase-auth-error-codes';
+import { auth } from 'firebase/app';
+import { Subject } from 'rxjs/Subject';
 
 export interface AuthResult {
   success: boolean;
@@ -11,28 +10,61 @@ export interface AuthResult {
   errorRetryPayload?: any;
 }
 
+export interface User {
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  providerId: string;
+  uid: string;
+}
+
 @Injectable()
-export class AuthService implements OnDestroy {
-  private authStateCache: ObservableCache<UserInfo | undefined>;
+export class AuthService {
+  private isLoggedInChange: Subject<boolean> = new Subject<boolean>();
 
   constructor(private af: AngularFireAuth) {
-    this.authStateCache = new ObservableCache<UserInfo | undefined>(() => this.doGetLoggedInUser());
-
     af.auth.onAuthStateChanged(() => {
-      this.authStateCache.invalidate();
+      this.isLoggedInChange.next(this.isLoggedIn);
     });
   }
 
-  ngOnDestroy(): void {
-    this.authStateCache.dispose();
+  get userId(): string {
+    if (!this.af.auth.currentUser) {
+      throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "userId" property.');
+    }
+
+    return this.af.auth.currentUser.uid;
   }
 
-  get loggedInUser(): Observable<UserInfo | undefined> {
-    return this.authStateCache.get();
+  get user(): User {
+    if (!this.af.auth.currentUser) {
+      throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "user" property.');
+    }
+
+    const user = this.af.auth.currentUser;
+
+    let photoURL: string | null = user.photoURL;
+    const providerId: string = user.providerData.map(p => p ? p.providerId : '').join('/');
+
+    if (user.providerData.length > 0) {
+      const providerUserInfo = user.providerData[0];
+
+      if (providerUserInfo) {
+        photoURL = providerUserInfo.photoURL;
+      }
+    }
+
+    return {
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: photoURL,
+      providerId: providerId,
+      uid: user.uid
+    };
   }
 
-  get isLoggedIn() {
-    return this.loggedInUser.map(user => !!user);
+  get isLoggedIn(): boolean {
+    return !!this.af.auth.currentUser;
   }
 
   loginWithFacebook(retryPayload?: any) {
@@ -41,16 +73,6 @@ export class AuthService implements OnDestroy {
 
   loginWithGoogle(retryPayload?: any) {
     return this.login(new auth.GoogleAuthProvider(), retryPayload);
-  }
-
-  getAuthToken() {
-    const user = this.af.auth.currentUser;
-
-    if (!user) {
-      throw new Error('User is not authenticated.');
-    }
-
-    return user.getIdToken();
   }
 
   private async login(provider: auth.AuthProvider, retryPayload?: any): Promise<AuthResult> {
@@ -64,7 +86,7 @@ export class AuthService implements OnDestroy {
       return { success: true };
     }
     catch (error) {
-      if (error.code === AuthErrorCodes.ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL) {
+      if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
         const availableProviders = await this.af.auth.fetchProvidersForEmail(error.email);
 
         return {
@@ -82,21 +104,5 @@ export class AuthService implements OnDestroy {
 
   async logout() {
     await this.af.auth.signOut();
-  }
-
-  private doGetLoggedInUser(): Observable<UserInfo | undefined> {
-    return this.af.authState.map(state => {
-      if (!state) {
-        return undefined;
-      }
-
-      const providerData = state.providerData[0];
-
-      if (!providerData) {
-        return undefined;
-      }
-
-      return providerData;
-    });
   }
 }

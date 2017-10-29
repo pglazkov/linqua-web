@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AuthGuard } from 'app/shared';
+import { AuthGuard } from 'shared';
 import { EntryListComponent } from './entry-list/entry-list.component';
 
 const routes: Routes = [

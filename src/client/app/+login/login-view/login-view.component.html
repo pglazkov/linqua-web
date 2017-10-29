@@ -2,9 +2,9 @@
   {{ errorMessage }}
 </div>
 
-<section [ngSwitch]="getIsLoggedIn() | async">
+<section [ngSwitch]="isLoggedIn">
   <div *ngSwitchCase="true" class="logged-in">
-    <mat-card *ngIf="getUser() | async; let user">
+    <mat-card>
       <mat-card-header>
         <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
         <mat-card-title>{{ user.displayName }}</mat-card-title>

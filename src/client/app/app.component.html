@@ -9,7 +9,7 @@
       </div>
     </mat-toolbar>
 
-    <mat-card *ngIf="getUser() | async; let user">
+    <mat-card *ngIf="isLoggedIn">
       <mat-card-header>
         <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
         <mat-card-title>{{ user.displayName }}</mat-card-title>
@@ -28,7 +28,7 @@
 
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="getIsLoggedIn() | async">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isLoggedIn">
         <mat-icon>menu</mat-icon>
       </button>
     </div>

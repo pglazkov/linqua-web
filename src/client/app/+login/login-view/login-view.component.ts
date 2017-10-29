@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'app/shared';
+import { AuthService } from 'shared';
 import { Router, ActivatedRoute } from '@angular/router';
 
 export enum AuthProviders {
@@ -18,18 +18,18 @@ export class LoginViewComponent implements OnInit {
   errorMessage: string | undefined;
   loginErrorRetryPayload: any;
 
-  constructor(public af: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {     
+  constructor(public af: AuthService, private router: Router, private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
   }
 
-  getIsLoggedIn() {
+  get isLoggedIn() {
     return this.af.isLoggedIn;
   }
 
-  getUser() {
-    return this.af.loggedInUser;
+  get user() {
+    return this.af.user;
   }
 
   async login(provider: AuthProviders) {
