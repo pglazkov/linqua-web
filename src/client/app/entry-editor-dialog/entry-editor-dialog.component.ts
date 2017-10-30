@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Entry, TranslationService } from 'shared';
@@ -12,6 +12,8 @@ export class EntryEditorDialogComponent {
   entryForm: FormGroup;
   isTranslating: boolean;
   translationError: boolean;
+
+  @ViewChild('translationTextArea') translationTextArea: ElementRef;
 
   constructor(
       private dialogRef: MatDialogRef<EntryEditorDialogComponent>,
@@ -50,6 +52,23 @@ export class EntryEditorDialogComponent {
     finally {
       this.isTranslating = false;
       this.entryForm.controls['translation'].enable();
+    }
+  }
+
+  async onOriginalTextKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      await this.translate();
+
+      this.translationTextArea.nativeElement.select();
+      this.translationTextArea.nativeElement.focus();
+    }
+  }
+
+  onTranslationTextKeyPress(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.onSubmit();
     }
   }
 

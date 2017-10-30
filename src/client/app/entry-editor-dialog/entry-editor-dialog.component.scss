@@ -30,6 +30,10 @@
       top: 8px;
     }
 
+    .translation-button {
+      text-align: right;
+    }
+
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
       display: none;
@@ -39,8 +43,8 @@
   .translate-container {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 5px;
   }
 
   .footer {
