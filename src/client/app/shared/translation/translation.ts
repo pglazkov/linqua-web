@@ -1,4 +1,4 @@
 export interface Translation {
-  original: string;
+  detectedSourceLanguage: string;
   en: string;
 }

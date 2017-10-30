@@ -12,6 +12,7 @@ export class EntryEditorDialogComponent {
   entryForm: FormGroup;
   isTranslating: boolean;
   translationError: boolean;
+  detectedLanguage: string | undefined;
 
   @ViewChild('translationTextArea') translationTextArea: ElementRef;
 
@@ -44,6 +45,7 @@ export class EntryEditorDialogComponent {
     try {
       const translation = await this.translationService.translate(originalText);
       this.entryForm.controls['translation'].setValue(translation.en);
+      this.detectedLanguage = translation.detectedSourceLanguage;
     }
     catch (e) {
       this.translationError = true;

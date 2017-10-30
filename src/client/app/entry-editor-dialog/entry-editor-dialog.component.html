@@ -1,6 +1,7 @@
 <form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
   <mat-form-field class="foreign-text-input">
     <textarea matInput matTextareaAutosize placeholder="word/phrase to translate" formControlName="originalText" (keypress)="onOriginalTextKeyPress($event)"></textarea>
+    <mat-hint align="end" *ngIf="detectedLanguage">{{ detectedLanguage }}</mat-hint>
   </mat-form-field>
 
   <div class="translate-container">
