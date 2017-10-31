@@ -22,7 +22,7 @@
       </div>
 
       <div class="load-more" *ngIf="canLoadMore">
-        <button *ngIf="!isLoadingMore; else loading" mat-raised-button (click)="loadMore()">load more</button>
+        <button *ngIf="!isLoadingMore; else loadingMore" mat-raised-button (click)="loadMore()">load more</button>
       </div>
     </mat-list>
   </ng-container>
@@ -39,6 +39,12 @@
 <ng-template #loading>
   <div class="loading-spinner-container">
     <mat-spinner mode="indeterminate"></mat-spinner>
+  </div>
+</ng-template>
+
+<ng-template #loadingMore>
+  <div class="loading-spinner-container">
+    <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
   </div>
 </ng-template>
 
