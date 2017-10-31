@@ -1,8 +1,8 @@
-<ng-container *ngIf="listVm; else loading">
+<ng-container *ngIf="listVm && !isInitialLoading; else loading">
 
   <ng-container *ngIf="listVm.groups.length > 0; else empty">
     <mat-list #list class="entry-list">
-      <div class="entry-list__group" *ngFor="let group of listVm.groups">
+      <div class="entry-list__group" *ngFor="let group of listVm.groups; trackBy: trackByGroup">
         <div class="entry-list__group__header">
           <h3 mat-subheader>
             {{ group.date | date }}
@@ -10,7 +10,7 @@
           <mat-divider></mat-divider>
         </div>
 
-        <mat-list-item *ngFor="let entry of group.entries" class="entry-list__list-item"
+        <mat-list-item *ngFor="let entry of group.entries; trackBy: trackByEntry" class="entry-list__list-item"
                       [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
                       (@entryCardEnterLeave.done)="entry.isNew = false">
           <app-entry-item mat-line
@@ -19,6 +19,10 @@
                           (deleteRequest)="onDeleteRequested(entry, group)">
           </app-entry-item>
         </mat-list-item>
+      </div>
+
+      <div class="load-more" *ngIf="canLoadMore">
+        <button *ngIf="!isLoadingMore; else loading" mat-raised-button (click)="loadMore()">load more</button>
       </div>
     </mat-list>
   </ng-container>

@@ -11,6 +11,14 @@ interface FirebaseEntry {
   updatedOn?: number;
 }
 
+export interface EntriesResult {
+  hasMore: boolean;
+  entries: Entry[];
+  loadMoreToken: any;
+}
+
+export const pageSize = 20;
+
 @Injectable()
 export class EntryStorageService {
 
@@ -18,16 +26,27 @@ export class EntryStorageService {
 
   }
 
-  getEntries(): Observable<Entry[]> {
+  getEntries(positionToken: any): Observable<EntriesResult> {
     return this.db.collection<any>('users')
       .doc(this.authService.userId)
       .collection<any>('entries', ref => {
-        return ref.orderBy('addedOn', 'desc');
+        let query = ref
+          .orderBy('addedOn', 'desc');
+
+        if (positionToken) {
+          query = query.startAt(positionToken);
+        }
+
+        query = query.limit(pageSize + 1);
+
+        return query;
       })
       .snapshotChanges()
       .first()
       .map(actions => {
-        return actions.map(a => {
+        const hasMore = actions.length > pageSize;
+
+        const entries = actions.slice(0, 20).map(a => {
           const data = a.payload.doc.data() as FirebaseEntry;
           const id = a.payload.doc.id;
 
@@ -39,6 +58,8 @@ export class EntryStorageService {
             updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
           });
         });
+
+        return { hasMore: hasMore, entries: entries, loadMoreToken: hasMore ? actions[actions.length - 1].payload.doc : undefined };
       });
   }
 

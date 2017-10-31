@@ -51,6 +51,11 @@
       }
     }
   }
+
+  .load-more {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .loading-spinner-container {
