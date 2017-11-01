@@ -6,3 +6,7 @@ Whenever you learn a foreign language you usually write down new words/phrases t
 Automatic translation to English when you add a word or phrase in a foreign language;
 Go through your words in random order one by one;
 Showing random words on a Live Tile on your phone's home screen (so you learn the words just by glancing at the live tile without having to open the app every time).
+
+## License
+
+MIT © Pavlo Glazkov
