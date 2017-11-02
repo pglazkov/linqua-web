@@ -21,8 +21,10 @@
         </mat-list-item>
       </div>
 
-      <div class="load-more" *ngIf="canLoadMore">
-        <button *ngIf="!isLoadingMore; else loadingMore" mat-raised-button (click)="loadMore()">load more</button>
+      <div class="entry-list__footer">
+        <ng-container *ngIf="canLoadMore">
+          <button *ngIf="!isLoadingMore; else loadingMore" mat-raised-button (click)="loadMore()">load more</button>
+        </ng-container>
       </div>
     </mat-list>
   </ng-container>

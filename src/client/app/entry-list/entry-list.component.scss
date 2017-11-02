@@ -10,7 +10,6 @@
 
 .entry-list {
   flex: 1;
-  padding: 10px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -23,17 +22,15 @@
     margin-top: 10px;
   }
 
+  .entry-list__group + .entry-list__group {
+    margin-top: 10px;
+  }
+
   .entry-list__group {
     @media (min-width: $screen-tablet) {
       width: 700px;
       margin-left: auto;
       margin-right: auto;
-    }
-
-    margin-bottom: 10px;
-
-    &:last-child {
-      margin-bottom: 90px;
     }
 
     .entry-list__group__header {
@@ -52,11 +49,11 @@
     }
   }
 
-  .load-more {
+  .entry-list__footer {
     display: flex;
     justify-content: center;
-    margin-top: 24px;
-    margin-bottom: 24px;
+    align-items: center;
+    height: 90px;
   }
 }
 
