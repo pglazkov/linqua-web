@@ -63,6 +63,10 @@ export class EntryStorageService {
       });
   }
 
+  getNewId() {
+    return this.entryCollectionRef.ref.doc().id;
+  }
+
   async addOrUpdate(entry: Entry): Promise<void> {
     const entryData: FirebaseEntry = {
       originalText: entry.originalText,
@@ -71,16 +75,11 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined
     };
 
-    const collectionRef = this.db
-      .collection<any>('users')
-      .doc(this.authService.userId)
-      .collection<any>('entries');
-
     if (entry.id) {
-      await collectionRef.doc(entry.id).set(entryData);
+      await this.entryCollectionRef.doc(entry.id).set(entryData);
     }
     else {
-      const newEntryRef = await collectionRef.add(entryData);
+      const newEntryRef = await this.entryCollectionRef.add(entryData);
       entry.id = newEntryRef.id;
     }
   }
@@ -92,5 +91,12 @@ export class EntryStorageService {
       .collection('entries')
       .doc(id)
       .delete();
+  }
+
+  private get entryCollectionRef() {
+    return this.db
+      .collection<any>('users')
+      .doc(this.authService.userId)
+      .collection<any>('entries');
   }
 }

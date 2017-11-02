@@ -68,31 +68,34 @@ export class EntryListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
-  addNewEntry() {
+  async addNewEntry() {
     const listVm = this.listVm;
 
     if (listVm === undefined) {
       return;
     }
 
-    this.dialog.open(EntryEditorDialogComponent).afterClosed().subscribe((result: Entry) => {
-      if (result) {
-        const entry = new EntryViewModel(result);
-        entry.isNew = true;
+    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().first().toPromise()
 
-        this.loadedEntries.unshift(result);
-        listVm.addEntry(entry);
+    if (result) {
+      result.id = this.storage.getNewId();
 
-        if (this.listElement) {
-          this.listElement.nativeElement.scrollTop = 0;
-        }
+      const entry = new EntryViewModel(result);
 
-        this.storage.addOrUpdate(entry.model);
+      entry.isNew = true;
+
+      this.loadedEntries.unshift(result);
+      listVm.addEntry(entry);
+
+      if (this.listElement) {
+        this.listElement.nativeElement.scrollTop = 0;
       }
-    });
+
+      await this.storage.addOrUpdate(entry.model);
+    }
   }
 
-  onEditRequested(entry: Entry) {
+  async onEditRequested(entry: Entry) {
     if (this.listVm === undefined) {
       return;
     }
@@ -100,13 +103,13 @@ export class EntryListComponent implements OnInit, OnDestroy {
     const editorDialog = this.dialog.open(EntryEditorDialogComponent);
     editorDialog.componentInstance.setEntry(entry);
 
-    editorDialog.afterClosed().subscribe((result: Entry) => {
-      if (result) {
-        Object.assign(entry, result);
-        entry.updatedOn = new Date();
-        this.storage.addOrUpdate(entry);
-      }
-    });
+    const result: Entry = await editorDialog.afterClosed().first().toPromise()
+
+    if (result) {
+      Object.assign(entry, result);
+      entry.updatedOn = new Date();
+      await this.storage.addOrUpdate(entry);
+    }
   }
 
   async onDeleteRequested(entry: EntryViewModel, group: EntryTimeGroupViewModel) {
