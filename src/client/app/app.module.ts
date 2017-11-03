@@ -5,7 +5,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { AngularFireModule } from 'angularfire2';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
 
@@ -60,7 +59,6 @@ const materialModules = [
     ...materialModules,
     StorageModule,
     TranslationModule,
-    AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AuthModule.forRoot()
   ],

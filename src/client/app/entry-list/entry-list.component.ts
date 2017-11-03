@@ -75,7 +75,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().first().toPromise()
+    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().first().toPromise();
 
     if (result) {
       result.id = this.storage.getNewId();
@@ -103,7 +103,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
     const editorDialog = this.dialog.open(EntryEditorDialogComponent);
     editorDialog.componentInstance.setEntry(entry);
 
-    const result: Entry = await editorDialog.afterClosed().first().toPromise()
+    const result: Entry = await editorDialog.afterClosed().first().toPromise();
 
     if (result) {
       Object.assign(entry, result);

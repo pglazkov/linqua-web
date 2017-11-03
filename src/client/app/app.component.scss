@@ -40,8 +40,10 @@
     flex-direction: column;
     overflow: visible;
 
-    router-outlet {
-      flex: none;
+    .handle-login-redirect-container {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 80px;
     }
   }
 

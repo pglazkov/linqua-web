@@ -1,0 +1,48 @@
+@import "../../../../styles/variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.error-message {
+  background: #f44336;
+  color: #fff;
+  padding: 1em;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+section {
+  display: flex;
+  flex: 1;
+  align-self: center;
+
+  .login-buttons-card {
+    display: flex;
+
+    button + button {
+      margin-left: 20px;
+    }
+  }
+
+  .handling-signin-card {
+    display: flex;
+    min-width: 350px;
+    justify-content: center;
+  }
+
+  @media (max-width: $screen-phone) {
+    .login-buttons-card {
+      flex-direction: column;
+
+      button + button {
+        margin-left: 0;
+        margin-top: 20px;
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@
       </div>
     </mat-toolbar>
 
-    <mat-card *ngIf="isLoggedIn">
+    <mat-card *ngIf="isLoggedIn | async">
       <mat-card-header>
         <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
         <mat-card-title>{{ user.displayName }}</mat-card-title>
@@ -28,7 +28,7 @@
 
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isLoggedIn">
+      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isLoggedIn | async">
         <mat-icon>menu</mat-icon>
       </button>
     </div>
@@ -46,7 +46,30 @@
   </mat-toolbar>
 
   <main>
-    <router-outlet></router-outlet>
+    <ng-container [ngSwitch]="state">
+      <ng-container *ngSwitchCase="states.LoggedIn">
+        <app-home-view></app-home-view>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="states.HandleLoginRedirect">
+        <div class="handle-login-redirect-container">
+          Logging in...
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="states.LoginError">
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="states.LoginNeeded">
+        <app-login-control></app-login-control>
+      </ng-container>
+
+      <ng-container *ngSwitchDefault>
+      </ng-container>
+    </ng-container>
   </main>
 
   <footer></footer>

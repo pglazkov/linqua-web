@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { auth } from 'firebase/app';
-import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { AsyncSubject } from 'rxjs/AsyncSubject';
 
 export interface AuthResult {
   success: boolean;
@@ -21,11 +22,20 @@ const accountToLinkStorageKey = 'account-to-link';
 
 @Injectable()
 export class AuthService {
-  private isLoggedInChange: Subject<boolean> = new Subject<boolean>();
+  private isLoggedInValueSubject: AsyncSubject<boolean> = new AsyncSubject<boolean>();
+  private isLoggedInValueAvailable = false;
 
   constructor(private af: AngularFireAuth) {
     af.auth.onAuthStateChanged(() => {
-      this.isLoggedInChange.next(this.isLoggedIn);
+      if (this.isLoggedInValueAvailable) {
+        // isLoggedInValueSubject is completed and contains a previous value.
+        // We need to "reset" the subject and emit the new value.
+        this.isLoggedInValueSubject = new AsyncSubject<boolean>();
+      }
+
+      this.isLoggedInValueAvailable = true;
+      this.isLoggedInValueSubject.next(!!this.af.auth.currentUser);
+      this.isLoggedInValueSubject.complete();
     });
   }
 
@@ -64,8 +74,8 @@ export class AuthService {
     };
   }
 
-  get isLoggedIn(): boolean {
-    return !!this.af.auth.currentUser;
+  get isLoggedIn(): Observable<boolean> {
+    return this.isLoggedInValueSubject.asObservable();
   }
 
   loginWithFacebook(): void {
@@ -77,10 +87,6 @@ export class AuthService {
   }
 
   async handleLoginResultIfNeeded(): Promise<AuthResult | undefined> {
-    if (this.isLoggedIn) {
-      return undefined;
-    }
-
     try {
       const redirectResult = await this.af.auth.getRedirectResult();
 
