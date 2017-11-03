@@ -9,15 +9,12 @@
       </div>
     </mat-toolbar>
 
-    <mat-card *ngIf="isLoggedIn | async">
+    <mat-card *ngIf="isLoggedIn | async" class="user-card">
       <mat-card-header>
         <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
         <mat-card-title>{{ user.displayName }}</mat-card-title>
         <mat-card-subtitle>{{ user.email || '(no email)' }}</mat-card-subtitle>
       </mat-card-header>
-      <mat-card-content>
-        <p>You are logged in using <strong>{{ user.providerId }}</strong></p>
-      </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button (click)="logout()">
           Logout
@@ -57,14 +54,8 @@
         </div>
       </ng-container>
 
-      <ng-container *ngSwitchCase="states.LoginError">
-        <div class="error-message" *ngIf="errorMessage">
-          {{ errorMessage }}
-        </div>
-      </ng-container>
-
       <ng-container *ngSwitchCase="states.LoginNeeded">
-        <app-login-control></app-login-control>
+        <app-login-control [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login-control>
       </ng-container>
 
       <ng-container *ngSwitchDefault>

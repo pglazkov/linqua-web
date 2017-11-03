@@ -30,6 +30,15 @@
     }
   }
 
+  .user-card {
+    .mat-card-actions {
+      margin-bottom: 0px;
+      margin-right: 0px;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
   mat-sidenav {
     width: 300px;
   }

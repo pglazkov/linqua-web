@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   padding: 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .error-message {
@@ -20,12 +22,33 @@ section {
   display: flex;
   flex: 1;
   align-self: center;
+  align-items: stretch;
+  flex-direction: column;
+
+  h1, .login-caption {
+    align-self: center;
+  }
+
+  .login-caption {
+    margin-bottom: 8px;
+    text-align: center;
+  }
 
   .login-buttons-card {
     display: flex;
+    flex-shrink: 0;
 
     button + button {
       margin-left: 20px;
+    }
+
+    @media (max-width: $screen-phone) {
+      flex-direction: column;
+
+      button + button {
+        margin-left: 0;
+        margin-top: 20px;
+      }
     }
   }
 
@@ -35,14 +58,49 @@ section {
     justify-content: center;
   }
 
-  @media (max-width: $screen-phone) {
-    .login-buttons-card {
+  .username-password-login-card {
+    .login-form {
+      display: flex;
       flex-direction: column;
 
-      button + button {
-        margin-left: 0;
-        margin-top: 20px;
+      .username-form-field {
+        width: 100%;
+      }
+
+      .password-form-field {
+        width: 100%;
+        margin-top: 8px;
+      }
+    }
+
+    .actions-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0px;
+
+      button {
+        min-width: 100px;
       }
     }
   }
+
+  .demo-login-card {
+    .actions-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0px;
+
+      button {
+        min-width: 100px;
+      }
+    }
+  }
+
+  mat-card + mat-card {
+    margin-top: 8px;
+  }
 }
+
+
+
+

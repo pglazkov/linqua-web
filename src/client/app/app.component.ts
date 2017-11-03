@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from 'shared';
+import { AuthResult, AuthService } from 'shared';
 
 export enum States {
   Unknown,
   LoginNeeded,
   HandleLoginRedirect,
-  LoginError,
   LoggedIn
 }
 
@@ -15,11 +14,11 @@ export enum States {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  errorMessage: string | undefined;
-
   states = States;
 
   state: States = States.Unknown;
+
+  redirectAuthResult: AuthResult | undefined;
 
   constructor(private af: AuthService) {
   }
@@ -43,19 +42,16 @@ export class AppComponent implements OnInit {
     });
   }
 
+  onLoginSuccess() {
+    this.state = States.LoggedIn;
+  }
+
   private async initState(): Promise<void> {
     this.state = States.Unknown;
 
     this.state = States.HandleLoginRedirect;
 
-    const authResult = await this.af.handleLoginResultIfNeeded();
-
-    if (authResult && !authResult.success) {
-      this.errorMessage = authResult.error;
-
-      this.state = States.LoginError;
-      return;
-    }
+    this.redirectAuthResult = await this.af.handleRedirectResult();
 
     const isLoggedIn = await this.af.isLoggedIn.toPromise();
 
