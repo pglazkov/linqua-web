@@ -86,6 +86,10 @@ export class AuthService {
     this.login(new auth.GoogleAuthProvider());
   }
 
+  loginWithEmailAndPassword(email: string, password: string): Promise<void> {
+    return this.af.auth.signInWithEmailAndPassword(email, password);
+  }
+
   async handleLoginResultIfNeeded(): Promise<AuthResult | undefined> {
     try {
       const redirectResult = await this.af.auth.getRedirectResult();

@@ -43,6 +43,14 @@ export class AppComponent implements OnInit {
     });
   }
 
+  onLoginSuccess() {
+    this.state = States.LoggedIn;
+  }
+
+  onLoginFailure(error: any) {
+    this.errorMessage = error;
+  }
+
   private async initState(): Promise<void> {
     this.state = States.Unknown;
 

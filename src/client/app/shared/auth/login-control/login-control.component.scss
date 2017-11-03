@@ -20,6 +20,8 @@ section {
   display: flex;
   flex: 1;
   align-self: center;
+  align-items: stretch;
+  flex-direction: column;
 
   .login-buttons-card {
     display: flex;
@@ -46,3 +48,30 @@ section {
     }
   }
 }
+
+.username-password-login-card {
+  .login-form {
+    display: flex;
+    flex-direction: column;
+
+    .username-form-field {
+      width: 100%;
+    }
+
+    .password-form-field {
+      width: 100%;
+    }
+  }
+
+  .actions-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0px;
+
+    button {
+      min-width: 100px;
+    }
+  }
+}
+
+

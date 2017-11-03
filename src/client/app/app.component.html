@@ -58,13 +58,11 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="states.LoginError">
-        <div class="error-message" *ngIf="errorMessage">
-          {{ errorMessage }}
-        </div>
+
       </ng-container>
 
       <ng-container *ngSwitchCase="states.LoginNeeded">
-        <app-login-control></app-login-control>
+        <app-login-control (loginSuccess)="onLoginSuccess()" (loginFailure)="onLoginFailure($event)"></app-login-control>
       </ng-container>
 
       <ng-container *ngSwitchDefault>
