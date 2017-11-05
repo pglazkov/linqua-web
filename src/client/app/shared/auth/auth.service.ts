@@ -94,15 +94,13 @@ export class AuthService {
     try {
       const redirectResult = await this.af.auth.getRedirectResult();
 
-      console.log(redirectResult);
-
       if (redirectResult && redirectResult.credential) {
 
         const accountToLinkData = sessionStorage.getItem(accountToLinkStorageKey);
-        const accountToLink = accountToLinkData ? JSON.parse(accountToLinkData) : undefined;
+        const accountToLink = accountToLinkData ? this.getCredentialInstance(JSON.parse(accountToLinkData)) : undefined;
 
         if (accountToLink) {
-          await redirectResult.credential.linkWithCredential(accountToLink);
+          const linkResult = await redirectResult.user.linkWithCredential(accountToLink);
           sessionStorage.removeItem(accountToLinkStorageKey);
         }
 
@@ -114,7 +112,7 @@ export class AuthService {
     catch (error) {
       if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
         const availableProviders = await this.af.auth.fetchProvidersForEmail(error.email);
-
+        
         sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
 
         return {
@@ -131,6 +129,17 @@ export class AuthService {
 
   private login(provider: auth.AuthProvider): void {
     this.af.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
+  }
+
+  private getCredentialInstance(credentialData: any) {
+    switch (credentialData.providerId) {
+      case 'facebook.com':
+        return auth.FacebookAuthProvider.credential(credentialData.accessToken);
+      case 'google.com':
+        return auth.GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
+      default: 
+        throw new Error(`Provider "${credentialData.providerId}" is not supported.`);
+    }
   }
 
   async logout() {
