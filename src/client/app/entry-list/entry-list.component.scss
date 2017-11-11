@@ -13,9 +13,14 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 
-  .entry-list__list-item ::ng-deep.mat-list-item-content {
-    height: auto;
-    padding: 0;
+  .entry-list__list-item {
+    &.mat-list-item {
+      height: auto;
+    }
+
+    ::ng-deep.mat-list-item-content {
+      padding: 0;
+    }
   }
 
   .entry-list__list-item + .entry-list__list-item {
