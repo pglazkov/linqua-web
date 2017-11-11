@@ -7,6 +7,7 @@ import {
 } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
+import { first, map, switchMap } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 @Injectable()
@@ -15,18 +16,22 @@ export class AuthTokenInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return this.af.idToken.first().map(token => {
-      if (token) {
-        return request.clone({
-          setHeaders: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-      }
+    return this.af.idToken.pipe(
+      first(),
+      map(token => {
+        if (token) {
+          return request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+        }
 
-      return request;
-    }).switchMap(req => {
-      return next.handle(req);
-    });
+        return request;
+      }),
+      switchMap(req => {
+        return next.handle(req);
+      })
+    );
   }
 }

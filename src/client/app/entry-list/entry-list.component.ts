@@ -6,6 +6,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 import { EntryListViewModel } from './entry-list.vm';
 import { Subject } from 'rxjs/Subject';
+import { takeUntil, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-view',
@@ -55,7 +56,10 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private async loadEntries() {
-    const result = await this.storage.getEntries(this.loadMoreToken).takeUntil(this.ngUnsubscribe).first().toPromise();
+    const result = await this.storage.getEntries(this.loadMoreToken).pipe(
+      takeUntil(this.ngUnsubscribe),
+      first()
+    ).toPromise();
 
     this.loadedEntries = this.loadedEntries.concat(result.entries);
     this.canLoadMore = result.hasMore;
@@ -75,7 +79,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().first().toPromise();
+    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().pipe(first()).toPromise();
 
     if (result) {
       result.id = this.storage.getNewId();
@@ -103,7 +107,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
     const editorDialog = this.dialog.open(EntryEditorDialogComponent);
     editorDialog.componentInstance.setEntry(entry);
 
-    const result: Entry = await editorDialog.afterClosed().first().toPromise();
+    const result: Entry = await editorDialog.afterClosed().pipe(first()).toPromise();
 
     if (result) {
       Object.assign(entry, result);
