@@ -79,7 +79,10 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const result: Entry = await this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig()).afterClosed().pipe(first()).toPromise();
+    const result: Entry = await this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig())
+      .afterClosed()
+      .pipe(first())
+      .toPromise();
 
     if (result) {
       result.id = this.storage.getNewId();
@@ -121,8 +124,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    await this.storage.delete(entry.id);
-
     const entryIndex = this.loadedEntries.findIndex(x => x.id === entry.id);
 
     if (entryIndex >= 0) {
@@ -130,6 +131,8 @@ export class EntryListComponent implements OnInit, OnDestroy {
     }
 
     this.listVm.deleteEntry(entry, group);
+
+    await this.storage.delete(entry.id);
   }
 
   async loadMore() {

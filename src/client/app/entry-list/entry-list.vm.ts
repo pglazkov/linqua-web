@@ -1,6 +1,8 @@
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 import { Entry } from 'shared';
 
+const entryDeletionAnimationDuration = 200;
+
 export class EntryListViewModel {
   readonly groups: EntryTimeGroupViewModel[] = [];
 
@@ -22,7 +24,10 @@ export class EntryListViewModel {
     group.deleteEntry(entry);
 
     if (group.entries.length === 0) {
-      this.groups.splice(this.groups.indexOf(group), 1);
+      // Delay the removal of the group to let the deletion animation finish
+      setTimeout(() => {
+        this.groups.splice(this.groups.indexOf(group), 1);
+      }, entryDeletionAnimationDuration);
     }
   }
 
