@@ -1,17 +1,8 @@
 <form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
-  <mat-form-field class="foreign-text-input">
+  <mat-form-field class="foreign-text-input" hintLabel="Press &quot;Enter&quot; to translate">
     <textarea matInput matTextareaAutosize placeholder="word/phrase to translate" formControlName="originalText" (keypress)="onOriginalTextKeyPress($event)"></textarea>
     <mat-hint align="end" *ngIf="detectedLanguage">{{ detectedLanguage }}</mat-hint>
   </mat-form-field>
-
-  <div class="translate-container">
-    <button mat-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? 'primary' : 'warn'">
-      <mat-icon *ngIf="!isTranslating">translate</mat-icon>
-      <span *ngIf="!isTranslating && !translationError">translate</span>
-      <span *ngIf="!isTranslating && translationError">retry</span>
-      <span *ngIf="isTranslating">translating...</span>
-    </button>
-  </div>
 
   <mat-form-field class="translation-input">
     <textarea #translationTextArea matInput matTextareaAutosize placeholder="translation" formControlName="translation" (keypress)="onTranslationTextKeyPress($event)"></textarea>
@@ -19,6 +10,13 @@
   </mat-form-field>
 
   <div class="footer">
+    <button mat-raised-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? 'primary' : 'warn'">
+      <mat-icon *ngIf="!isTranslating">translate</mat-icon>
+      <span *ngIf="!isTranslating && !translationError">translate</span>
+      <span *ngIf="!isTranslating && translationError">retry</span>
+      <span *ngIf="isTranslating">translating...</span>
+    </button>
+
     <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating" [color]="entryForm.get('translation')?.value ? 'accent' : undefined">save</button>
   </div>
 </form>

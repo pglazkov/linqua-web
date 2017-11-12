@@ -64,6 +64,9 @@
       "module": false,
       "pipe": false,
       "service": false
+    },
+    "serve": {
+      "port": 3000
     }
   }
 }

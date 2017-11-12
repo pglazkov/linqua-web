@@ -1,7 +1,7 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
-import { Entry, EntryStorageService, EntriesResult } from 'shared';
+import { Entry, EntryStorageService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 import { EntryListViewModel } from './entry-list.vm';
@@ -41,7 +41,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(private dialog: MatDialog, private storage: EntryStorageService) {
+  constructor(private dialog: MatDialog, private storage: EntryStorageService, private viewContainer: ViewContainerRef) {
   }
 
   async ngOnInit() {
@@ -79,7 +79,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const result: Entry = await this.dialog.open(EntryEditorDialogComponent).afterClosed().pipe(first()).toPromise();
+    const result: Entry = await this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig()).afterClosed().pipe(first()).toPromise();
 
     if (result) {
       result.id = this.storage.getNewId();
@@ -104,7 +104,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const editorDialog = this.dialog.open(EntryEditorDialogComponent);
+    const editorDialog = this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig({ isEdit: true }));
     editorDialog.componentInstance.setEntry(entry);
 
     const result: Entry = await editorDialog.afterClosed().pipe(first()).toPromise();
@@ -149,6 +149,33 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
   trackByEntry(index: number, entry: EntryViewModel) {
     return entry.id;
+  }
+
+  private createEntryDialogConfig(config: { isEdit: boolean } = { isEdit: false }): MatDialogConfig {
+    let result = {
+      viewContainerRef: this.viewContainer,
+      maxWidth: '500px',
+      width: '100%'
+    };
+
+    if (!this.isMobile()) {
+      if (!config.isEdit) {
+        result = Object.assign(result, {
+          position: { bottom: '74px', right: '74px' }
+        });
+      }
+    }
+    else {
+      result = Object.assign(result, {
+        position: { top: '56px' }
+      });
+    }
+
+    return result;
+  }
+
+  private isMobile() {
+    return window.screen.width < 768;
   }
 }
 
