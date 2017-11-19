@@ -50,7 +50,10 @@
 
       <ng-container *ngSwitchCase="states.HandleLoginRedirect">
         <div class="handle-login-redirect-container">
-          Logging in...
+          Just a moment, verifying login...
+          <div class="spinner">
+            <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
+          </div>
         </div>
       </ng-container>
 

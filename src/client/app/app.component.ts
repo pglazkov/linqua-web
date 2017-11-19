@@ -49,9 +49,11 @@ export class AppComponent implements OnInit {
   private async initState(): Promise<void> {
     this.state = States.Unknown;
 
-    this.state = States.HandleLoginRedirect;
+    if (this.af.shouldHandleRedirectResult) {
+      this.state = States.HandleLoginRedirect;
 
-    this.redirectAuthResult = await this.af.handleRedirectResult();
+      this.redirectAuthResult = await this.af.handleRedirectResult();
+    }
 
     const isLoggedIn = await this.af.isLoggedIn.toPromise();
 

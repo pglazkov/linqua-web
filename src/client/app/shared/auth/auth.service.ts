@@ -19,6 +19,7 @@ export interface User {
 }
 
 const accountToLinkStorageKey = 'account-to-link';
+const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,10 @@ export class AuthService {
     return this.isLoggedInValueSubject.asObservable();
   }
 
+  get shouldHandleRedirectResult() {
+    return !!sessionStorage.getItem(loginWithRedirectInProgressKey);
+  }
+
   loginWithFacebook(): void {
     this.login(new auth.FacebookAuthProvider());
   }
@@ -100,7 +105,7 @@ export class AuthService {
         const accountToLink = accountToLinkData ? this.getCredentialInstance(JSON.parse(accountToLinkData)) : undefined;
 
         if (accountToLink) {
-          const linkResult = await redirectResult.user.linkWithCredential(accountToLink);
+          await redirectResult.user.linkWithCredential(accountToLink);
           sessionStorage.removeItem(accountToLinkStorageKey);
         }
 
@@ -112,7 +117,7 @@ export class AuthService {
     catch (error) {
       if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
         const availableProviders = await this.af.auth.fetchProvidersForEmail(error.email);
-        
+
         sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
 
         return {
@@ -125,9 +130,14 @@ export class AuthService {
 
       return { success: false, error: JSON.stringify(error) };
     }
+    finally {
+      sessionStorage.removeItem(loginWithRedirectInProgressKey);
+    }
   }
 
   private login(provider: auth.AuthProvider): void {
+    sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
+
     this.af.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
   }
 
@@ -137,7 +147,7 @@ export class AuthService {
         return auth.FacebookAuthProvider.credential(credentialData.accessToken);
       case 'google.com':
         return auth.GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
-      default: 
+      default:
         throw new Error(`Provider "${credentialData.providerId}" is not supported.`);
     }
   }
