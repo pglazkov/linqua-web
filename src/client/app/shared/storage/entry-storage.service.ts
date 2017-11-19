@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/observable';
-import { first, map } from 'rxjs/operators';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthService } from '../auth';
+import { Subject } from 'rxjs/Subject';
+import { Subscriber } from 'rxjs/Subscriber';
 
 interface FirebaseEntry {
   originalText: string;
@@ -16,6 +17,7 @@ export interface EntriesResult {
   hasMore: boolean;
   entries: Entry[];
   loadMoreToken: any;
+  fromCache: boolean;
 }
 
 export const pageSize = 20;
@@ -27,47 +29,62 @@ export class EntryStorageService {
 
   }
 
-  getEntries(positionToken: any): Observable<EntriesResult> {
-    return this.db.collection<any>('users')
+  getEntriesStream(positionToken?: any): Observable<EntriesResult> {
+    const resultStream = new Subject<EntriesResult>();
+
+    let query = this.db.firestore.collection('users')
       .doc(this.authService.userId)
-      .collection<any>('entries', ref => {
-        let query = ref
-          .orderBy('addedOn', 'desc');
+      .collection('entries')
+      .orderBy('addedOn', 'desc');
 
-        if (positionToken) {
-          query = query.startAt(positionToken);
-        }
+    if (positionToken) {
+      query = query.startAt(positionToken);
+    }
 
-        query = query.limit(pageSize + 1);
+    query = query.limit(pageSize + 1);
 
-        return query;
-      })
-      .snapshotChanges()
-      .pipe(
-        first(),
-        map(actions => {
-          const hasMore = actions.length > pageSize;
+    let unsubscribeListener: () => void = () => {};
 
-          const entries = actions.slice(0, 20).map(a => {
-            const data = a.payload.doc.data() as FirebaseEntry;
-            const id = a.payload.doc.id;
+    unsubscribeListener = query.onSnapshot({ includeQueryMetadataChanges: true }, snapshot => {
+      const hasMore = snapshot.docs.length > pageSize;
 
-            return new Entry({
-              id: id,
-              originalText: data.originalText,
-              translation: data.translation,
-              addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
-              updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
-            });
-          });
+      const entries = snapshot.docs.slice(0, pageSize).map(d => {
+        const data = d.data() as FirebaseEntry;
+        const id = d.id;
 
-          return { hasMore: hasMore, entries: entries, loadMoreToken: hasMore ? actions[actions.length - 1].payload.doc : undefined };
-        })
-      );
+        return new Entry({
+          id: id,
+          originalText: data.originalText,
+          translation: data.translation,
+          addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
+          updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
+        });
+      });
+
+      const result: EntriesResult = {
+        hasMore: hasMore,
+        entries: entries,
+        loadMoreToken: hasMore ? snapshot.docs[snapshot.docs.length - 1] : undefined,
+        fromCache: snapshot.metadata.fromCache
+      };
+      resultStream.next(result);
+    }, error => {
+      resultStream.error(error);
+    }, () => {
+      resultStream.complete();
+    });
+
+    return Observable.create((observer: Subscriber<EntriesResult>) => {
+      resultStream.subscribe(observer);
+
+      return () => {
+        unsubscribeListener();
+      };
+    });
   }
 
   getNewId() {
-    return this.entryCollectionRef.ref.doc().id;
+    return this.entryCollectionRef.doc().id;
   }
 
   async addOrUpdate(entry: Entry): Promise<void> {
@@ -88,18 +105,13 @@ export class EntryStorageService {
   }
 
   delete(id: string): Promise<void> {
-    return this.db
-      .collection<any>('users')
-      .doc(this.authService.userId)
-      .collection('entries')
-      .doc(id)
-      .delete();
+    return this.entryCollectionRef.doc(id).delete();
   }
 
   private get entryCollectionRef() {
-    return this.db
-      .collection<any>('users')
+    return this.db.firestore
+      .collection('users')
       .doc(this.authService.userId)
-      .collection<any>('entries');
+      .collection('entries');
   }
 }

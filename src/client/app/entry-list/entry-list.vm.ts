@@ -1,13 +1,19 @@
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
-import { Entry } from 'shared';
+import { createSortComparer, Entry } from 'shared';
 
 const entryDeletionAnimationDuration = 200;
 
 export class EntryListViewModel {
-  readonly groups: EntryTimeGroupViewModel[] = [];
+  static readonly entrySortCompareFunc =
+    createSortComparer((o: { addedOn: Date }) => o.addedOn, 'desc');
+
+  static readonly groupSortComparerFunc =
+    createSortComparer((g: EntryTimeGroupViewModel) => g.date.getTime(), 'desc');
+
+  groups: EntryTimeGroupViewModel[] = [];
 
   constructor(entries: Entry[]) {
-    const sortedEntries = entries.sort((a, b) => a.addedOn > b.addedOn ? 1 : (a.addedOn < b.addedOn ? -1 : 0));
+    const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
 
     for (const entry of sortedEntries) {
       this.addEntry(new EntryViewModel(entry));
@@ -17,7 +23,7 @@ export class EntryListViewModel {
   addEntry(entry: EntryViewModel) {
     const group = this.findOrCreateTimeGroupForEntry(entry);
 
-    group.entries.unshift(entry);
+    group.addEntry(entry);
   }
 
   deleteEntry(entry: EntryViewModel, group: EntryTimeGroupViewModel) {
@@ -29,6 +35,21 @@ export class EntryListViewModel {
         this.groups.splice(this.groups.indexOf(group), 1);
       }, entryDeletionAnimationDuration);
     }
+  }
+
+  mergeFrom(other: EntryListViewModel) {
+    for (const otherGroup of other.groups) {
+      const thisGroup = this.groups.find(g => g.equals(otherGroup));
+
+      if (thisGroup) {
+        thisGroup.mergeFrom(otherGroup);
+      }
+      else {
+        this.groups.push(otherGroup);
+      }
+    }
+
+    this.groups.sort(EntryListViewModel.groupSortComparerFunc);
   }
 
   private findOrCreateTimeGroupForEntry(entry: EntryViewModel) {
@@ -43,11 +64,12 @@ export class EntryListViewModel {
     let group = this.groups.find(g => g.date.getTime() === dateWithoutTime.getTime());
 
     if (!group) {
-      group = new EntryTimeGroupViewModel();
+      group = new EntryTimeGroupViewModel(EntryListViewModel.entrySortCompareFunc);
       group.date = dateWithoutTime;
       group.entries = [];
 
       this.groups.unshift(group);
+      this.groups.sort(EntryListViewModel.groupSortComparerFunc);
     }
 
     return group;

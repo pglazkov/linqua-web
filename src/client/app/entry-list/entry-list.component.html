@@ -1,4 +1,4 @@
-<ng-container *ngIf="listVm && !isInitialLoading; else loading">
+<ng-container *ngIf="listVm; else loading">
 
   <ng-container *ngIf="listVm.groups.length > 0; else empty">
     <mat-list #list class="entry-list">

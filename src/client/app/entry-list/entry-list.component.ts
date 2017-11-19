@@ -6,7 +6,14 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 import { EntryListViewModel } from './entry-list.vm';
 import { Subject } from 'rxjs/Subject';
-import { takeUntil, first } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
+import { ISubscription } from 'rxjs/Subscription';
+
+interface EntryListState {
+  loadedEntries: Entry[];
+  canLoadMore: boolean;
+  loadMoreToken: any;
+}
 
 @Component({
   selector: 'app-home-view',
@@ -32,44 +39,62 @@ export class EntryListComponent implements OnInit, OnDestroy {
   listVm: EntryListViewModel | undefined;
   canLoadMore = false;
   loadMoreToken: any;
-  isInitialLoading = true;
   isLoadingMore = false;
 
   @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
 
-  private readonly ngUnsubscribe: Subject<void> = new Subject<void>();
+  private readonly ngUnsubscribe: ISubscription[] = [];
+
+  private readonly stateSubject = new Subject<EntryListState>();
 
   private loadedEntries: Entry[] = [];
 
   constructor(private dialog: MatDialog, private storage: EntryStorageService, private viewContainer: ViewContainerRef) {
+    this.stateSubject.subscribe(s => this.onStateChange(s));
   }
 
-  async ngOnInit() {
-    this.isInitialLoading = true;
+  ngOnInit() {
+    let sub: ISubscription = { unsubscribe: () => {}, closed: true };
+
+    sub = this.storage.getEntriesStream().subscribe(result => {
+      this.stateSubject.next({
+        loadedEntries: result.entries,
+        canLoadMore: result.hasMore,
+        loadMoreToken: result.loadMoreToken
+      });
+
+      if (!result.fromCache) {
+        sub.unsubscribe();
+      }
+    });
+
+    this.ngUnsubscribe.push(sub);
+  }
+
+  async loadMore() {
+    this.isLoadingMore = true;
 
     try {
-      await this.loadEntries();
+      const result = await this.storage.getEntriesStream(this.loadMoreToken).pipe(
+        filter(r => !r.fromCache),
+        first()
+      ).toPromise();
+
+      this.stateSubject.next({
+        loadedEntries: this.loadedEntries.concat(result.entries),
+        canLoadMore: result.hasMore,
+        loadMoreToken: result.loadMoreToken
+      });
     }
     finally {
-      this.isInitialLoading = false;
+      this.isLoadingMore = false;
     }
-  }
-
-  private async loadEntries() {
-    const result = await this.storage.getEntries(this.loadMoreToken).pipe(
-      takeUntil(this.ngUnsubscribe),
-      first()
-    ).toPromise();
-
-    this.loadedEntries = this.loadedEntries.concat(result.entries);
-    this.canLoadMore = result.hasMore;
-    this.loadMoreToken = result.loadMoreToken;
-    this.listVm = new EntryListViewModel(this.loadedEntries);
   }
 
   ngOnDestroy(): void {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
+    for (const sub of this.ngUnsubscribe) {
+      sub.unsubscribe();
+    }
   }
 
   async addNewEntry() {
@@ -135,23 +160,27 @@ export class EntryListComponent implements OnInit, OnDestroy {
     await this.storage.delete(entry.id);
   }
 
-  async loadMore() {
-    this.isLoadingMore = true;
-
-    try {
-      await this.loadEntries();
-    }
-    finally {
-      this.isLoadingMore = false;
-    }
-  }
-
   trackByGroup(index: number, group: EntryTimeGroupViewModel) {
     return group.date;
   }
 
   trackByEntry(index: number, entry: EntryViewModel) {
     return entry.id;
+  }
+
+  private onStateChange(newState: EntryListState) {
+    const newListVm = new EntryListViewModel(newState.loadedEntries);
+
+    if (this.listVm) {
+      this.listVm.mergeFrom(newListVm);
+    }
+    else {
+      this.listVm = newListVm;
+    }
+
+    this.loadedEntries = newState.loadedEntries;
+    this.canLoadMore = newState.canLoadMore;
+    this.loadMoreToken = newState.loadMoreToken;
   }
 
   private createEntryDialogConfig(config: { isEdit: boolean } = { isEdit: false }): MatDialogConfig {

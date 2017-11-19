@@ -1,4 +1,4 @@
-import { Entry, EntryConfig } from 'shared';
+import { createSortComparer, Entry, EntryConfig } from 'shared';
 
 export class EntryViewModel {
   get id() {
@@ -51,11 +51,43 @@ export class EntryTimeGroupViewModel {
   date: Date;
   entries: EntryViewModel[];
 
+  constructor(private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number) {
+  }
+
+  addEntry(entry: EntryViewModel) {
+    this.entries.unshift(entry);
+
+    this.entries.sort(this.entrySortCompareFunc);
+  }
+
   deleteEntry(entry: EntryViewModel) {
     const entryIndex = this.entries.findIndex(x => x.equals(entry));
 
     if (entryIndex >= 0) {
       this.entries.splice(entryIndex, 1);
     }
+  }
+
+  mergeFrom(otherGroup: EntryTimeGroupViewModel) {
+    for (const otherEntry of otherGroup.entries) {
+      const thisEntry = this.entries.find(e => e.id === otherEntry.id);
+
+      if (thisEntry) {
+        this.entries[this.entries.indexOf(thisEntry)] = otherEntry;
+      }
+      else {
+        this.entries.push(otherEntry);
+      }
+    }
+
+    this.entries.sort(this.entrySortCompareFunc);
+  }
+
+  equals(otherGroup: EntryTimeGroupViewModel | undefined): boolean {
+    if (!otherGroup) {
+      return false;
+    }
+
+    return this.date.getTime() === otherGroup.date.getTime();
   }
 }

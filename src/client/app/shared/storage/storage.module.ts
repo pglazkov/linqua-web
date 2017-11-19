@@ -4,7 +4,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 @NgModule({
   imports: [
-    AngularFirestoreModule
+    AngularFirestoreModule.enablePersistence()
   ],
   exports: [],
   declarations: [],
