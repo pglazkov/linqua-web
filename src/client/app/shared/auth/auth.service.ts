@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { FirebaseApp } from '../firebase';
+import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { auth } from 'firebase/app';
 import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
 
 export interface AuthResult {
   success: boolean;
@@ -25,9 +25,12 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 export class AuthService {
   private isLoggedInValueSubject: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private isLoggedInValueAvailable = false;
+  private readonly auth: auth.Auth;
 
-  constructor(private af: AngularFireAuth) {
-    af.auth.onAuthStateChanged(() => {
+  constructor(private fba: FirebaseApp) {
+    this.auth = fba.auth();
+
+    this.auth.onAuthStateChanged(() => {
       if (this.isLoggedInValueAvailable) {
         // isLoggedInValueSubject is completed and contains a previous value.
         // We need to "reset" the subject and emit the new value.
@@ -35,25 +38,25 @@ export class AuthService {
       }
 
       this.isLoggedInValueAvailable = true;
-      this.isLoggedInValueSubject.next(!!this.af.auth.currentUser);
+      this.isLoggedInValueSubject.next(!!this.auth.currentUser);
       this.isLoggedInValueSubject.complete();
     });
   }
 
   get userId(): string {
-    if (!this.af.auth.currentUser) {
+    if (!this.auth.currentUser) {
       throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "userId" property.');
     }
 
-    return this.af.auth.currentUser.uid;
+    return this.auth.currentUser.uid;
   }
 
   get user(): User {
-    if (!this.af.auth.currentUser) {
+    if (!this.auth.currentUser) {
       throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "user" property.');
     }
 
-    const user = this.af.auth.currentUser;
+    const user = this.auth.currentUser;
 
     let photoURL: string | null = user.photoURL;
     const providerId: string = user.providerData.map(p => p ? p.providerId : '').join('/');
@@ -92,12 +95,12 @@ export class AuthService {
   }
 
   loginWithEmailAndPassword(email: string, password: string): Promise<void> {
-    return this.af.auth.signInWithEmailAndPassword(email, password);
+    return this.auth.signInWithEmailAndPassword(email, password);
   }
 
   async handleRedirectResult(): Promise<AuthResult | undefined> {
     try {
-      const redirectResult = await this.af.auth.getRedirectResult();
+      const redirectResult = await this.auth.getRedirectResult();
 
       if (redirectResult && redirectResult.credential) {
 
@@ -116,7 +119,7 @@ export class AuthService {
     }
     catch (error) {
       if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
-        const availableProviders = await this.af.auth.fetchProvidersForEmail(error.email);
+        const availableProviders = await this.auth.fetchProvidersForEmail(error.email);
 
         sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
 
@@ -138,7 +141,7 @@ export class AuthService {
   private login(provider: auth.AuthProvider): void {
     sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
 
-    this.af.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
+    this.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
   }
 
   private getCredentialInstance(credentialData: any) {
@@ -153,6 +156,6 @@ export class AuthService {
   }
 
   async logout() {
-    await this.af.auth.signOut();
+    await this.auth.signOut();
   }
 }

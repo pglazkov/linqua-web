@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { EntryStorageService } from './entry-storage.service';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
+
+import 'firebase/firestore';
 
 @NgModule({
   imports: [
-    AngularFirestoreModule.enablePersistence()
+
   ],
   exports: [],
   declarations: [],

@@ -1,9 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { ApplicationRef, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { AngularFireModule } from 'angularfire2';
 
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
@@ -21,7 +20,7 @@ import {
   MatToolbarModule
 } from '@angular/material';
 
-import { AuthModule, StorageModule, TranslationModule } from 'shared';
+import { AuthModule, FirebaseAppModule, StorageModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { EntryListComponent, EntryItemComponent } from './entry-list';
@@ -59,11 +58,17 @@ const materialModules = [
     ...materialModules,
     StorageModule,
     TranslationModule,
-    AngularFireModule.initializeApp(firebaseConfig),
+    FirebaseAppModule.initializeApp(firebaseConfig),
     AuthModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent],
   entryComponents: [EntryEditorDialogComponent]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(appRef: ApplicationRef) {
+    appRef.isStable.subscribe(v => {
+      console.log(v);
+    });
+  }
+}

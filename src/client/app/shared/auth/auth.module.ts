@@ -8,12 +8,13 @@ import { MatButtonModule, MatCardModule, MatInputModule } from '@angular/materia
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import 'firebase/auth';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    AngularFireAuthModule,
     MatInputModule,
     MatCardModule,
     MatButtonModule

@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/observable';
-import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthService } from '../auth';
 import { Subject } from 'rxjs/Subject';
 import { Subscriber } from 'rxjs/Subscriber';
+import { from } from 'rxjs/observable/from';
+import { FirebaseApp } from '../firebase';
+import { firestore } from 'firebase/app';
 
 interface FirebaseEntry {
   originalText: string;
@@ -25,14 +27,19 @@ export const pageSize = 20;
 @Injectable()
 export class EntryStorageService {
 
-  constructor(private db: AngularFirestore, private authService: AuthService) {
+  readonly db: firestore.Firestore;
 
+  private persistenceEnabled$: Observable<boolean>;
+
+  constructor(private fba: FirebaseApp, private authService: AuthService) {
+    this.db = fba.firestore();
+    this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
   }
 
   getEntriesStream(positionToken?: any): Observable<EntriesResult> {
     const resultStream = new Subject<EntriesResult>();
 
-    let query = this.db.firestore.collection('users')
+    let query = this.db.collection('users')
       .doc(this.authService.userId)
       .collection('entries')
       .orderBy('addedOn', 'desc');
@@ -109,7 +116,7 @@ export class EntryStorageService {
   }
 
   private get entryCollectionRef() {
-    return this.db.firestore
+    return this.db
       .collection('users')
       .doc(this.authService.userId)
       .collection('entries');
