@@ -8,6 +8,7 @@ import {
 
 import { Observable } from 'rxjs/Observable';
 import { first, map, switchMap } from 'rxjs/operators';
+import { from } from 'rxjs/observable/from';
 import { FirebaseApp } from '../firebase';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class AuthTokenInterceptor implements HttpInterceptor {
     const user = this.fba.auth().currentUser;
 
     if (user) {
-      return Observable.fromPromise(user.getIdToken()).pipe(
+      return from(user.getIdToken()).pipe(
         first(),
         map(token => {
           if (token) {

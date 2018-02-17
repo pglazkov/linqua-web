@@ -185,20 +185,21 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
   private createEntryDialogConfig(config: { isEdit: boolean } = { isEdit: false }): MatDialogConfig {
     let result = {
-      viewContainerRef: this.viewContainer,
-      maxWidth: '500px',
-      width: '100%'
+      viewContainerRef: this.viewContainer
     };
 
     if (!this.isMobile()) {
       if (!config.isEdit) {
         result = Object.assign(result, {
+          maxWidth: '500px',
           position: { bottom: '74px', right: '74px' }
         });
       }
     }
     else {
       result = Object.assign(result, {
+        width: '100vw',
+        maxWidth: '100vw',
         position: { top: '56px' }
       });
     }

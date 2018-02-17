@@ -1,11 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ApplicationRef, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
+import { environment } from 'environments/environment';
 
 import {
   MatButtonModule,
@@ -52,6 +54,7 @@ const materialModules = [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
+    ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
@@ -66,9 +69,5 @@ const materialModules = [
   entryComponents: [EntryEditorDialogComponent]
 })
 export class AppModule {
-  constructor(appRef: ApplicationRef) {
-    appRef.isStable.subscribe(v => {
-      console.log(v);
-    });
-  }
+  
 }
