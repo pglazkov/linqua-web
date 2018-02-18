@@ -1,2 +1,2 @@
-export * from './entry-list.component';
+export * from './home.component';
 export * from './entry-item/entry-item.component';

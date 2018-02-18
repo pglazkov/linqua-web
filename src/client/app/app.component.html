@@ -45,7 +45,7 @@
   <main>
     <ng-container [ngSwitch]="state">
       <ng-container *ngSwitchCase="states.LoggedIn">
-        <app-home-view></app-home-view>
+        <app-home></app-home>
       </ng-container>
 
       <ng-container *ngSwitchCase="states.HandleLoginRedirect">

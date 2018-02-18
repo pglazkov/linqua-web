@@ -16,9 +16,9 @@ interface EntryListState {
 }
 
 @Component({
-  selector: 'app-home-view',
-  templateUrl: './entry-list.component.html',
-  styleUrls: ['./entry-list.component.scss'],
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss'],
   animations: [
     trigger('entryCardEnterLeave', [
       state('in', style({ opacity: 1, height: '*' })),
@@ -35,7 +35,7 @@ interface EntryListState {
     ])
   ]
 })
-export class EntryListComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy {
   listVm: EntryListViewModel | undefined;
   canLoadMore = false;
   loadMoreToken: any;
