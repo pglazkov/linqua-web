@@ -1,18 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/observable';
+
 import { AuthService } from '../auth';
 import { Subject } from 'rxjs/Subject';
 import { Subscriber } from 'rxjs/Subscriber';
 import { from } from 'rxjs/observable/from';
+import { map } from 'rxjs/operators/map';
 import { FirebaseApp } from '../firebase';
 import { firestore } from 'firebase/app';
+import { HttpClient } from '@angular/common/http';
+
 
 interface FirebaseEntry {
   originalText: string;
   translation?: string;
   addedOn?: number;
   updatedOn?: number;
+}
+
+interface RandomEntryResponse {
+  id: string;
+  data: FirebaseEntry;
 }
 
 export interface EntriesResult {
@@ -31,18 +40,27 @@ export class EntryStorageService {
 
   private persistenceEnabled$: Observable<boolean>;
 
-  constructor(private fba: FirebaseApp, private authService: AuthService) {
+  constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient) {
     this.db = fba.firestore();
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
+  }
+
+  get randomEntry$(): Observable<Entry> {
+    return new Observable<Entry>(subscriber => {
+      const sub = this.http.get<RandomEntryResponse>(`/api/random`)
+        .pipe(
+          map(response => this.toEntry(response.id, response.data))
+        )
+        .subscribe(subscriber);
+
+      return sub.unsubscribe;
+    });
   }
 
   getEntriesStream(positionToken?: any): Observable<EntriesResult> {
     const resultStream = new Subject<EntriesResult>();
 
-    let query = this.db.collection('users')
-      .doc(this.authService.userId)
-      .collection('entries')
-      .orderBy('addedOn', 'desc');
+    let query = this.entryCollectionRef.orderBy('addedOn', 'desc');
 
     if (positionToken) {
       query = query.startAt(positionToken);
@@ -59,13 +77,7 @@ export class EntryStorageService {
         const data = d.data() as FirebaseEntry;
         const id = d.id;
 
-        return new Entry({
-          id: id,
-          originalText: data.originalText,
-          translation: data.translation,
-          addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
-          updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
-        });
+        return this.toEntry(id, data);
       });
 
       const result: EntriesResult = {
@@ -120,5 +132,15 @@ export class EntryStorageService {
       .collection('users')
       .doc(this.authService.userId)
       .collection('entries');
+  }
+
+  private toEntry(id: string, data: FirebaseEntry) {
+    return new Entry({
+      id: id,
+      originalText: data.originalText,
+      translation: data.translation,
+      addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
+      updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
+    });
   }
 }

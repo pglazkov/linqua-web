@@ -1,3 +1,10 @@
+<h2 class="section-title mat-title">word of the day</h2>
+
+<div class="random-entry">
+  <app-random-entry [entry]="randomEntry" (nextEntryRequest)="onUpdateRandomEntryRequested()"></app-random-entry>
+</div>
+
+<h2 class="section-title mat-title">all</h2>
 <ng-container *ngIf="listVm; else loading">
 
   <ng-container *ngIf="listVm.groups.length > 0; else empty">

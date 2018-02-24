@@ -1,5 +1,3 @@
-import { uniqueId } from '../util';
-
 export interface EntryConfig {
   id?: string;
   originalText: string;

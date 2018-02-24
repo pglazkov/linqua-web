@@ -1,0 +1,20 @@
+<mat-card class="entry-card">
+  <div class="content" *ngIf="entry; else loading">
+    <span class="original-text">{{ entry.originalText }}</span>
+    <span class="translation mat-caption">{{ entry.translation }}</span>
+  </div>
+
+  <div class="toolbox" *ngIf="entry">
+    <button class="loading-next-button" *ngIf="!nextRequested; else loadingNext" mat-icon-button (click)="requestNext()">
+      <mat-icon aria-label="Refresh word of the day">autorenew</mat-icon>
+    </button>
+
+    <ng-template #loadingNext>
+      <mat-spinner class="loading-next-spinner" mode="indeterminate" [diameter]="20" [strokeWidth]="2"></mat-spinner>
+    </ng-template>
+  </div>
+
+  <ng-template #loading>
+    <mat-spinner mode="indeterminate" [diameter]="30" [strokeWidth]="3"></mat-spinner>
+  </ng-template>
+</mat-card>

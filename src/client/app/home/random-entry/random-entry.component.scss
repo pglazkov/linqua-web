@@ -1,0 +1,47 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry-card {
+  display: flex;
+  align-items: center;
+  margin: 2px;
+  flex-direction: column;
+
+  .content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    span {
+      word-wrap: break-word;
+      white-space: normal;
+    }
+
+    .original-text {
+      text-align: center;
+      font-weight: 500;
+      font-size: 32px;
+    }
+
+    .translation {
+      text-align: center;
+      margin-top: 8px;
+    }
+  }
+
+  .toolbox {
+    margin-top: 16px;
+    margin-bottom: -8px;
+
+    .loading-next-button {
+      opacity: 0.8;
+    }
+
+    .loading-next-spinner {
+      margin: 10px;
+    }
+  }
+}

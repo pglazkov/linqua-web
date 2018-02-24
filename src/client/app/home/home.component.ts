@@ -40,35 +40,23 @@ export class HomeComponent implements OnInit, OnDestroy {
   canLoadMore = false;
   loadMoreToken: any;
   isLoadingMore = false;
+  randomEntry: Entry | undefined;
 
   @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
 
   private readonly ngUnsubscribe: ISubscription[] = [];
 
-  private readonly stateSubject = new Subject<EntryListState>();
+  private readonly listStateSubject = new Subject<EntryListState>();
 
   private loadedEntries: Entry[] = [];
 
   constructor(private dialog: MatDialog, private storage: EntryStorageService, private viewContainer: ViewContainerRef) {
-    this.stateSubject.subscribe(s => this.onStateChange(s));
+    this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 
   ngOnInit() {
-    let sub: ISubscription = { unsubscribe: () => {}, closed: true };
-
-    sub = this.storage.getEntriesStream().subscribe(result => {
-      this.stateSubject.next({
-        loadedEntries: result.entries,
-        canLoadMore: result.hasMore,
-        loadMoreToken: result.loadMoreToken
-      });
-
-      if (!result.fromCache) {
-        sub.unsubscribe();
-      }
-    });
-
-    this.ngUnsubscribe.push(sub);
+    this.loadRandomEntry();
+    this.loadEntryList();
   }
 
   async loadMore() {
@@ -80,7 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         first()
       ).toPromise();
 
-      this.stateSubject.next({
+      this.listStateSubject.next({
         loadedEntries: this.loadedEntries.concat(result.entries),
         canLoadMore: result.hasMore,
         loadMoreToken: result.loadMoreToken
@@ -160,6 +148,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     await this.storage.delete(entry.id);
   }
 
+  async onUpdateRandomEntryRequested() {
+    await this.loadRandomEntry();
+  }
+
   trackByGroup(index: number, group: EntryTimeGroupViewModel) {
     return group.date;
   }
@@ -168,7 +160,28 @@ export class HomeComponent implements OnInit, OnDestroy {
     return entry.id;
   }
 
-  private onStateChange(newState: EntryListState) {
+  private loadEntryList() {
+    let sub: ISubscription = {
+      unsubscribe: () => {
+      }, closed: true
+    };
+
+    sub = this.storage.getEntriesStream().subscribe(result => {
+      this.listStateSubject.next({
+        loadedEntries: result.entries,
+        canLoadMore: result.hasMore,
+        loadMoreToken: result.loadMoreToken
+      });
+
+      if (!result.fromCache) {
+        sub.unsubscribe();
+      }
+    });
+
+    this.ngUnsubscribe.push(sub);
+  }
+
+  private onListStateChange(newState: EntryListState) {
     const newListVm = new EntryListViewModel(newState.loadedEntries);
 
     if (this.listVm) {
@@ -209,6 +222,10 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private isMobile() {
     return window.screen.width < 768;
+  }
+
+  private async loadRandomEntry() {
+    this.randomEntry = await this.storage.randomEntry$.toPromise();
   }
 }
 

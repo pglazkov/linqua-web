@@ -25,7 +25,7 @@ import {
 import { AuthModule, FirebaseAppModule, StorageModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
-import { HomeComponent, EntryItemComponent } from './home';
+import { HomeComponent, EntryItemComponent, RandomEntryComponent } from './home';
 
 const materialModules = [
   MatListModule,
@@ -48,7 +48,8 @@ const materialModules = [
     AppComponent,
     HomeComponent,
     EntryEditorDialogComponent,
-    EntryItemComponent
+    EntryItemComponent,
+    RandomEntryComponent
   ],
   imports: [
     CommonModule,
