@@ -8,24 +8,22 @@
   box-sizing: border-box;
 }
 
-.section-title {
-  margin: 10px auto;
-  opacity: 0.6;
-  font-size: 18px;
-}
-
-.random-entry, .entry-list__group {
-  @media (min-width: $screen-tablet) {
-    width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
 .entry-list {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+
+  .random-entry {
+    margin-bottom: 16px;
+  }
+
+  .random-entry, .entry-list__group {
+    @media (min-width: $screen-tablet) {
+      width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
 
   .entry-list__list-item {
     &.mat-list-item {

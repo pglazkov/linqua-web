@@ -1,14 +1,11 @@
-<h2 class="section-title mat-title">word of the day</h2>
-
-<div class="random-entry">
-  <app-random-entry [entry]="randomEntry" (nextEntryRequest)="onUpdateRandomEntryRequested()"></app-random-entry>
-</div>
-
-<h2 class="section-title mat-title">all</h2>
 <ng-container *ngIf="listVm; else loading">
 
-  <ng-container *ngIf="listVm.groups.length > 0; else empty">
-    <mat-list #list class="entry-list">
+  <mat-list #list class="entry-list">
+    <div class="random-entry">
+      <app-random-entry [entry]="randomEntry" (nextEntryRequest)="onUpdateRandomEntryRequested()"></app-random-entry>
+    </div>
+
+    <ng-container *ngIf="listVm.groups.length > 0; else empty">
       <div class="entry-list__group" *ngFor="let group of listVm.groups; trackBy: trackByGroup">
         <div class="entry-list__group__header">
           <h3 mat-subheader>
@@ -18,8 +15,8 @@
         </div>
 
         <mat-list-item *ngFor="let entry of group.entries; trackBy: trackByEntry" class="entry-list__list-item"
-                      [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-                      (@entryCardEnterLeave.done)="entry.isNew = false">
+                       [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
+                       (@entryCardEnterLeave.done)="entry.isNew = false">
           <app-entry-item mat-line
                           [entry]="entry"
                           (editRequest)="onEditRequested(entry)"
@@ -33,8 +30,8 @@
           <button *ngIf="!isLoadingMore; else loadingMore" mat-raised-button (click)="loadMore()">load more</button>
         </ng-container>
       </div>
-    </mat-list>
-  </ng-container>
+    </ng-container>
+  </mat-list>
 
   <ng-template #empty>
     <div class="empty-list-container mat-typography">
