@@ -45,16 +45,11 @@ export class EntryStorageService {
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
   }
 
-  get randomEntry$(): Observable<Entry> {
-    return new Observable<Entry>(subscriber => {
-      const sub = this.http.get<RandomEntryResponse>(`/api/random`)
-        .pipe(
-          map(response => this.toEntry(response.id, response.data))
-        )
-        .subscribe(subscriber);
-
-      return sub.unsubscribe;
-    });
+  getRandomEntry(): Observable<Entry> {
+    return this.http.get<RandomEntryResponse>(`/api/random`)
+      .pipe(
+        map(response => this.toEntry(response.id, response.data))
+      );
   }
 
   getEntriesStream(positionToken?: any): Observable<EntriesResult> {

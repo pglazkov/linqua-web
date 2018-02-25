@@ -8,6 +8,7 @@ import { EntryListViewModel } from './entry-list.vm';
 import { Subject } from 'rxjs/Subject';
 import { filter, first } from 'rxjs/operators';
 import { ISubscription } from 'rxjs/Subscription';
+import { RandomEntryService } from './random-entry/random-entry.service';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -50,7 +51,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(private dialog: MatDialog, private storage: EntryStorageService, private viewContainer: ViewContainerRef) {
+  constructor(private dialog: MatDialog, private storage: EntryStorageService, private randomEntryService: RandomEntryService, private viewContainer: ViewContainerRef) {
     this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 
@@ -225,7 +226,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async loadRandomEntry() {
-    this.randomEntry = await this.storage.randomEntry$.toPromise();
+    this.randomEntry = await this.randomEntryService.getRandomEntry().toPromise();
   }
 }
 

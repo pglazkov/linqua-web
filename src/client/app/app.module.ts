@@ -26,6 +26,7 @@ import { AuthModule, FirebaseAppModule, StorageModule, TranslationModule } from 
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { HomeComponent, EntryItemComponent, RandomEntryComponent } from './home';
+import { RandomEntryService } from './home/random-entry/random-entry.service';
 
 const materialModules = [
   MatListModule,
@@ -65,7 +66,9 @@ const materialModules = [
     FirebaseAppModule.initializeApp(firebaseConfig),
     AuthModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    RandomEntryService
+  ],
   bootstrap: [AppComponent],
   entryComponents: [EntryEditorDialogComponent]
 })
