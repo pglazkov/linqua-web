@@ -9,6 +9,7 @@ import { Subject } from 'rxjs/Subject';
 import { filter, first } from 'rxjs/operators';
 import { ISubscription } from 'rxjs/Subscription';
 import { RandomEntryService } from './random-entry/random-entry.service';
+import { tryCatch } from 'rxjs/util/tryCatch';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -41,6 +42,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   canLoadMore = false;
   loadMoreToken: any;
   isLoadingMore = false;
+  isLoadingRandomEntry = false;
   randomEntry: Entry | undefined;
 
   @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
@@ -226,17 +228,25 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async loadRandomEntry() {
-    const getRandomEntry = () => this.randomEntryService.getRandomEntry().toPromise();
+    this.isLoadingRandomEntry = true;
 
-    const prevEntry = this.randomEntry;
-    let newEntry = await getRandomEntry();
+    try {
+      const getRandomEntry = () => this.randomEntryService.getRandomEntry().toPromise();
 
-    if (prevEntry && newEntry && prevEntry.id === newEntry.id) {
-      // We go the same random entry as previous one, let's try one more time
-      newEntry = await getRandomEntry();
+      const prevEntry = this.randomEntry;
+      let newEntry = await getRandomEntry();
+
+      if (prevEntry && newEntry && prevEntry.id === newEntry.id) {
+        // We go the same random entry as previous one, let's try one more time
+        newEntry = await getRandomEntry();
+      }
+
+      this.randomEntry = newEntry;
+    }
+    finally {
+      this.isLoadingRandomEntry = false;
     }
 
-    this.randomEntry = newEntry;
   }
 }
 
