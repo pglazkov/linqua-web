@@ -20,8 +20,7 @@ interface FirebaseEntry {
 }
 
 interface RandomEntryResponse {
-  id: string;
-  data: FirebaseEntry;
+  batch: { id: string; data: FirebaseEntry; }[];
 }
 
 export interface EntriesResult {
@@ -45,11 +44,11 @@ export class EntryStorageService {
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
   }
 
-  getRandomEntry(): Observable<Entry> {
-    return this.http.get<RandomEntryResponse>(`/api/random`)
+  getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
+    return this.http.get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
       .pipe(
-        map(response => this.toEntry(response.id, response.data))
-      );
+        map(response => response.batch.map(x => this.toEntry(x.id, x.data))
+      ));
   }
 
   getEntriesStream(positionToken?: any): Observable<EntriesResult> {

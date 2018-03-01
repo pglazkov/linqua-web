@@ -1,7 +1,7 @@
 <ng-container *ngIf="listVm; else loading">
 
   <mat-list #list class="entry-list">
-    <div class="random-entry">
+    <div class="random-entry" *ngIf="randomEntry">
       <app-random-entry [entry]="randomEntry" (nextEntryRequest)="onUpdateRandomEntryRequested()"></app-random-entry>
     </div>
 

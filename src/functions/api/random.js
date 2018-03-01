@@ -1,19 +1,33 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const url = require('url');
 
 module.exports = (req, res) => {
+
+  const urlParsed = url.parse(req.url, true);
+  let batchSize = urlParsed.query.batch_size ? Number.parseInt(urlParsed.query.batch_size) : 1;
 
   admin.firestore().collection('users')
     .doc(req.user.uid)
     .collection('entries')
     .get()
     .then(results => {
-      const randomIndex = Math.floor(Math.random() * results.docs.length);
-      const randomDoc = results.docs[randomIndex];
+      const resultMap = new Map();
 
-      const randomDocData = randomDoc.data();
+      batchSize = Math.min(batchSize, results.docs.length);
 
-      res.status(200).json({ id: randomDoc.id, data: randomDocData });
+      while (resultMap.size < batchSize) {
+        const randomIndex = Math.floor(Math.random() * results.docs.length);
+        const randomDoc = results.docs[randomIndex];
+
+        const randomDocData = randomDoc.data();
+
+        if (!resultMap.has(randomDoc.id)) {
+          resultMap.set(randomDoc.id, { id: randomDoc.id, data: randomDocData });
+        }
+      }
+
+      res.status(200).json( { batch: Array.from(resultMap.values()) });
     }, e => {
       res.status(500).json(e);
     });

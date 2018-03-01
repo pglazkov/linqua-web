@@ -226,7 +226,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private async loadRandomEntry() {
-    this.randomEntry = await this.randomEntryService.getRandomEntry().toPromise();
+    const getRandomEntry = () => this.randomEntryService.getRandomEntry().toPromise();
+
+    const prevEntry = this.randomEntry;
+    let newEntry = await getRandomEntry();
+
+    if (prevEntry && newEntry && prevEntry.id === newEntry.id) {
+      // We go the same random entry as previous one, let's try one more time
+      newEntry = await getRandomEntry();
+    }
+
+    this.randomEntry = newEntry;
   }
 }
 
