@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
-import { Entry, EntryStorageService } from 'shared';
+import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
 import { EntryListViewModel } from './entry-list.vm';
@@ -9,7 +9,7 @@ import { Subject } from 'rxjs/Subject';
 import { filter, first } from 'rxjs/operators';
 import { ISubscription } from 'rxjs/Subscription';
 import { RandomEntryService } from './random-entry/random-entry.service';
-import { tryCatch } from 'rxjs/util/tryCatch';
+
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(private dialog: MatDialog, private storage: EntryStorageService, private randomEntryService: RandomEntryService, private viewContainer: ViewContainerRef) {
+  constructor(private dialog: MatDialog, private storage: EntryStorageService, private randomEntryService: RandomEntryService, private viewContainer: ViewContainerRef, private timeGroupService: TimeGroupService) {
     this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 
@@ -156,7 +156,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   trackByGroup(index: number, group: EntryTimeGroupViewModel) {
-    return group.date;
+    return group.order;
   }
 
   trackByEntry(index: number, entry: EntryViewModel) {
@@ -185,7 +185,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private onListStateChange(newState: EntryListState) {
-    const newListVm = new EntryListViewModel(newState.loadedEntries);
+    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService);
 
     if (this.listVm) {
       this.listVm.mergeFrom(newListVm);

@@ -22,7 +22,7 @@ import {
   MatToolbarModule
 } from '@angular/material';
 
-import { AuthModule, FirebaseAppModule, StorageModule, TranslationModule } from 'shared';
+import { AuthModule, FirebaseAppModule, StorageModule, TimeGroupingModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { HomeComponent, EntryItemComponent, RandomEntryComponent } from './home';
@@ -64,7 +64,8 @@ const materialModules = [
     StorageModule,
     TranslationModule,
     FirebaseAppModule.initializeApp(firebaseConfig),
-    AuthModule.forRoot()
+    AuthModule.forRoot(),
+    TimeGroupingModule.forRoot()
   ],
   providers: [
     RandomEntryService

@@ -48,7 +48,8 @@ export class EntryViewModel {
 }
 
 export class EntryTimeGroupViewModel {
-  date: Date;
+  order: number;
+  name: string;
   entries: EntryViewModel[];
 
   constructor(private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number) {
@@ -88,6 +89,6 @@ export class EntryTimeGroupViewModel {
       return false;
     }
 
-    return this.date.getTime() === otherGroup.date.getTime();
+    return this.name === otherGroup.name;
   }
 }
