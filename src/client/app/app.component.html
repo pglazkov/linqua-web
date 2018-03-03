@@ -1,33 +1,7 @@
 <mat-sidenav-container class="container">
-  <mat-sidenav #sidenav mode="over" opened="false" color="primary">
-    <mat-toolbar class="toolbar" color="primary">
-      <div class="toolbar__header">
-        <a class="app-name" mat-button routerLink="/">
-          <img src="assets/logo.png" />
-          <span>LINQUA</span>
-        </a>
-      </div>
-    </mat-toolbar>
-
-    <mat-card *ngIf="isLoggedIn | async" class="user-card">
-      <mat-card-header>
-        <img mat-card-avatar [src]="user.photoURL || 'assets/generic-avatar.png'">
-        <mat-card-title>{{ user.displayName }}</mat-card-title>
-        <mat-card-subtitle>{{ user.email || '(no email)' }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-actions>
-        <button mat-raised-button (click)="logout()">
-          Logout
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </mat-sidenav>
-
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-      <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isLoggedIn | async">
-        <mat-icon>menu</mat-icon>
-      </button>
+
     </div>
 
     <header class="toolbar__header">
@@ -38,7 +12,15 @@
     </header>
 
     <div class="toolbar__side-content">
-
+      <ng-container *ngIf="isLoggedIn | async">
+        <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu">
+        <mat-menu #menu="matMenu" yPosition="below">
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <span>logout</span>
+          </button>
+        </mat-menu>
+      </ng-container>
     </div>
   </mat-toolbar>
 

@@ -4,12 +4,20 @@
   overflow: hidden;
 }
 
+.avatar {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .container {
   height: 100%;
 
   .toolbar {
     .toolbar__side-content {
-      flex: 0 0 40px;
+      flex: 0 0 32px;
       display: flex;
     }
 
@@ -28,19 +36,6 @@
         }
       }
     }
-  }
-
-  .user-card {
-    .mat-card-actions {
-      margin-bottom: 0px;
-      margin-right: 0px;
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
-
-  mat-sidenav {
-    width: 300px;
   }
 
   main {
