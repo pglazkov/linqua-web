@@ -5,7 +5,6 @@
 
 .entry-card {
   display: flex;
-  align-items: center;
   margin: 2px;
   flex-direction: column;
 
@@ -17,9 +16,9 @@
 
   .content {
     flex: 1 1 auto;
+    align-self: center;
     display: flex;
     flex-direction: column;
-    width: 100%;
 
     span {
       word-wrap: break-word;
@@ -39,15 +38,27 @@
   }
 
   .toolbox {
+    display: flex;
     margin-top: 16px;
     margin-bottom: -8px;
 
-    .loading-next-button {
-      opacity: 0.8;
+    .center-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      margin-left: 84px; // This has to be equal to the width of .right-content
+
+      .loading-next-button {
+        opacity: 0.8;
+      }
+
+      .loading-next-spinner {
+        margin: 10px;
+      }
     }
 
-    .loading-next-spinner {
-      margin: 10px;
+    .right-content {
+      width: 84px;
     }
   }
 }

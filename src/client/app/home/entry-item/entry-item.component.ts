@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { EntryViewModel } from '../entry.vm';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { EntryListItemViewModel } from '../entry-list-item.vm';
 
 @Component({
   selector: 'app-entry-item',
@@ -7,10 +7,16 @@ import { EntryViewModel } from '../entry.vm';
   styleUrls: ['./entry-item.component.scss']
 })
 export class EntryItemComponent implements OnInit {
-  @Input() entry: EntryViewModel;
+  @Input() entry: EntryListItemViewModel;
 
   @Output() editRequest = new EventEmitter();
   @Output() deleteRequest = new EventEmitter();
+  @Output() toggleIsLearnedRequest = new EventEmitter();
+
+  @HostBinding('class.learned')
+  get isLearned(): boolean {
+    return this.entry.isLearned;
+  }
 
   constructor() { }
 
@@ -23,5 +29,9 @@ export class EntryItemComponent implements OnInit {
 
   delete() {
     this.deleteRequest.emit();
+  }
+
+  toggleIsLearned() {
+    this.toggleIsLearnedRequest.emit();
   }
 }

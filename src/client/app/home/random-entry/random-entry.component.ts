@@ -29,10 +29,14 @@ export class RandomEntryComponent implements OnInit {
   }
 
   @Output() nextEntryRequest = new EventEmitter<void>();
+  @Output() editRequest = new EventEmitter();
+  @Output() deleteRequest = new EventEmitter();
+  @Output() markLearnedRequest = new EventEmitter();
 
   private _entry: Entry | undefined;
 
   nextRequested = false;
+
 
   constructor() { }
 
@@ -42,5 +46,18 @@ export class RandomEntryComponent implements OnInit {
   requestNext() {
     this.nextRequested = true;
     this.nextEntryRequest.emit();
+  }
+
+  edit() {
+    this.editRequest.emit();
+  }
+
+  delete() {
+    this.deleteRequest.emit();
+  }
+
+  markLearned() {
+    this.nextRequested = true;
+    this.markLearnedRequest.emit();
   }
 }

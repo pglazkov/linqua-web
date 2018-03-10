@@ -37,6 +37,43 @@ export class RandomEntryService {
     return result;
   }
 
+  async onEntryUpdated(entry: Entry): Promise<void> {
+    const batch = await this.batch$.toPromise();
+
+    if (batch && batch.length > 0) {
+      const entryInBatch = batch.find(x => x.id === entry.id);
+
+      if (entryInBatch) {
+        const idx = batch.indexOf(entryInBatch);
+
+        batch[idx] = entry;
+      }
+    }
+  }
+
+  async onEntryDeleted(entry: Entry): Promise<void> {
+    const batch = await this.batch$.toPromise();
+
+    if (batch && batch.length > 0) {
+      const entryInBatch = batch.find(x => x.id === entry.id);
+
+      if (entryInBatch) {
+        batch.splice(batch.indexOf(entryInBatch), 1);
+
+        if (batch.length === 0) {
+          // We deleted last entry from the loaded batch, so
+          // we also need to make sure that persistent cache is also empty before
+          // trying to load the next batch.
+          this.saveInPersistentCache([]);
+
+          this.batch$ = this.loadBatch();
+        }
+      }
+    }
+
+    return Promise.resolve();
+  }
+
   private get persistentCacheKey() {
     return PERSISTENT_CACHE_KEY_PREFIX + this.authService.userId;
   }

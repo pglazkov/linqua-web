@@ -1,3 +1,5 @@
+@import "variables";
+
 :host {
   display: flex;
   flex-direction: column;
@@ -30,5 +32,16 @@
 
   .toolbox {
     flex: 0 0 auto;
+  }
+}
+
+:host-context(.learned) {
+  .mark-learned-button {
+    color: mat-color($green);
+  }
+
+  .content {
+    opacity: 0.3;
+    text-decoration: line-through;
   }
 }

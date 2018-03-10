@@ -3,9 +3,12 @@ import { AuthService } from './auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthTokenInterceptor } from './auth-token.interceptor';
 import { LoginControlComponent } from './login-control/login-control.component';
-import { MatButtonModule, MatCardModule, MatInputModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 import 'firebase/auth';
 

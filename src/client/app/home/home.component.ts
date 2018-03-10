@@ -1,15 +1,15 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { MatDialog, MatDialogConfig } from '@angular/material';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
 import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { EntryTimeGroupViewModel, EntryViewModel } from './entry.vm';
+import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
 import { Subject } from 'rxjs/Subject';
 import { filter, first } from 'rxjs/operators';
 import { ISubscription } from 'rxjs/Subscription';
 import { RandomEntryService } from './random-entry/random-entry.service';
-
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -53,7 +53,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(private dialog: MatDialog, private storage: EntryStorageService, private randomEntryService: RandomEntryService, private viewContainer: ViewContainerRef, private timeGroupService: TimeGroupService) {
+  constructor(private dialog: MatDialog,
+              private storage: EntryStorageService,
+              private randomEntryService: RandomEntryService,
+              private viewContainer: ViewContainerRef,
+              private timeGroupService: TimeGroupService) {
     this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 
@@ -103,7 +107,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (result) {
       result.id = this.storage.getNewId();
 
-      const entry = new EntryViewModel(result);
+      const entry = new EntryListItemViewModel(result);
 
       entry.isNew = true;
 
@@ -131,14 +135,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (result) {
       Object.assign(entry, result);
       entry.updatedOn = new Date();
+
+      if (this.randomEntry && this.randomEntry.id === entry.id) {
+        this.randomEntry = entry;
+      }
+
+      this.listVm.onEntryUpdated(entry);
+
       await this.storage.addOrUpdate(entry);
+      await this.randomEntryService.onEntryUpdated(entry);
     }
   }
 
-  async onDeleteRequested(entry: EntryViewModel, group: EntryTimeGroupViewModel) {
+  async onDeleteRequested(entry: Entry | EntryListItemViewModel, group?: EntryListTimeGroupViewModel) {
     if (this.listVm === undefined) {
       return;
     }
+
+    const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
 
     const entryIndex = this.loadedEntries.findIndex(x => x.id === entry.id);
 
@@ -146,21 +160,78 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.loadedEntries.splice(entryIndex, 1);
     }
 
-    this.listVm.deleteEntry(entry, group);
+    if (entry instanceof EntryListItemViewModel && group) {
+      this.listVm.deleteEntry(entry, group);
+    }
 
     await this.storage.delete(entry.id);
+    await this.randomEntryService.onEntryDeleted(entryModel);
+
+    if (this.randomEntry && this.randomEntry.id === entry.id) {
+      await this.loadRandomEntry();
+    }
   }
 
   async onUpdateRandomEntryRequested() {
     await this.loadRandomEntry();
   }
 
-  trackByGroup(index: number, group: EntryTimeGroupViewModel) {
+  async onEditRandomEntryRequested(entry: Entry) {
+    await this.onEditRequested(entry);
+  }
+
+  async onDeleteRandomEntryRequested(entry: Entry) {
+    if (!this.listVm) {
+      return;
+    }
+
+    const vms = this.listVm.findViewModelsForEntry(entry);
+
+    if (vms) {
+      await this.onDeleteRequested(vms.entryVm, vms.entryGroupVm);
+    }
+    else {
+      await this.onDeleteRequested(entry);
+    }
+  }
+
+  async onMarkLearnedRandomEntryRequested(entry: Entry) {
+    if (!this.listVm) {
+      return;
+    }
+
+    const vms = this.listVm.findViewModelsForEntry(entry);
+
+    await this.onToggleIsLearnedRequested(vms ? vms.entryVm : entry);
+  }
+
+  trackByGroup(index: number, group: EntryListTimeGroupViewModel) {
     return group.order;
   }
 
-  trackByEntry(index: number, entry: EntryViewModel) {
+  trackByEntry(index: number, entry: EntryListItemViewModel) {
     return entry.id;
+  }
+
+  async onToggleIsLearnedRequested(entry: EntryListItemViewModel | Entry) {
+    const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
+    const newIsLearned = entry instanceof EntryListItemViewModel ? !entry.isLearned : true;
+
+    if (entry instanceof EntryListItemViewModel) {
+      entry.isLearned = newIsLearned;
+    }
+
+    if (newIsLearned) {
+      await this.storage.archive(entry.id);
+      await this.randomEntryService.onEntryDeleted(entryModel);
+    }
+    else {
+      await this.storage.unarchive(entry.id);
+    }
+
+    if (!this.randomEntry || (this.randomEntry && this.randomEntry.id === entry.id)) {
+      await this.loadRandomEntry();
+    }
   }
 
   private loadEntryList() {

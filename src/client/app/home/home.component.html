@@ -2,7 +2,11 @@
 
   <mat-list #list class="entry-list">
     <div class="random-entry" *ngIf="randomEntry || isLoadingRandomEntry">
-      <app-random-entry [entry]="randomEntry" (nextEntryRequest)="onUpdateRandomEntryRequested()"></app-random-entry>
+      <app-random-entry [entry]="randomEntry"
+                        (nextEntryRequest)="onUpdateRandomEntryRequested()"
+                        (editRequest)="onEditRandomEntryRequested(randomEntry)"
+                        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry)"
+                        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry)"></app-random-entry>
     </div>
 
     <ng-container *ngIf="listVm.groups.length > 0; else empty">
@@ -20,7 +24,8 @@
           <app-entry-item mat-line
                           [entry]="entry"
                           (editRequest)="onEditRequested(entry)"
-                          (deleteRequest)="onDeleteRequested(entry, group)">
+                          (deleteRequest)="onDeleteRequested(entry, group)"
+                          (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)">
           </app-entry-item>
         </mat-list-item>
       </div>

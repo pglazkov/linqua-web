@@ -5,6 +5,9 @@
   </div>
 
   <div class="toolbox">
+    <button mat-icon-button class="mark-learned-button" (click)="toggleIsLearned()">
+      <mat-icon>done</mat-icon>
+    </button>
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>

@@ -121,11 +121,36 @@ export class EntryStorageService {
     return this.entryCollectionRef.doc(id).delete();
   }
 
+  async unarchive(id: string): Promise<void> {
+    const archiveDocRef = this.archiveCollectionRef.doc(id);
+    const archiveDoc = await archiveDocRef.get();
+
+    await this.entryCollectionRef.doc(archiveDoc.id).set(archiveDoc.data());
+
+    await archiveDocRef.delete();
+  }
+
+  async archive(id: string): Promise<void> {
+    const docRef = this.entryCollectionRef.doc(id);
+    const doc = await docRef.get();
+
+    await this.archiveCollectionRef.doc(doc.id).set(doc.data());
+
+    await docRef.delete();
+  }
+
   private get entryCollectionRef() {
     return this.db
       .collection('users')
       .doc(this.authService.userId)
       .collection('entries');
+  }
+
+  private get archiveCollectionRef() {
+    return this.db
+      .collection('users')
+      .doc(this.authService.userId)
+      .collection('entries-archive');
   }
 
   private toEntry(id: string, data: FirebaseEntry) {
