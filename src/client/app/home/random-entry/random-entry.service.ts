@@ -121,7 +121,7 @@ export class RandomEntryService {
   }
 
   private get persistentCacheStorage(): Storage {
-    return window.sessionStorage;
+    return window.localStorage;
   }
 
   private preloadNextBatch(): Observable<Entry[]> {
