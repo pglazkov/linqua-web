@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
 import { Observable } from 'rxjs/observable';
 
@@ -6,10 +6,12 @@ import { AuthService } from '../auth';
 import { Subject } from 'rxjs/Subject';
 import { Subscriber } from 'rxjs/Subscriber';
 import { from } from 'rxjs/observable/from';
-import { map } from 'rxjs/operators/map';
+import { map, merge, filter, multicast, concatMap, takeWhile, take, concat } from 'rxjs/operators';
 import { FirebaseApp } from '../firebase';
 import { firestore } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 
 interface FirebaseEntry {
@@ -32,16 +34,41 @@ export interface EntriesResult {
 
 export const pageSize = 20;
 
+type UserProperty = 'entries-count' | 'entries-archive-count';
+
+type UserData = {
+  [k in UserProperty]?: number
+};
+
+interface StatsServerData {
+  fromCache: boolean;
+  entriesCount: number | undefined;
+  entriesArchiveCount: number | undefined;
+}
+
+export interface LearnedEntriesStats {
+  totalEntryCount: number;
+  learnedEntryCount: number;
+}
+
 @Injectable()
 export class EntryStorageService {
 
-  readonly db: firestore.Firestore;
+  readonly stats$: Observable<LearnedEntriesStats | undefined>;
+
+  private readonly db: firestore.Firestore;
 
   private persistenceEnabled$: Observable<boolean>;
+  private latestStats$ = new BehaviorSubject<LearnedEntriesStats | undefined>(undefined);
+  private clientCalculatedStats$ = new ReplaySubject<LearnedEntriesStats | undefined>();
 
-  constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient) {
+  constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
     this.db = fba.firestore();
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
+
+    this.stats$ = this.createStatsStream();
+
+    this.stats$.subscribe(this.latestStats$);
   }
 
   getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
@@ -65,26 +92,28 @@ export class EntryStorageService {
     let unsubscribeListener: () => void = () => {};
 
     unsubscribeListener = query.onSnapshot({ includeQueryMetadataChanges: true }, snapshot => {
-      const hasMore = snapshot.docs.length > pageSize;
+      this.zone.run(() => {
+        const hasMore = snapshot.docs.length > pageSize;
 
-      const entries = snapshot.docs.slice(0, pageSize).map(d => {
-        const data = d.data() as FirebaseEntry;
-        const id = d.id;
+        const entries = snapshot.docs.slice(0, pageSize).map(d => {
+          const data = d.data() as FirebaseEntry;
+          const id = d.id;
 
-        return this.toEntry(id, data);
+          return this.toEntry(id, data);
+        });
+
+        const result: EntriesResult = {
+          hasMore: hasMore,
+          entries: entries,
+          loadMoreToken: hasMore ? snapshot.docs[snapshot.docs.length - 1] : undefined,
+          fromCache: snapshot.metadata.fromCache
+        };
+        resultStream.next(result);
       });
-
-      const result: EntriesResult = {
-        hasMore: hasMore,
-        entries: entries,
-        loadMoreToken: hasMore ? snapshot.docs[snapshot.docs.length - 1] : undefined,
-        fromCache: snapshot.metadata.fromCache
-      };
-      resultStream.next(result);
     }, error => {
-      resultStream.error(error);
+      this.zone.run(() => resultStream.error(error));
     }, () => {
-      resultStream.complete();
+      this.zone.run(() => resultStream.complete());
     });
 
     return Observable.create((observer: Subscriber<EntriesResult>) => {
@@ -101,6 +130,13 @@ export class EntryStorageService {
   }
 
   async addOrUpdate(entry: Entry): Promise<void> {
+    this.updateStats(currentStats => {
+      return {
+        totalEntryCount: currentStats.totalEntryCount + 1,
+        learnedEntryCount: currentStats.learnedEntryCount
+      };
+    });
+
     const entryData: FirebaseEntry = {
       originalText: entry.originalText,
       translation: entry.translation,
@@ -117,40 +153,73 @@ export class EntryStorageService {
     }
   }
 
-  delete(id: string): Promise<void> {
-    return this.entryCollectionRef.doc(id).delete();
+  async delete(id: string): Promise<void> {
+    this.updateStats(currentStats => {
+      return {
+        totalEntryCount: currentStats.totalEntryCount - 1,
+        learnedEntryCount: currentStats.learnedEntryCount
+      };
+    });
+
+    await this.entryCollectionRef.doc(id).delete();
   }
 
   async unarchive(id: string): Promise<void> {
+    this.updateStats(currentStats => {
+      return {
+        totalEntryCount: currentStats.totalEntryCount,
+        learnedEntryCount: currentStats.learnedEntryCount - 1
+      };
+    });
+
+    const docRef = this.entryCollectionRef.doc(id);
     const archiveDocRef = this.archiveCollectionRef.doc(id);
-    const archiveDoc = await archiveDocRef.get();
 
-    await this.entryCollectionRef.doc(archiveDoc.id).set(archiveDoc.data());
+    await this.db.runTransaction(async t => {
+      const archiveDoc = await t.get(archiveDocRef);
+      const archiveDocData = archiveDoc.data();
 
-    await archiveDocRef.delete();
+      if (archiveDocData) {
+        t.set(docRef, archiveDocData);
+        t.delete(archiveDocRef);
+      }
+    });
   }
 
   async archive(id: string): Promise<void> {
+    this.updateStats(currentStats => {
+      return {
+        totalEntryCount: currentStats.totalEntryCount,
+        learnedEntryCount: currentStats.learnedEntryCount + 1
+      };
+    });
+
     const docRef = this.entryCollectionRef.doc(id);
-    const doc = await docRef.get();
+    const archiveDocRef = this.archiveCollectionRef.doc(id);
 
-    await this.archiveCollectionRef.doc(doc.id).set(doc.data());
+    await this.db.runTransaction(async t => {
+      const doc = await t.get(docRef);
+      const docData = doc.data();
 
-    await docRef.delete();
+      if (docData) {
+        t.set(archiveDocRef, docData);
+        t.delete(docRef);
+      }
+    });
   }
 
   private get entryCollectionRef() {
-    return this.db
-      .collection('users')
-      .doc(this.authService.userId)
-      .collection('entries');
+    return this.userRef.collection('entries');
   }
 
   private get archiveCollectionRef() {
+    return this.userRef.collection('entries-archive');
+  }
+
+  private get userRef() {
     return this.db
       .collection('users')
-      .doc(this.authService.userId)
-      .collection('entries-archive');
+      .doc(this.authService.userId);
   }
 
   private toEntry(id: string, data: FirebaseEntry) {
@@ -160,6 +229,83 @@ export class EntryStorageService {
       translation: data.translation,
       addedOn: data.addedOn ? new Date(data.addedOn) : undefined,
       updatedOn: data.updatedOn ? new Date(data.updatedOn) : undefined
+    });
+  }
+
+  private updateStats(updateCallback: (currentStats: LearnedEntriesStats) => LearnedEntriesStats): void {
+    const currentStats = this.latestStats$.getValue() || {
+      totalEntryCount: 0,
+      learnedEntryCount: 0
+    };
+
+    this.clientCalculatedStats$.next(updateCallback(currentStats));
+  }
+
+  private get serverStats$(): Observable<StatsServerData> {
+    return Observable.create((subscriber: Subscriber<StatsServerData>) => {
+      const snapshotUpdates$ = new ReplaySubject<StatsServerData>();
+
+      const unsubscribeFromUserSnapshotChanges = this.userRef.onSnapshot({ includeMetadataChanges: true }, s => {
+        this.zone.run(() => {
+
+          const data = (s.data() as UserData);
+
+          snapshotUpdates$.next({
+            fromCache: s.metadata.fromCache,
+            entriesCount: data['entries-count'],
+            entriesArchiveCount: data['entries-archive-count']
+          } as StatsServerData);
+        });
+      });
+
+      const sub = snapshotUpdates$.subscribe(subscriber);
+
+      return () => {
+        unsubscribeFromUserSnapshotChanges();
+        sub.unsubscribe();
+      };
+    });
+  }
+
+  private createStatsStream(): Observable<LearnedEntriesStats | undefined> {
+    const statsSubj = new ReplaySubject<LearnedEntriesStats | undefined>();
+
+    // The logic of the following stream is as follows:
+    //   1. Wait until user is logged in
+    //   2. Query the DB for the statistics until we get data not from cache (since we have local
+    //      persistent cache enabled for offline support)
+    //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
+    const statsSubscription = this.authService.isLoggedIn.pipe(
+      filter(isUserLoggedIn => isUserLoggedIn),
+      concatMap(_ => this.serverStats$),
+      // Take all values from cache until we get one NOT from cache (include it as well in the result).
+      // The following trick with multicast operator is to achive a "takeUntilInclusive" behavior. It was taken from here:
+      // https://github.com/ReactiveX/rxjs/issues/2420#issuecomment-355417505
+      multicast(
+        () => new ReplaySubject(1),
+        (serverStats) => serverStats.pipe(
+          takeWhile((c) => c.fromCache),
+          concat(serverStats.pipe(
+            take(1),
+          ))
+        )
+      ),
+      map(serverStats => {
+        return {
+          totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
+          learnedEntryCount: serverStats.entriesArchiveCount || 0
+        } as LearnedEntriesStats;
+      }),
+      merge(this.clientCalculatedStats$)
+    ).subscribe(statsSubj);
+
+    return Observable.create((subscriber: Subscriber<LearnedEntriesStats | undefined>) => {
+      const s = statsSubj.subscribe(subscriber);
+
+      return () => {
+        statsSubscription.unsubscribe();
+        s.unsubscribe();
+      };
     });
   }
 }

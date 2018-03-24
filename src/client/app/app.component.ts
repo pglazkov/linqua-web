@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthResult, AuthService } from 'shared';
+import { AuthResult, AuthService, EntryStorageService } from 'shared';
+import { first } from 'rxjs/operators';
 
 export enum States {
   Unknown,
@@ -20,7 +21,7 @@ export class AppComponent implements OnInit {
 
   redirectAuthResult: AuthResult | undefined;
 
-  constructor(private af: AuthService) {
+  constructor(private af: AuthService, private entryStorageService: EntryStorageService) {
   }
 
   async ngOnInit() {
@@ -33,6 +34,10 @@ export class AppComponent implements OnInit {
 
   get isLoggedIn() {
     return this.af.isLoggedIn;
+  }
+
+  get stats$() {
+    return this.entryStorageService.stats$;
   }
 
   logout() {
@@ -55,7 +60,7 @@ export class AppComponent implements OnInit {
       this.redirectAuthResult = await this.af.handleRedirectResult();
     }
 
-    const isLoggedIn = await this.af.isLoggedIn.toPromise();
+    const isLoggedIn = await this.af.isLoggedIn.pipe(first()).toPromise();
 
     if (!isLoggedIn) {
       this.state = States.LoginNeeded;

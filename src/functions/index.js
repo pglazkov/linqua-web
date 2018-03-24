@@ -20,4 +20,9 @@ api.use(tokenValidationMiddleware);
 api.get('/translate', translateApi);
 api.get('/random', randomApi);
 
+// API entry point
 exports.main = functions.https.onRequest(main);
+
+// Firestore Triggers
+exports.entriesArchiveCountUpdate = require('./firestore/update-user-collection-count')('entries-archive');
+exports.entriesCountUpdate = require('./firestore/update-user-collection-count')('entries');

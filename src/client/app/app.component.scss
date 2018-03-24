@@ -1,3 +1,5 @@
+@import "variables";
+
 :host {
   height: 100%;
   display: block;
@@ -17,8 +19,13 @@
 
   .toolbar {
     .toolbar__side-content {
-      flex: 0 0 32px;
+      flex: 0 0 60px;
       display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar__side-content-right {
+      align-items: flex-end;
     }
 
     .toolbar__header {
@@ -59,6 +66,35 @@
   ::ng-deep.mat-drawer-content {
     display: flex;
     flex-direction: column;
+  }
+}
+
+.stats {
+  display: flex;
+
+  .stats__icon {
+    font-size: 28px;
+    line-height: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .stats__numbers {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+
+    .stats__numbers__learned {
+      font-size: 18px;
+      line-height: 18px;
+    }
+
+    .stats__numbers__total {
+      font-size: 9px;
+      line-height: 9px;
+      margin-top: 2px;
+      opacity: 0.7;
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { auth } from 'firebase/app';
 import { Observable } from 'rxjs/Observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 export interface AuthResult {
   success: boolean;
@@ -23,23 +24,14 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable()
 export class AuthService {
-  private isLoggedInValueSubject: AsyncSubject<boolean> = new AsyncSubject<boolean>();
-  private isLoggedInValueAvailable = false;
+  private isLoggedInValueSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
   private readonly auth: auth.Auth;
 
   constructor(private fba: FirebaseApp) {
     this.auth = fba.auth();
 
     this.auth.onAuthStateChanged(() => {
-      if (this.isLoggedInValueAvailable) {
-        // isLoggedInValueSubject is completed and contains a previous value.
-        // We need to "reset" the subject and emit the new value.
-        this.isLoggedInValueSubject = new AsyncSubject<boolean>();
-      }
-
-      this.isLoggedInValueAvailable = true;
       this.isLoggedInValueSubject.next(!!this.auth.currentUser);
-      this.isLoggedInValueSubject.complete();
     });
   }
 

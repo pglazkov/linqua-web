@@ -40,8 +40,10 @@
 
   <ng-template #empty>
     <div class="empty-list-container mat-typography">
-      <p class="mat-body-2">It is lonely here...</p>
-      <p>Start by adding a word or phrase in a foreign language that you would like to learn.</p>
+      <ng-container *ngIf="emptyListInfo$ | async; let emptyListInfo">
+        <p class="mat-body-2">{{ emptyListInfo.mainMessage }}</p>
+        <p>{{ emptyListInfo.extendedMessage }}</p>
+      </ng-container>
     </div>
   </ng-template>
 

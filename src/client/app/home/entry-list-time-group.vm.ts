@@ -34,6 +34,14 @@ export class EntryListTimeGroupViewModel {
       }
     }
 
+    for (const thisEntry of this.entries) {
+      const otherEntry = this.entries.find(e => e.id === thisEntry.id);
+
+      if (!otherEntry) {
+        this.entries.splice(this.entries.indexOf(thisEntry), 1);
+      }
+    }
+
     this.entries.sort(this.entrySortCompareFunc);
   }
 

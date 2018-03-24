@@ -1,7 +1,17 @@
 <mat-sidenav-container class="container">
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-
+      <ng-container *ngIf="isLoggedIn | async">
+        <div class="stats" *ngIf="stats$ | async; let statItem">
+          <ng-container *ngIf="statItem.totalEntryCount">
+            <mat-icon class="stats__icon">done_all</mat-icon>
+            <div class="stats__numbers">
+              <span class="stats__numbers__learned">{{ statItem.learnedEntryCount }}</span>
+              <span class="stats__numbers__total">/ {{ statItem.totalEntryCount }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
     </div>
 
     <header class="toolbar__header">
@@ -11,7 +21,7 @@
       </a>
     </header>
 
-    <div class="toolbar__side-content">
+    <div class="toolbar__side-content toolbar__side-content-right">
       <ng-container *ngIf="isLoggedIn | async">
         <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu">
         <mat-menu #menu="matMenu" yPosition="below">

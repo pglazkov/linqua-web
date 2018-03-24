@@ -5,7 +5,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
 import { Subject } from 'rxjs/Subject';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { ISubscription } from 'rxjs/Subscription';
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -64,6 +64,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadRandomEntry();
     this.loadEntryList();
+  }
+
+  get stats$() {
+    return this.storage.stats$;
   }
 
   async loadMore() {
@@ -232,6 +236,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.randomEntry || (this.randomEntry && this.randomEntry.id === entry.id)) {
       await this.loadRandomEntry();
     }
+  }
+
+  get emptyListInfo$() {
+    return this.stats$.pipe(
+      map(s => {
+        if (!s || !s.totalEntryCount) {
+          return {
+            mainMessage: 'It is lonely here...',
+            extendedMessage: 'Start by adding a word or phrase in a foreign language that you would like to learn.'
+          };
+        }
+
+        return {
+          mainMessage: 'All done',
+          extendedMessage: 'Congratulations!'
+        };
+      })
+    );
   }
 
   private loadEntryList() {

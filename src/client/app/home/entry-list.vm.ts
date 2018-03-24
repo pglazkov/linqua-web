@@ -50,6 +50,14 @@ export class EntryListViewModel {
       }
     }
 
+    for (const thisGroup of this.groups) {
+      const otherGroup = other.groups.find(g => g.equals(thisGroup));
+
+      if (!otherGroup) {
+        this.groups.splice(this.groups.indexOf(thisGroup), 1);
+      }
+    }
+
     this.groups.sort(EntryListViewModel.groupSortComparerFunc);
   }
 
