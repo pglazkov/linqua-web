@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FirebaseApp } from '../firebase';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
+import { FirebaseApp } from 'ng-firebase-lite';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { auth } from 'firebase/app';
 import { Observable } from 'rxjs/Observable';

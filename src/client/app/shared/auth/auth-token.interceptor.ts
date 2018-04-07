@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs/Observable';
 import { first, map, switchMap } from 'rxjs/operators';
 import { from } from 'rxjs/observable/from';
-import { FirebaseApp } from '../firebase';
+import { FirebaseApp } from 'ng-firebase-lite';
 
 @Injectable()
 export class AuthTokenInterceptor implements HttpInterceptor {

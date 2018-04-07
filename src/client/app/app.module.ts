@@ -4,13 +4,15 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
+import { FirebaseAppModule } from 'ng-firebase-lite';
+
 import { AppComponent } from './app.component';
 import { firebaseConfig } from './firebase-config';
 import { environment } from 'environments/environment';
 
 
 
-import { AuthModule, FirebaseAppModule, StorageModule, TimeGroupingModule, TranslationModule } from 'shared';
+import { AuthModule, StorageModule, TimeGroupingModule, TranslationModule } from 'shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { HomeComponent, EntryItemComponent, RandomEntryComponent } from './home';

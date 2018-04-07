@@ -7,7 +7,7 @@ import { Subject } from 'rxjs/Subject';
 import { Subscriber } from 'rxjs/Subscriber';
 import { from } from 'rxjs/observable/from';
 import { map, merge, filter, multicast, concatMap, takeWhile, take, concat } from 'rxjs/operators';
-import { FirebaseApp } from '../firebase';
+import { FirebaseApp } from 'ng-firebase-lite';
 import { firestore } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
