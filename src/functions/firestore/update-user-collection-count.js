@@ -7,9 +7,9 @@ const db = admin.firestore();
 // field on the user document after each update to the collection
 module.exports = (collectionName) => functions.firestore
   .document(`users/{userId}/${collectionName}/{itemId}`)
-  .onWrite(event => {
+  .onWrite((change, context) => {
 
-    const isUpdate = event.data.exists && event.data.previous.exists;
+    const isUpdate = change.after.exists && change.before.exists;
 
     if (isUpdate) {
       console.log('Skipping because it is an update operation (not addition or deletion).');
@@ -18,7 +18,7 @@ module.exports = (collectionName) => functions.firestore
 
     const userRef = db
       .collection('users')
-      .doc(event.params.userId);
+      .doc(context.params.userId);
 
     return db.runTransaction(t => {
       return t.get(userRef).then(userDoc => {

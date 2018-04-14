@@ -8,7 +8,7 @@
     "start:ng:local-api": "ng serve --proxy-config proxy.conf.local.json",
     "start:ng:prod-api": "ng serve --proxy-config proxy.conf.prod.json",
     "start:prod": "http-server dist/wwwroot -p 8080 --proxy https://linqua-app.com",
-    "start:api": "firebase serve --only functions",
+    "start:api": "firebase serve",
     "build": "ng build",
     "build:prod": "ng build --prod --aot --build-optimizer",
     "test": "ng test",

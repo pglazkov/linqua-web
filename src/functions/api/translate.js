@@ -15,7 +15,7 @@ module.exports = (req, res) => {
   const options = {
     uri: 'https://www.googleapis.com/language/translate/v2',
     qs: {
-      key: functions.config().firebase.apiKey,
+      key: functions.config().translateapi.key,
       q: original,
       target: targetLang
     },
