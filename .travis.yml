@@ -23,4 +23,4 @@ script:
 
 # Perform automatic deploy if the target branch is "master"
 after_success:
-  - test $TRAVIS_BRANCH = "travis" && test $TRAVIS_PULL_REQUEST = "false" && ( cd ./src/functions; yarn install ) && npm install -g --silent firebase-tools && firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY" && yarn deploy:firebase --token $FIREBASE_TOKEN --non-interactive
+  - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && ( cd ./src/functions; yarn install ) && npm install -g --silent firebase-tools && firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY" && yarn deploy:firebase --token $FIREBASE_TOKEN --non-interactive
