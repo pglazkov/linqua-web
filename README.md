@@ -1,3 +1,5 @@
+[![Build status](https://travis-ci.org/pglazkov/Linqua.Web.svg?branch=master)](https://travis-ci.org/pglazkov/Linqua.Web.svg?branch=master)
+
 # Linqua
 ## Vacabulary training tool
 
@@ -10,5 +12,4 @@ Whenever you learn a foreign language you usually write down new words/phrases t
 ![Demo Animation](demo.gif)
 
 ## License
-
 MIT © Pavlo Glazkov

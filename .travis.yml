@@ -1,0 +1,26 @@
+dist: trusty
+sudo: false
+language: node_js
+
+node_js :
+  - "lts/*"
+
+addons:
+  chrome: stable
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+notifications:
+  email:
+    on_failure: change
+    on_success: change
+
+script:
+    - xvfb-run --server-args="-screen 0 1024x768x24" -a yarn ci
+
+# Perform automatic deploy if the target branch is "master"
+after_success:
+  - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && ( cd ./src/functions; yarn install ) && npm install -g --silent firebase-tools && firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY" && yarn deploy:firebase --token $FIREBASE_TOKEN --non-interactive
