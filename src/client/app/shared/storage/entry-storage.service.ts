@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
-import { Observable } from 'rxjs/observable';
+import { Observable } from 'rxjs/Observable';
 
 import { AuthService } from '../auth';
 import { Subject } from 'rxjs/Subject';
