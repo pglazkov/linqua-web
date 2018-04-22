@@ -1,7 +1,7 @@
 language: node_js
 
-node_js:
-  - "8"
+node_js :
+  - stable
 
 addons:
   chrome: stable
@@ -10,6 +10,10 @@ cache:
   yarn: true
   directories:
     - node_modules
+
+before_script:
+  - npm install -g --silent firebase-tools
+  - npm install -g --silent @angular/cli@1.7.4
 
 script:
     - yarn ci
