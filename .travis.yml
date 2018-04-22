@@ -25,4 +25,4 @@ notifications:
 #   - "sh -e /etc/init.d/xvfb start"
 
 script:
-    - xvfb-run -a yarn ci
+    - xvfb-run --server-args="-screen 0 1024x768x24" -a +extension RANDR yarn ci
