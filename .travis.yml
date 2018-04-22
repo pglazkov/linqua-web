@@ -18,8 +18,8 @@ notifications:
     on_failure: change
     on_success: change
 
-# script:
-#     - xvfb-run --server-args="-screen 0 1024x768x24" -a yarn ci
+script:
+    - xvfb-run --server-args="-screen 0 1024x768x24" -a yarn ci
 
 after_success:
   # - npm install -g --silent firebase-tools # installs firebase to run firebase deploy
