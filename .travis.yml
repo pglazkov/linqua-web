@@ -22,8 +22,7 @@ script:
     - xvfb-run --server-args="-screen 0 1024x768x24" -a yarn ci
 
 after_success:
-  # - npm install -g --silent firebase-tools # installs firebase to run firebase deploy
-  # - firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY"
-  - echo $TRAVIS_BRANCH
-  - echo $TRAVIS_PULL_REQUEST
-#  - test $TRAVIS_BRANCH = "travis" && test $TRAVIS_PULL_REQUEST = "false" && yarn deploy:firebase --token $FIREBASE_TOKEN --non-interactive
+  - ( cd ./src/functions; yarn install )
+  - npm install -g --silent firebase-tools # installs firebase to run firebase deploy
+  - firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY"
+  - test $TRAVIS_BRANCH = "travis" && test $TRAVIS_PULL_REQUEST = "false" && yarn deploy:firebase --token $FIREBASE_TOKEN --non-interactive

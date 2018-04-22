@@ -24,7 +24,7 @@
     "e2e:ci": "run-p --race start:prod e2e",
     "http-server": "http-server",
     "npm-run-all": "npm-run-all",
-    "ci": "run-s lint build",
+    "ci": "run-s lint build test:ci build:prod e2e:ci",
     "deploy:firebase": "firebase deploy",
     "deploy": "run-s ci deploy:firebase"
   },
