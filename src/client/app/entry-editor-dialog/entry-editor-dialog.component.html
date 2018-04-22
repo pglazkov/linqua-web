@@ -1,22 +1,22 @@
-<form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate>
+<form class="entry-form" [formGroup]="entryForm" (ngSubmit)="onSubmit()" novalidate data-test-id="entry-form">
   <mat-form-field class="foreign-text-input" hintLabel="Press &quot;Enter&quot; to translate">
-    <textarea matInput matTextareaAutosize placeholder="word/phrase to translate" formControlName="originalText" (keypress)="onOriginalTextKeyPress($event)"></textarea>
+    <textarea matInput matTextareaAutosize placeholder="word/phrase to translate" formControlName="originalText" (keypress)="onOriginalTextKeyPress($event)" data-test-id="original-text-input"></textarea>
     <mat-hint align="end" *ngIf="detectedLanguage">{{ detectedLanguage }}</mat-hint>
   </mat-form-field>
 
   <mat-form-field class="translation-input">
-    <textarea #translationTextArea matInput matTextareaAutosize placeholder="translation" formControlName="translation" (keypress)="onTranslationTextKeyPress($event)"></textarea>
+    <textarea #translationTextArea matInput matTextareaAutosize placeholder="translation" formControlName="translation" (keypress)="onTranslationTextKeyPress($event)" data-test-id="translation-text-input"></textarea>
     <mat-spinner *ngIf="isTranslating" matSuffix class="translation-spinner" color="accent" [diameter]="25" [strokeWidth]="2"></mat-spinner>
   </mat-form-field>
 
   <div class="footer">
-    <button mat-raised-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? 'primary' : 'warn'">
+    <button mat-raised-button type="button" [disabled]="!entryForm.value.originalText || isTranslating" (click)="translate()" [color]="!translationError ? 'primary' : 'warn'" data-test-id="translate-button">
       <mat-icon *ngIf="!isTranslating">translate</mat-icon>
       <span *ngIf="!isTranslating && !translationError">translate</span>
       <span *ngIf="!isTranslating && translationError">retry</span>
       <span *ngIf="isTranslating">translating...</span>
     </button>
 
-    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating" [color]="entryForm.get('translation')?.value ? 'accent' : undefined">save</button>
+    <button mat-raised-button button type="submit" [disabled]="!entryForm.valid || isTranslating" [color]="entryForm.get('translation')?.value ? 'accent' : undefined" data-test-id="submit-button">save</button>
   </div>
 </form>

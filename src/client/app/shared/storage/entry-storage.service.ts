@@ -248,12 +248,12 @@ export class EntryStorageService {
       const unsubscribeFromUserSnapshotChanges = this.userRef.onSnapshot({ includeMetadataChanges: true }, s => {
         this.zone.run(() => {
 
-          const data = (s.data() as UserData);
+          const data: UserData | undefined = s.data();
 
           snapshotUpdates$.next({
             fromCache: s.metadata.fromCache,
-            entriesCount: data['entries-count'],
-            entriesArchiveCount: data['entries-archive-count']
+            entriesCount: data ? data['entries-count'] : 0,
+            entriesArchiveCount: data ? data['entries-archive-count'] : 0
           } as StatsServerData);
         });
       });

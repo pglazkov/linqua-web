@@ -267,3 +267,6 @@ testem.log
 Thumbs.db
 /dist
 .runtimeconfig.json
+
+/cypress/screenshots
+/cypress/videos
