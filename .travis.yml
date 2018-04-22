@@ -1,7 +1,9 @@
+dist: trusty
+sudo: required
 language: node_js
 
 node_js :
-  - stable
+  - "lts/*"
 
 addons:
   chrome: stable
@@ -10,10 +12,6 @@ cache:
   yarn: true
   directories:
     - node_modules
-
-before_script:
-  - npm install -g --silent firebase-tools
-  - npm install -g --silent @angular/cli@1.7.4
 
 script:
     - yarn ci
