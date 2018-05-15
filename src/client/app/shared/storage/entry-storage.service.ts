@@ -3,15 +3,15 @@ import { Entry } from '../model';
 import { Observable } from 'rxjs/Observable';
 
 import { AuthService } from '../auth';
-import { Subject } from 'rxjs/Subject';
 import { Subscriber } from 'rxjs/Subscriber';
 import { from } from 'rxjs/observable/from';
-import { map, merge, filter, multicast, concatMap, takeWhile, take, concat } from 'rxjs/operators';
+import { map, merge, filter, multicast, concatMap, takeWhile, take, concat, tap, distinctUntilChanged } from 'rxjs/operators';
 import { FirebaseApp } from 'ng-firebase-lite';
 import { firestore } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ConnectableObservable } from 'rxjs/Rx';
 
 
 interface FirebaseEntry {
@@ -32,7 +32,7 @@ export interface EntriesResult {
   fromCache: boolean;
 }
 
-export const pageSize = 20;
+export const DEFAULT_PAGE_SIZE = 20;
 
 type UserProperty = 'entries-count' | 'entries-archive-count';
 
@@ -67,19 +67,17 @@ export class EntryStorageService {
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
 
     this.stats$ = this.createStatsStream();
-
-    this.stats$.subscribe(this.latestStats$);
   }
 
   getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
     return this.http.get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
       .pipe(
         map(response => response.batch.map(x => this.toEntry(x.id, x.data))
-      ));
+        ));
   }
 
-  getEntriesStream(positionToken?: any): Observable<EntriesResult> {
-    const resultStream = new Subject<EntriesResult>();
+  getEntriesStream(positionToken?: any, pageSize: number = DEFAULT_PAGE_SIZE): Observable<EntriesResult> {
+    const resultStream = new ReplaySubject<EntriesResult>(1);
 
     let query = this.entryCollectionRef.orderBy('addedOn', 'desc');
 
@@ -268,18 +266,16 @@ export class EntryStorageService {
   }
 
   private createStatsStream(): Observable<LearnedEntriesStats | undefined> {
-    const statsSubj = new ReplaySubject<LearnedEntriesStats | undefined>();
-
     // The logic of the following stream is as follows:
     //   1. Wait until user is logged in
     //   2. Query the DB for the statistics until we get data not from cache (since we have local
     //      persistent cache enabled for offline support)
     //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
-    const statsSubscription = this.authService.isLoggedIn.pipe(
+    const ret = this.authService.isLoggedIn.pipe(
       filter(isUserLoggedIn => isUserLoggedIn),
       concatMap(_ => this.serverStats$),
       // Take all values from cache until we get one NOT from cache (include it as well in the result).
-      // The following trick with multicast operator is to achive a "takeUntilInclusive" behavior. It was taken from here:
+      // The following trick with multicast operator is to achieve a "takeUntilInclusive" behavior. It was taken from here:
       // https://github.com/ReactiveX/rxjs/issues/2420#issuecomment-355417505
       multicast(
         () => new ReplaySubject(1),
@@ -296,16 +292,31 @@ export class EntryStorageService {
           learnedEntryCount: serverStats.entriesArchiveCount || 0
         } as LearnedEntriesStats;
       }),
-      merge(this.clientCalculatedStats$)
-    ).subscribe(statsSubj);
+      merge(this.clientCalculatedStats$),
+      distinctUntilChanged(this.compareStats),
+      tap(v => this.latestStats$.next(v)),
+      multicast(() => new ReplaySubject<LearnedEntriesStats | undefined>(1))
+    ) as ConnectableObservable<LearnedEntriesStats | undefined>;
+
+    ret.connect();
 
     return Observable.create((subscriber: Subscriber<LearnedEntriesStats | undefined>) => {
-      const s = statsSubj.subscribe(subscriber);
+      const sub = ret.subscribe(subscriber);
 
-      return () => {
-        statsSubscription.unsubscribe();
-        s.unsubscribe();
-      };
+      return () => sub.unsubscribe();
     });
+  }
+
+  private compareStats(x: LearnedEntriesStats | undefined, y: LearnedEntriesStats | undefined): boolean {
+    if (x === y) {
+      return true;
+    }
+
+    if (!x || !y) {
+      return false;
+    }
+
+    return x.totalEntryCount === y.totalEntryCount
+      && x.learnedEntryCount === y.learnedEntryCount;
   }
 }
