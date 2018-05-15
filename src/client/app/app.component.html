@@ -3,13 +3,11 @@
     <div class="toolbar__side-content">
       <ng-container *ngIf="isLoggedIn | async">
         <div class="stats" *ngIf="stats$ | async; let statItem">
-          <ng-container *ngIf="statItem.totalEntryCount">
-            <mat-icon class="stats__icon">done_all</mat-icon>
-            <div class="stats__numbers">
-              <span class="stats__numbers__learned">{{ statItem.learnedEntryCount }}</span>
-              <span class="stats__numbers__total">/ {{ statItem.totalEntryCount }}</span>
-            </div>
-          </ng-container>
+          <mat-icon class="stats__icon">done_all</mat-icon>
+          <div class="stats__numbers">
+            <span class="stats__numbers__learned">{{ statItem.learnedEntryCount }}</span>
+            <span class="stats__numbers__total">/ {{ statItem.totalEntryCount }}</span>
+          </div>
         </div>
       </ng-container>
     </div>
