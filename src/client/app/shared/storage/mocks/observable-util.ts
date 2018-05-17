@@ -1,6 +1,5 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable, of as observableOf } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { of as observableOf } from 'rxjs/observable/of';
 
 export class ObservableUtil {
   static getChildData(obj: any, path: string): Observable<any> {

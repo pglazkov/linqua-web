@@ -1,6 +1,6 @@
 import { MockDocumentReference } from './mock-document-reference';
 import { MockDocumentSnapshot } from './mock-document-snapshot';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 export class MockTransaction {
   public readonly operations: Promise<any>[] = [];

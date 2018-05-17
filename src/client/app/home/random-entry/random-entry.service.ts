@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Entry, EntryConfig, EntryStorageService, AuthService } from 'shared';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs';
 
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
 const BATCH_SIZE = 10;

@@ -202,6 +202,7 @@ describe('EntryStorageService', () => {
       });
     });
 
+    mockData.emitAll();
   })));
 
   it('stats$ - should emit once when not changed',

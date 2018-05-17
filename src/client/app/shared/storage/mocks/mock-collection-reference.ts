@@ -4,7 +4,7 @@ import uniqueId from 'lodash-es/uniqueId';
 import orderBy from 'lodash-es/orderBy';
 import take from 'lodash-es/take';
 import indexOf from 'lodash-es/indexOf';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { ObservableUtil } from './observable-util';
 import { MockDocumentReference } from './mock-document-reference';
 import { MockDocumentSnapshot } from './mock-document-snapshot';

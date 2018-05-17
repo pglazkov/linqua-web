@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { FirebaseApp } from 'ng-firebase-lite';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
-import { auth } from 'firebase/app';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable, ReplaySubject } from 'rxjs';
+import * as firebase from 'firebase/app';
 
 export interface AuthResult {
   success: boolean;
@@ -24,7 +23,7 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 @Injectable()
 export class AuthService {
   private isLoggedInValueSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
-  private readonly auth: auth.Auth;
+  private readonly auth: firebase.auth.Auth;
 
   constructor(private fba: FirebaseApp) {
     this.auth = fba.auth();
@@ -78,11 +77,11 @@ export class AuthService {
   }
 
   loginWithFacebook(): void {
-    this.login(new auth.FacebookAuthProvider());
+    this.login(new firebase.auth.FacebookAuthProvider());
   }
 
   loginWithGoogle(): void {
-    this.login(new auth.GoogleAuthProvider());
+    this.login(new firebase.auth.GoogleAuthProvider());
   }
 
   loginWithEmailAndPassword(email: string, password: string): Promise<void> {
@@ -129,7 +128,7 @@ export class AuthService {
     }
   }
 
-  private login(provider: auth.AuthProvider): void {
+  private login(provider: firebase.auth.AuthProvider): void {
     sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
 
     this.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
@@ -138,9 +137,9 @@ export class AuthService {
   private getCredentialInstance(credentialData: any) {
     switch (credentialData.providerId) {
       case 'facebook.com':
-        return auth.FacebookAuthProvider.credential(credentialData.accessToken);
+        return firebase.auth.FacebookAuthProvider.credential(credentialData.accessToken);
       case 'google.com':
-        return auth.GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
+        return firebase.auth.GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
       default:
         throw new Error(`Provider "${credentialData.providerId}" is not supported.`);
     }

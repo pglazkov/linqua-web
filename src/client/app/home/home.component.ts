@@ -4,9 +4,8 @@ import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
-import { Subject } from 'rxjs/Subject';
+import { Subject, Unsubscribable } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
-import { ISubscription } from 'rxjs/Subscription';
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
@@ -47,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
 
-  private readonly ngUnsubscribe: ISubscription[] = [];
+  private readonly ngUnsubscribe: Unsubscribable[] = [];
 
   private readonly listStateSubject = new Subject<EntryListState>();
 
@@ -257,9 +256,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadEntryList() {
-    let sub: ISubscription = {
-      unsubscribe: () => {
-      }, closed: true
+    let sub: Unsubscribable = {
+      unsubscribe: () => {}
     };
 
     sub = this.storage.getEntriesStream().subscribe(result => {

@@ -6,9 +6,8 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable, from } from 'rxjs';
 import { first, map, switchMap } from 'rxjs/operators';
-import { from } from 'rxjs/observable/from';
 import { FirebaseApp } from 'ng-firebase-lite';
 
 @Injectable()

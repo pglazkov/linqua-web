@@ -1,5 +1,5 @@
-import * as firebase from 'firebase';
-import { Observable } from 'rxjs/Observable';
+import * as firebase from 'firebase/app';
+import { Observable } from 'rxjs';
 
 export class MockAuth {
   constructor(private loggedInUser: Observable<firebase.UserInfo>) {

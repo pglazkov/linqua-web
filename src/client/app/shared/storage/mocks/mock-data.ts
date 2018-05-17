@@ -1,8 +1,5 @@
-import { Subject } from 'rxjs/Subject';
-import * as firebase from 'firebase';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import * as firebase from 'firebase/app';
 import { MockFirestore } from './mock-firestore';
 
 export interface MockEntryDocument {

@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 export class MockDocumentSnapshot {
   constructor(public readonly id: string, private readonly rawData: any, private readonly fromCache = false) {

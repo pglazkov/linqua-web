@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 import { MockNodeBase } from './mock-node-base';
 import { MockNode } from './mock-node';
 import { MockCollectionReference } from './mock-collection-reference';

@@ -1,17 +1,12 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subscriber, from, ReplaySubject, BehaviorSubject, ConnectableObservable } from 'rxjs';
 
 import { AuthService } from '../auth';
-import { Subscriber } from 'rxjs/Subscriber';
-import { from } from 'rxjs/observable/from';
 import { map, merge, filter, multicast, concatMap, takeWhile, take, concat, tap, distinctUntilChanged } from 'rxjs/operators';
 import { FirebaseApp } from 'ng-firebase-lite';
 import { firestore } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { ConnectableObservable } from 'rxjs/Rx';
 
 
 interface FirebaseEntry {
@@ -64,9 +59,43 @@ export class EntryStorageService {
 
   constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
     this.db = fba.firestore();
+    this.configureDb();
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
 
     this.stats$ = this.createStatsStream();
+  }
+
+  private configureDb() {
+    /**
+    The following setting is added because of the following warning from Firebase:
+
+    ==========
+    The behavior for Date objects stored in Firestore is going to change
+    AND YOUR APP MAY BREAK.
+      To hide this warning and ensure your app does not break, you need to add the
+    following code to your app before calling any other Cloud Firestore methods:
+
+      const firestore = firebase.firestore();
+    const settings = {/!* your settings... *!/ timestampsInSnapshots: true};
+    firestore.settings(settings);
+
+    With this change, timestamps stored in Cloud Firestore will be read back as
+      Firebase Timestamp objects instead of as system Date objects. So you will also
+    need to update code expecting a Date to instead expect a Timestamp. For example:
+
+    // Old:
+      const date = snapshot.get('created_at');
+    // New:
+    const timestamp = snapshot.get('created_at');
+    const date = timestamp.toDate();
+
+    Please audit all existing usages of Date when you enable the new behavior. In a
+    future release, the behavior will change to the new behavior, so if you do not
+      follow these steps, YOUR APP MAY BREAK.
+    ==========
+    */
+
+    this.db.settings({ timestampsInSnapshots: true });
   }
 
   getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
@@ -272,13 +301,13 @@ export class EntryStorageService {
     //      persistent cache enabled for offline support)
     //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
     const ret = this.authService.isLoggedIn.pipe(
-      filter(isUserLoggedIn => isUserLoggedIn),
+      filter(isUserLoggedIn => !!isUserLoggedIn),
       concatMap(_ => this.serverStats$),
       // Take all values from cache until we get one NOT from cache (include it as well in the result).
       // The following trick with multicast operator is to achieve a "takeUntilInclusive" behavior. It was taken from here:
       // https://github.com/ReactiveX/rxjs/issues/2420#issuecomment-355417505
       multicast(
-        () => new ReplaySubject(1),
+        () => new ReplaySubject<StatsServerData>(1),
         (serverStats) => serverStats.pipe(
           takeWhile((c) => c.fromCache),
           concat(serverStats.pipe(
@@ -286,7 +315,7 @@ export class EntryStorageService {
           ))
         )
       ),
-      map(serverStats => {
+      map((serverStats: StatsServerData) => {
         return {
           totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
           learnedEntryCount: serverStats.entriesArchiveCount || 0
@@ -294,7 +323,7 @@ export class EntryStorageService {
       }),
       merge(this.clientCalculatedStats$),
       distinctUntilChanged(this.compareStats),
-      tap(v => this.latestStats$.next(v)),
+      tap((v: LearnedEntriesStats | undefined) => this.latestStats$.next(v)),
       multicast(() => new ReplaySubject<LearnedEntriesStats | undefined>(1))
     ) as ConnectableObservable<LearnedEntriesStats | undefined>;
 
