@@ -22,8 +22,8 @@
               ]
             },
             "assets": [
-              "src/client/assets",
-              "src/client/favicon.ico"
+              { "glob": "**/*", "input": "src/client/assets", "output": "/assets" },
+              { "glob": "favicon.ico", "input": "src/client", "output": "/" }
             ],
             "styles": [
               "src/client/styles/styles.scss"
@@ -82,8 +82,8 @@
               "src/client/styles/styles.scss"
             ],
             "assets": [
-              "src/client/assets",
-              "src/client/favicon.ico"
+              { "glob": "**/*", "input": "src/client/assets", "output": "/assets" },
+              { "glob": "favicon.ico", "input": "src/client", "output": "/" }
             ]
           }
         },
