@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/pglazkov/Linqua.Web.svg?branch=master)](https://travis-ci.org/pglazkov/Linqua.Web?branch=master)
+[![Build status](https://travis-ci.org/pglazkov/Linqua.Web.svg?branch=master)](https://travis-ci.org/pglazkov/Linqua.Web?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/pglazkov/Linqua.Web.svg)](https://greenkeeper.io/)
 
 # Linqua
 ## Vacabulary training tool
