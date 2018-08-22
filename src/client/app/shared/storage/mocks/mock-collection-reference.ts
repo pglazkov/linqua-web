@@ -36,7 +36,7 @@ export class MockCollectionReference extends MockNodeBase {
 
   orderBy(fieldPath: string | firebase.firestore.FieldPath, directionStr?: firebase.firestore.OrderByDirection): firebase.firestore.Query {
     this.transforms.push((items) => {
-      return orderBy(items, [fieldPath], [directionStr || 'asc']);
+      return orderBy(items, [fieldPath.toString()], [directionStr || 'asc']);
     });
 
     return this as any;
