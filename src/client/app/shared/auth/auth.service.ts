@@ -84,8 +84,8 @@ export class AuthService {
     this.login(new firebase.auth.GoogleAuthProvider());
   }
 
-  loginWithEmailAndPassword(email: string, password: string): Promise<void> {
-    return this.auth.signInWithEmailAndPassword(email, password);
+  async loginWithEmailAndPassword(email: string, password: string): Promise<void> {
+    await this.auth.signInWithEmailAndPassword(email, password);
   }
 
   async handleRedirectResult(): Promise<AuthResult | undefined> {
@@ -97,7 +97,7 @@ export class AuthService {
         const accountToLinkData = sessionStorage.getItem(accountToLinkStorageKey);
         const accountToLink = accountToLinkData ? this.getCredentialInstance(JSON.parse(accountToLinkData)) : undefined;
 
-        if (accountToLink) {
+        if (accountToLink && redirectResult.user) {
           await redirectResult.user.linkWithCredential(accountToLink);
           sessionStorage.removeItem(accountToLinkStorageKey);
         }

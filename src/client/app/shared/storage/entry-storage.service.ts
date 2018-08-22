@@ -84,7 +84,7 @@ export class EntryStorageService {
 
     let unsubscribeListener: () => void = () => {};
 
-    unsubscribeListener = query.onSnapshot({ includeQueryMetadataChanges: true }, snapshot => {
+    unsubscribeListener = query.onSnapshot({ includeMetadataChanges: true }, snapshot => {
       this.zone.run(() => {
         const hasMore = snapshot.docs.length > pageSize;
 
