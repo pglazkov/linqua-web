@@ -4762,11 +4762,11 @@ next-tick@1:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"
 
-ng-firebase-lite@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ng-firebase-lite/-/ng-firebase-lite-1.0.2.tgz#e0b03274fb2cbd209069efd722d26c3da4edbc27"
+ng-firebase-lite@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/ng-firebase-lite/-/ng-firebase-lite-2.0.2.tgz#d62c2fc6d6b94f5d336668462c4ae293b1942ae8"
   dependencies:
-    tslib "^1.7.1"
+    tslib "^1.9.0"
 
 nice-try@^1.0.4:
   version "1.0.4"

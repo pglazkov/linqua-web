@@ -28,7 +28,8 @@
             "styles": [
               "src/client/styles/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "preserveSymlinks": true
           },
           "configurations": {
             "production": {

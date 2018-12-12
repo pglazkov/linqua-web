@@ -2,7 +2,7 @@ import { FirebaseApp } from 'ng-firebase-lite';
 import { MockData } from './mock-data';
 import { MockAuth } from './mock-auth';
 import { MockFirestore } from './mock-firestore';
-import * as firebase from 'firebase';
+import * as firebase from 'firebase/app';
 
 export class MockFirebaseApp implements FirebaseApp {
   constructor(private mockData: MockData) {
@@ -21,6 +21,7 @@ export class MockFirebaseApp implements FirebaseApp {
   name = 'linqua';
   options: {} = {};
   storage: () => firebase.storage.Storage = MockFirebaseApp.notImplemented;
+  functions: () => firebase.functions.Functions = MockFirebaseApp.notImplemented;
 
   private static notImplemented: () => any = () => {
     throw new Error('Not implemented');
