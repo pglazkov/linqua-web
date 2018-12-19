@@ -59,6 +59,13 @@ export class EntryStorageService {
 
   constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
     this.db = fba.firestore();
+
+    this.db.settings({
+      // This setting is needed to get rid of the warning in console from Firebase saying: "The behavior for Date objects
+      // stored in Firestore is going to change AND YOUR APP MAY BREAK"
+      timestampsInSnapshots: true
+    });
+
     this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
 
     this.stats$ = this.createStatsStream();

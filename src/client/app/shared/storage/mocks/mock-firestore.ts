@@ -32,6 +32,10 @@ export class MockFirestore extends MockNodeBase {
     return Promise.resolve();
   }
 
+  settings(settingsObject: any) {
+    // Do nothing
+  }
+
   async runTransaction(updateFunction: (transaction: MockTransaction) => Promise<any>): Promise<any> {
     const tran = new MockTransaction();
 
