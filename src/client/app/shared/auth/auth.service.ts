@@ -3,7 +3,8 @@ import { firebaseAppToken } from 'ng-firebase-lite';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { Observable, ReplaySubject } from 'rxjs';
 import { FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect } from "firebase/auth";
+import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect, connectAuthEmulator } from "firebase/auth";
+import { environment } from 'environments/environment';
 
 export interface AuthResult {
   success: boolean;
@@ -28,6 +29,10 @@ export class AuthService {
 
   constructor(@Inject(firebaseAppToken) private fba: FirebaseApp) {
     this.auth = getAuth();
+
+    if (environment.useFirebaseEmulators) {
+      connectAuthEmulator(this.auth, 'http://localhost:9099');
+    }
 
     this.auth.onAuthStateChanged(() => {
       this.isLoggedInValueSubject.next(!!this.auth.currentUser);

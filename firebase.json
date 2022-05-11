@@ -27,10 +27,10 @@
       "port": 5001
     },
     "firestore": {
-      "port": 8080
+      "port": 5002
     },
     "hosting": {
-      "port": 5000
+      "port": 8080
     },
     "ui": {
       "enabled": true

@@ -5,7 +5,8 @@ import { AuthService } from '../auth';
 import { firebaseAppToken } from 'ng-firebase-lite';
 import { FirebaseApp } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
-import { addDoc, collection, deleteDoc, doc, enableIndexedDbPersistence, Firestore, getFirestore, limit, onSnapshot, orderBy, query, runTransaction, setDoc, startAt } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, enableIndexedDbPersistence, Firestore, getFirestore, limit, onSnapshot, orderBy, query, runTransaction, setDoc, startAt, connectFirestoreEmulator } from 'firebase/firestore';
+import { environment } from 'environments/environment';
 
 
 interface FirebaseEntry {
@@ -51,14 +52,19 @@ export class EntryStorageService {
 
   private readonly db: Firestore;
 
-  private persistenceEnabled$: Observable<boolean>;
+  private persistenceEnabled$: Observable<boolean> | undefined;
   private latestStats$ = new BehaviorSubject<LearnedEntriesStats | undefined>(undefined);
   private clientCalculatedStats$ = new ReplaySubject<LearnedEntriesStats | undefined>();
 
-  constructor(@Inject(firebaseAppToken) private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
+  constructor(@Inject(firebaseAppToken) fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
     this.db = getFirestore(fba);
 
-    this.persistenceEnabled$ = from(enableIndexedDbPersistence(this.db).then(() => true, () => false));
+    if (environment.useFirebaseEmulators) {
+      connectFirestoreEmulator(this.db, 'localhost', 5002);
+    }
+    else {
+      this.persistenceEnabled$ = from(enableIndexedDbPersistence(this.db).then(() => true, () => false));
+    }
 
     this.stats$ = this.createStatsStream();
   }
