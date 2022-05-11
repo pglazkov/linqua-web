@@ -1,12 +1,11 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Inject, Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
-import { Observable, Subscriber, from, ReplaySubject, BehaviorSubject, ConnectableObservable } from 'rxjs';
-
+import { Observable, Subscriber, from, ReplaySubject, BehaviorSubject, connectable, Connectable, map, filter, concatMap, takeWhile, tap, distinctUntilChanged, mergeWith } from 'rxjs';
 import { AuthService } from '../auth';
-import { map, merge, filter, multicast, concatMap, takeWhile, take, concat, tap, distinctUntilChanged } from 'rxjs/operators';
-import { FirebaseApp } from 'ng-firebase-lite';
-import { firestore } from 'firebase/app';
+import { firebaseAppToken } from 'ng-firebase-lite';
+import { FirebaseApp } from 'firebase/app';
 import { HttpClient } from '@angular/common/http';
+import { addDoc, collection, deleteDoc, doc, enableIndexedDbPersistence, Firestore, getFirestore, limit, onSnapshot, orderBy, query, runTransaction, setDoc, startAt } from 'firebase/firestore';
 
 
 interface FirebaseEntry {
@@ -48,25 +47,18 @@ export interface LearnedEntriesStats {
 
 @Injectable()
 export class EntryStorageService {
-
   readonly stats$: Observable<LearnedEntriesStats | undefined>;
 
-  private readonly db: firestore.Firestore;
+  private readonly db: Firestore;
 
   private persistenceEnabled$: Observable<boolean>;
   private latestStats$ = new BehaviorSubject<LearnedEntriesStats | undefined>(undefined);
   private clientCalculatedStats$ = new ReplaySubject<LearnedEntriesStats | undefined>();
 
-  constructor(private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
-    this.db = fba.firestore();
+  constructor(@Inject(firebaseAppToken) private fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
+    this.db = getFirestore(fba);
 
-    this.db.settings({
-      // This setting is needed to get rid of the warning in console from Firebase saying: "The behavior for Date objects
-      // stored in Firestore is going to change AND YOUR APP MAY BREAK"
-      timestampsInSnapshots: true
-    });
-
-    this.persistenceEnabled$ = from(this.db.enablePersistence().then(() => true, () => false));
+    this.persistenceEnabled$ = from(enableIndexedDbPersistence(this.db).then(() => true, () => false));
 
     this.stats$ = this.createStatsStream();
   }
@@ -75,23 +67,20 @@ export class EntryStorageService {
     return this.http.get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
       .pipe(
         map(response => response.batch.map(x => this.toEntry(x.id, x.data))
-        ));
+      ));
   }
 
   getEntriesStream(positionToken?: any, pageSize: number = DEFAULT_PAGE_SIZE): Observable<EntriesResult> {
     const resultStream = new ReplaySubject<EntriesResult>(1);
 
-    let query = this.entryCollectionRef.orderBy('addedOn', 'desc');
-
-    if (positionToken) {
-      query = query.startAt(positionToken);
-    }
-
-    query = query.limit(pageSize + 1);
-
     let unsubscribeListener: () => void = () => {};
 
-    unsubscribeListener = query.onSnapshot({ includeMetadataChanges: true }, snapshot => {
+    let q = query(this.entryCollectionRef, 
+      orderBy('addedOn', 'desc'), 
+      ...(positionToken ? [startAt(positionToken)] : []), 
+      limit(pageSize + 1));
+
+    unsubscribeListener = onSnapshot(q, { includeMetadataChanges: true }, snapshot => {
       this.zone.run(() => {
         const hasMore = snapshot.docs.length > pageSize;
 
@@ -116,7 +105,7 @@ export class EntryStorageService {
       this.zone.run(() => resultStream.complete());
     });
 
-    return Observable.create((observer: Subscriber<EntriesResult>) => {
+    return new Observable((observer: Subscriber<EntriesResult>) => {
       resultStream.subscribe(observer);
 
       return () => {
@@ -126,7 +115,7 @@ export class EntryStorageService {
   }
 
   getNewId() {
-    return this.entryCollectionRef.doc().id;
+    return doc(this.entryCollectionRef).id;
   }
 
   async addOrUpdate(entry: Entry): Promise<void> {
@@ -145,10 +134,10 @@ export class EntryStorageService {
     };
 
     if (entry.id) {
-      await this.entryCollectionRef.doc(entry.id).set(entryData);
+      await setDoc(doc(this.entryCollectionRef, entry.id), entryData);
     }
     else {
-      const newEntryRef = await this.entryCollectionRef.add(entryData);
+      const newEntryRef = await addDoc(this.entryCollectionRef, entryData);
       entry.id = newEntryRef.id;
     }
   }
@@ -161,7 +150,7 @@ export class EntryStorageService {
       };
     });
 
-    await this.entryCollectionRef.doc(id).delete();
+    await deleteDoc(doc(this.entryCollectionRef, id));
   }
 
   async unarchive(id: string): Promise<void> {
@@ -172,10 +161,10 @@ export class EntryStorageService {
       };
     });
 
-    const docRef = this.entryCollectionRef.doc(id);
-    const archiveDocRef = this.archiveCollectionRef.doc(id);
+    const docRef = doc(this.entryCollectionRef, id);
+    const archiveDocRef = doc(this.archiveCollectionRef, id);
 
-    await this.db.runTransaction(async t => {
+    await runTransaction(this.db, async t => {
       const archiveDoc = await t.get(archiveDocRef);
       const archiveDocData = archiveDoc.data();
 
@@ -194,10 +183,10 @@ export class EntryStorageService {
       };
     });
 
-    const docRef = this.entryCollectionRef.doc(id);
-    const archiveDocRef = this.archiveCollectionRef.doc(id);
+    const docRef = doc(this.entryCollectionRef, id);
+    const archiveDocRef = doc(this.archiveCollectionRef, id);
 
-    await this.db.runTransaction(async t => {
+    await runTransaction(this.db, async t => {
       const doc = await t.get(docRef);
       const docData = doc.data();
 
@@ -209,17 +198,15 @@ export class EntryStorageService {
   }
 
   private get entryCollectionRef() {
-    return this.userRef.collection('entries');
+    return collection(this.userRef, 'entries');
   }
 
   private get archiveCollectionRef() {
-    return this.userRef.collection('entries-archive');
+    return collection(this.userRef, 'entries-archive');
   }
 
-  private get userRef() {
-    return this.db
-      .collection('users')
-      .doc(this.authService.userId);
+  private get userRef() {    
+    return doc(collection(this.db, 'users'), this.authService.userId);
   }
 
   private toEntry(id: string, data: FirebaseEntry) {
@@ -245,9 +232,8 @@ export class EntryStorageService {
     return Observable.create((subscriber: Subscriber<StatsServerData>) => {
       const snapshotUpdates$ = new ReplaySubject<StatsServerData>();
 
-      const unsubscribeFromUserSnapshotChanges = this.userRef.onSnapshot({ includeMetadataChanges: true }, s => {
+      const unsubscribeFromUserSnapshotChanges = onSnapshot(this.userRef, { includeMetadataChanges: true }, s => {
         this.zone.run(() => {
-
           const data: UserData | undefined = s.data();
 
           snapshotUpdates$.next({
@@ -273,36 +259,29 @@ export class EntryStorageService {
     //   2. Query the DB for the statistics until we get data not from cache (since we have local
     //      persistent cache enabled for offline support)
     //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
-    const ret = this.authService.isLoggedIn.pipe(
-      filter(isUserLoggedIn => !!isUserLoggedIn),
-      concatMap(_ => this.serverStats$),
-      // Take all values from cache until we get one NOT from cache (include it as well in the result).
-      // The following trick with multicast operator is to achieve a "takeUntilInclusive" behavior. It was taken from here:
-      // https://github.com/ReactiveX/rxjs/issues/2420#issuecomment-355417505
-      multicast(
-        () => new ReplaySubject<StatsServerData>(1),
-        (serverStats) => serverStats.pipe(
-          takeWhile((c) => c.fromCache),
-          concat(serverStats.pipe(
-            take(1),
-          ))
-        )
-      ),
-      map((serverStats: StatsServerData) => {
-        return {
-          totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
-          learnedEntryCount: serverStats.entriesArchiveCount || 0
-        } as LearnedEntriesStats;
-      }),
-      merge(this.clientCalculatedStats$),
-      distinctUntilChanged(this.compareStats),
-      tap((v: LearnedEntriesStats | undefined) => this.latestStats$.next(v)),
-      multicast(() => new ReplaySubject<LearnedEntriesStats | undefined>(1))
-    ) as ConnectableObservable<LearnedEntriesStats | undefined>;
+    const ret = connectable(
+      this.authService.isLoggedIn.pipe(
+        filter(isUserLoggedIn => !!isUserLoggedIn),
+        concatMap(_ => this.serverStats$),
+        // Take all values from cache until we get one NOT from cache (include it as well in the result).
+        takeWhile((c) => c.fromCache, true),
+        map((serverStats: StatsServerData) => {
+          return {
+            totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
+            learnedEntryCount: serverStats.entriesArchiveCount || 0
+          } as LearnedEntriesStats;
+        }),
+        mergeWith(this.clientCalculatedStats$),
+        distinctUntilChanged(this.compareStats),
+        tap((v: LearnedEntriesStats | undefined) => this.latestStats$.next(v))
+      ), { 
+        connector: () => new ReplaySubject<LearnedEntriesStats | undefined>(1) 
+      }
+    ) as Connectable<LearnedEntriesStats | undefined>;
 
     ret.connect();
 
-    return Observable.create((subscriber: Subscriber<LearnedEntriesStats | undefined>) => {
+    return new Observable((subscriber: Subscriber<LearnedEntriesStats | undefined>) => {
       const sub = ret.subscribe(subscriber);
 
       return () => sub.unsubscribe();

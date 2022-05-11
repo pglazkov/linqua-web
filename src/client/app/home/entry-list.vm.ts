@@ -95,10 +95,7 @@ export class EntryListViewModel {
     let group = this.groups.find(g => g.name === timeGroup.englishName);
 
     if (!group) {
-      group = new EntryListTimeGroupViewModel(EntryListViewModel.entrySortCompareFunc);
-      group.order = timeGroup.order;
-      group.name = timeGroup.englishName;
-      group.entries = [];
+      group = new EntryListTimeGroupViewModel(EntryListViewModel.entrySortCompareFunc, timeGroup.order, timeGroup.englishName, []);
 
       this.groups.unshift(group);
       this.groups.sort(EntryListViewModel.groupSortComparerFunc);

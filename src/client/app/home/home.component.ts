@@ -4,7 +4,7 @@ import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
-import { Subject, Unsubscribable } from 'rxjs';
+import { firstValueFrom, Subject, Unsubscribable } from 'rxjs';
 import { filter, first, map } from 'rxjs/operators';
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isLoadingRandomEntry = false;
   randomEntry: Entry | undefined;
 
-  @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
+  @ViewChild('list', { read: ElementRef, static: false }) listElement: ElementRef | undefined;
 
   private readonly ngUnsubscribe: Unsubscribable[] = [];
 
@@ -73,10 +73,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingMore = true;
 
     try {
-      const result = await this.storage.getEntriesStream(this.loadMoreToken).pipe(
+      const result = await firstValueFrom(this.storage.getEntriesStream(this.loadMoreToken).pipe(
         filter(r => !r.fromCache),
         first()
-      ).toPromise();
+      ));
 
       this.listStateSubject.next({
         loadedEntries: this.loadedEntries.concat(result.entries),

@@ -4,9 +4,9 @@
     <div class="random-entry" *ngIf="randomEntry || isLoadingRandomEntry">
       <app-random-entry [entry]="randomEntry"
                         (nextEntryRequest)="onUpdateRandomEntryRequested()"
-                        (editRequest)="onEditRandomEntryRequested(randomEntry)"
-                        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry)"
-                        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry)"></app-random-entry>
+                        (editRequest)="onEditRandomEntryRequested(randomEntry!)"
+                        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
+                        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"></app-random-entry>
     </div>
 
     <ng-container *ngIf="listVm.groups.length > 0; else empty">

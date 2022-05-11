@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { EntryListItemViewModel } from '../entry-list-item.vm';
 
 @Component({
@@ -6,8 +6,8 @@ import { EntryListItemViewModel } from '../entry-list-item.vm';
   templateUrl: './entry-item.component.html',
   styleUrls: ['./entry-item.component.scss']
 })
-export class EntryItemComponent implements OnInit {
-  @Input() entry: EntryListItemViewModel;
+export class EntryItemComponent {
+  @Input() entry!: EntryListItemViewModel;
 
   @Output() editRequest = new EventEmitter();
   @Output() deleteRequest = new EventEmitter();
@@ -16,11 +16,6 @@ export class EntryItemComponent implements OnInit {
   @HostBinding('class.learned')
   get isLearned(): boolean {
     return this.entry.isLearned;
-  }
-
-  constructor() { }
-
-  ngOnInit() {
   }
 
   edit() {

@@ -10,8 +10,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
-import 'firebase/auth';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -26,7 +24,7 @@ import 'firebase/auth';
   providers: []
 })
 export class AuthModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<AuthModule> {
     return {
       ngModule: AuthModule,
       providers: [

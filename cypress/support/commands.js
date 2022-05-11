@@ -1,5 +1,5 @@
-import * as firebase from 'firebase/app';
-import 'firebase/auth';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -27,7 +27,7 @@ import 'firebase/auth';
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-const firebaseApp = firebase.initializeApp({
+const firebaseApp = initializeApp({
   apiKey: 'AIzaSyAzraaEABvAbytZVZRVlguP7XEB1hjY_dE',
   authDomain: 'linqua-cab88.firebaseapp.com',
   projectId: 'linqua-cab88',
@@ -35,20 +35,27 @@ const firebaseApp = firebase.initializeApp({
   messagingSenderId: '64353876836'
 });
 
+const auth = getAuth(firebaseApp);
+
 Cypress.Commands.add('login', () => {
   return new Cypress.Promise((resolve, reject) => {
-    firebase.auth().signOut().then(() => {
+    auth.signOut().then(() => {
 
       // On the development machine, the E2E_TEST_ACCOUNT_PASS environment variable can be set in command line as `export CYPRESS_E2E_TEST_ACCOUNT_PASS=<password>`
       // or permanently stored in ~/.bash_profile.
-      return firebaseApp.auth().signInWithEmailAndPassword('e2e.ci@linqua-app.com', Cypress.env('E2E_TEST_ACCOUNT_PASS'));
+      const pass = Cypress.env('E2E_TEST_ACCOUNT_PASS');
+      if (!pass) {
+        throw new Error('E2E_TEST_ACCOUNT_PASS environment variable is not set. Please set it with a password for e2e.ci2@linqua-app.com account.');
+      }
+
+      return signInWithEmailAndPassword(auth, 'e2e.ci2@linqua-app.com', Cypress.env('E2E_TEST_ACCOUNT_PASS'));
     }).then(resolve, reject);
   });
 });
 
-Cypress.Commands.add('logout', () => {
+Cypress.Commands.add('logout', () =>{ 
   return new Cypress.Promise((resolve, reject) => {
-    firebase.auth().signOut().then(resolve, reject);
+    auth.signOut().then(resolve, reject);
   });
 });
 

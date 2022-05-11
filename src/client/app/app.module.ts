@@ -68,8 +68,7 @@ const materialModules = [
   providers: [
     RandomEntryService
   ],
-  bootstrap: [AppComponent],
-  entryComponents: [EntryEditorDialogComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 
