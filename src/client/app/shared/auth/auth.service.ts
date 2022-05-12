@@ -27,8 +27,8 @@ export class AuthService {
   private isLoggedInValueSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
   private readonly auth: Auth;
 
-  constructor(@Inject(firebaseAppToken) private fba: FirebaseApp) {
-    this.auth = getAuth();
+  constructor(@Inject(firebaseAppToken) fba: FirebaseApp) {
+    this.auth = getAuth(fba);
 
     if (environment.useFirebaseEmulators) {
       connectAuthEmulator(this.auth, 'http://localhost:9099');

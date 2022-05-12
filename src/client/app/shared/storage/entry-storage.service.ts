@@ -63,7 +63,13 @@ export class EntryStorageService {
       connectFirestoreEmulator(this.db, 'localhost', 5002);
     }
     else {
-      this.persistenceEnabled$ = from(enableIndexedDbPersistence(this.db).then(() => true, () => false));
+      // Enable persistance only when not using emulator because emulated database is cleared automatically, but local cache is not, so there might be discrepancies.
+      // See a note here: https://firebase.google.com/docs/emulator-suite/connect_firestore#android_apple_platforms_and_web_sdks
+      enableIndexedDbPersistence(this.db).then(() => {
+        console.log('Offline persistance successfully enabled.');
+      }, err => {
+        console.warn('Enabling offline persistance failed. Error ' + err);
+      });
     }
 
     this.stats$ = this.createStatsStream();

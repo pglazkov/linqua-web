@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthResult, AuthService, EntryStorageService } from 'shared';
-import { first } from 'rxjs/operators';
+import { firstValueFrom, first } from 'rxjs';
 
 export enum States {
   Unknown,
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
       this.redirectAuthResult = await this.af.handleRedirectResult();
     }
 
-    const isLoggedIn = await this.af.isLoggedIn.pipe(first()).toPromise();
+    const isLoggedIn = await firstValueFrom(this.af.isLoggedIn.pipe(first()));
 
     if (!isLoggedIn) {
       this.state = States.LoginNeeded;

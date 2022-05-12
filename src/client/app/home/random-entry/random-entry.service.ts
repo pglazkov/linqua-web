@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Entry, EntryConfig, EntryStorageService, AuthService } from 'shared';
-import { Observable, ReplaySubject } from 'rxjs';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
 const BATCH_SIZE = 10;
@@ -37,7 +37,7 @@ export class RandomEntryService {
   }
 
   async onEntryUpdated(entry: Entry): Promise<void> {
-    const batch = await this.batch$.toPromise();
+    const batch = await firstValueFrom(this.batch$);
 
     if (batch && batch.length > 0) {
       const entryInBatch = batch.find(x => x.id === entry.id);
@@ -51,7 +51,7 @@ export class RandomEntryService {
   }
 
   async onEntryDeleted(entry: Entry): Promise<void> {
-    const batch = await this.batch$.toPromise();
+    const batch = await firstValueFrom(this.batch$);
 
     if (batch && batch.length > 0) {
       const entryInBatch = batch.find(x => x.id === entry.id);
