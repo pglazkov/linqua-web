@@ -26,7 +26,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 const materialModules = [
@@ -39,7 +38,6 @@ const materialModules = [
   MatMenuModule,
   MatProgressSpinnerModule,
   MatToolbarModule,
-  MatSidenavModule,
   MatButtonToggleModule
 ];
 
