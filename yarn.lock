@@ -6351,10 +6351,10 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ng-firebase-lite@^3.0.0-next.3:
-  version "3.0.0-next.3"
-  resolved "https://registry.yarnpkg.com/ng-firebase-lite/-/ng-firebase-lite-3.0.0-next.3.tgz#b8e69baea31b95532f1782842f9dfb2315b8fef5"
-  integrity sha512-jIlyFBxgjuKvRK3uBmhbbj32hzosdYM68OU/SwoO6W3I9HJqm8eKGxqHg1ud3QdOOKtyil+mAaCHvLlUm13DxA==
+ng-firebase-lite@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/ng-firebase-lite/-/ng-firebase-lite-3.0.1.tgz#221f656e1f15c5d6bd51f69742fcf9a8c4e5628d"
+  integrity sha512-sDbb0WODmuz55p4d9Uz4ILLWPsEkeGrjzs5ofzTxNsUza5LuWdB4BuQLsZoLBXElwVpAlK8iha6FofPPlHzgeQ==
   dependencies:
     tslib "^2.3.0"
 
