@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   HttpRequest,
   HttpHandler,
@@ -6,17 +6,21 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 
-import { Observable, from } from 'rxjs';
-import { first, map, switchMap } from 'rxjs/operators';
-import { FirebaseApp } from 'ng-firebase-lite';
+import { Observable, from, first, map, switchMap } from 'rxjs';
+import { firebaseAppToken } from 'ng-firebase-lite';
+import { FirebaseApp } from 'firebase/app';
+import { Auth, getAuth } from 'firebase/auth';
 
 @Injectable()
 export class AuthTokenInterceptor implements HttpInterceptor {
-  constructor(private fba: FirebaseApp) {
+  auth: Auth;
+
+  constructor(@Inject(firebaseAppToken) fba: FirebaseApp) {
+    this.auth = getAuth(fba);
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const user = this.fba.auth().currentUser;
+    const user = this.auth.currentUser;
 
     if (user) {
       return from(user.getIdToken()).pipe(

@@ -16,6 +16,8 @@
 
 .container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 
   .toolbar {
     .toolbar__side-content {
@@ -49,7 +51,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: visible;
+    overflow: hidden;
 
     .handle-login-redirect-container {
       margin: auto;
@@ -61,11 +63,6 @@
         margin-top: 24px;
       }
     }
-  }
-
-  ::ng-deep.mat-drawer-content {
-    display: flex;
-    flex-direction: column;
   }
 }
 

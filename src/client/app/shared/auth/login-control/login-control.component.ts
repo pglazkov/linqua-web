@@ -65,7 +65,7 @@ export class LoginControlComponent {
       await this.af.loginWithEmailAndPassword(email, password);
       this.loginSuccess.emit();
     }
-    catch (error) {
+    catch (error: any) {
       this.errorMessage = error;
     }
     finally {

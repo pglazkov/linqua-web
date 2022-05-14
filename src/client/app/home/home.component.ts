@@ -4,8 +4,7 @@ import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
-import { Subject, Unsubscribable } from 'rxjs';
-import { filter, first, map } from 'rxjs/operators';
+import { firstValueFrom, Subject, Unsubscribable, filter, first, map } from 'rxjs';
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
@@ -44,7 +43,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   isLoadingRandomEntry = false;
   randomEntry: Entry | undefined;
 
-  @ViewChild('list', {read: ElementRef}) listElement: ElementRef;
+  @ViewChild('list', { read: ElementRef, static: false }) listElement: ElementRef | undefined;
 
   private readonly ngUnsubscribe: Unsubscribable[] = [];
 
@@ -73,10 +72,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingMore = true;
 
     try {
-      const result = await this.storage.getEntriesStream(this.loadMoreToken).pipe(
+      const result = await firstValueFrom(this.storage.getEntriesStream(this.loadMoreToken).pipe(
         filter(r => !r.fromCache),
         first()
-      ).toPromise();
+      ));
 
       this.listStateSubject.next({
         loadedEntries: this.loadedEntries.concat(result.entries),
@@ -102,10 +101,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const result: Entry = await this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig())
+    const result: Entry = await firstValueFrom(this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig())
       .afterClosed()
-      .pipe(first())
-      .toPromise();
+      .pipe(first()));
 
     if (result) {
       result.id = this.storage.getNewId();
@@ -133,7 +131,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const editorDialog = this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig({ isEdit: true }));
     editorDialog.componentInstance.setEntry(entry);
 
-    const result: Entry = await editorDialog.afterClosed().pipe(first()).toPromise();
+    const result: Entry = await firstValueFrom(editorDialog.afterClosed().pipe(first()));
 
     if (result) {
       Object.assign(entry, result);
@@ -322,7 +320,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingRandomEntry = true;
 
     try {
-      const getRandomEntry = () => this.randomEntryService.getRandomEntry().toPromise();
+      const getRandomEntry = () => firstValueFrom(this.randomEntryService.getRandomEntry());
 
       const prevEntry = this.randomEntry;
       let newEntry = await getRandomEntry();

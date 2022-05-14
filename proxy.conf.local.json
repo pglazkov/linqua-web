@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://localhost:5000/linqua-cab88/us-central1/main",
+    "target": "http://localhost:5001/linqua-cab88/us-central1/main",
     "secure": true,
     "changeOrigin": true
   }

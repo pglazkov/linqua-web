@@ -10,11 +10,11 @@ import { Entry, TranslationService } from 'shared';
 })
 export class EntryEditorDialogComponent {
   entryForm: FormGroup;
-  isTranslating: boolean;
-  translationError: boolean;
+  isTranslating: boolean = false;
+  translationError: boolean = false;
   detectedLanguage: string | undefined;
 
-  @ViewChild('translationTextArea') translationTextArea: ElementRef;
+  @ViewChild('translationTextArea', { static: true }) translationTextArea!: ElementRef;
 
   constructor(
       private dialogRef: MatDialogRef<EntryEditorDialogComponent>,

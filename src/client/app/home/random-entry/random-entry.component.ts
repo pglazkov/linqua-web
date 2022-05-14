@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Entry } from 'shared';
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-random-entry',
@@ -18,7 +18,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
     ])
   ]
 })
-export class RandomEntryComponent implements OnInit {
+export class RandomEntryComponent {
   @Input()
   get entry(): Entry | undefined {
     return this._entry;
@@ -36,12 +36,6 @@ export class RandomEntryComponent implements OnInit {
   private _entry: Entry | undefined;
 
   nextRequested = false;
-
-
-  constructor() { }
-
-  ngOnInit() {
-  }
 
   requestNext() {
     this.nextRequested = true;

@@ -7,19 +7,15 @@ export interface EntryConfig {
 }
 
 export class Entry implements EntryConfig {
-  id: string;
-  originalText: string;
+  id: string = '';
+  originalText: string = '';
   translation?: string;
-  addedOn: Date;
+  addedOn: Date = new Date();
   updatedOn?: Date;
 
   constructor(prototype?: EntryConfig) {
     if (prototype) {
       Object.assign(this, prototype);
-    }
-
-    if (!this.addedOn) {
-      this.addedOn = new Date();
     }
 
     if (!this.updatedOn) {

@@ -10,7 +10,6 @@
 * `firebase login`
 * Make sure to set the Translate API key as describe above
 * Run `firebase functions:config:get > .runtimeconfig.json` in `src/functions` directory
-* Run `firebase serve`
 * Use Postman to execute HTTP requests against API (with `Authentication` header value taken from requests that browser makes after you login to the app)
 
 # Links

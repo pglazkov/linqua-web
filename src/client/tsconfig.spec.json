@@ -1,13 +1,10 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc/spec",
-    "baseUrl": "./",
-    "module": "commonjs",
-    "target": "es5",
+    "outDir": "../../out-tsc/spec",
     "types": [
-      "jasmine",
-      "node"
+      "jasmine"
     ]
   },
   "files": [
@@ -16,7 +13,6 @@
   ],
   "include": [
     "**/*.spec.ts",
-    "**/*.d.ts",
-    "**/mocks"
+    "**/*.d.ts"
   ]
 }

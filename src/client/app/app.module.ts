@@ -26,7 +26,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 const materialModules = [
@@ -39,7 +38,6 @@ const materialModules = [
   MatMenuModule,
   MatProgressSpinnerModule,
   MatToolbarModule,
-  MatSidenavModule,
   MatButtonToggleModule
 ];
 
@@ -55,7 +53,12 @@ const materialModules = [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production}),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
     FormsModule,
     ReactiveFormsModule,
     ...materialModules,
@@ -68,8 +71,7 @@ const materialModules = [
   providers: [
     RandomEntryService
   ],
-  bootstrap: [AppComponent],
-  entryComponents: [EntryEditorDialogComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule {
 

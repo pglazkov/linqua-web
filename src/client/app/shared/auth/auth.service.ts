@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { FirebaseApp } from 'ng-firebase-lite';
+import { Inject, Injectable } from '@angular/core';
+import { firebaseAppToken } from 'ng-firebase-lite';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
 import { Observable, ReplaySubject } from 'rxjs';
-import * as firebase from 'firebase/app';
+import { FirebaseApp } from 'firebase/app';
+import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect, connectAuthEmulator } from "firebase/auth";
+import { environment } from 'environments/environment';
 
 export interface AuthResult {
   success: boolean;
@@ -23,10 +25,14 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 @Injectable()
 export class AuthService {
   private isLoggedInValueSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
-  private readonly auth: firebase.auth.Auth;
+  private readonly auth: Auth;
 
-  constructor(private fba: FirebaseApp) {
-    this.auth = fba.auth();
+  constructor(@Inject(firebaseAppToken) fba: FirebaseApp) {
+    this.auth = getAuth(fba);
+
+    if (environment.useFirebaseEmulators) {
+      connectAuthEmulator(this.auth, 'http://localhost:9099');
+    }
 
     this.auth.onAuthStateChanged(() => {
       this.isLoggedInValueSubject.next(!!this.auth.currentUser);
@@ -77,28 +83,28 @@ export class AuthService {
   }
 
   loginWithFacebook(): void {
-    this.login(new firebase.auth.FacebookAuthProvider());
+    this.login(new FacebookAuthProvider());
   }
 
   loginWithGoogle(): void {
-    this.login(new firebase.auth.GoogleAuthProvider());
+    this.login(new GoogleAuthProvider());
   }
 
   async loginWithEmailAndPassword(email: string, password: string): Promise<void> {
-    await this.auth.signInWithEmailAndPassword(email, password);
+    await signInWithEmailAndPassword(this.auth, email, password);
   }
 
   async handleRedirectResult(): Promise<AuthResult | undefined> {
     try {
-      const redirectResult = await this.auth.getRedirectResult();
+      const redirectResult = await getRedirectResult(this.auth);
 
-      if (redirectResult && redirectResult.credential) {
+      if (redirectResult) {
 
         const accountToLinkData = sessionStorage.getItem(accountToLinkStorageKey);
         const accountToLink = accountToLinkData ? this.getCredentialInstance(JSON.parse(accountToLinkData)) : undefined;
 
         if (accountToLink && redirectResult.user) {
-          await redirectResult.user.linkWithCredential(accountToLink);
+          await linkWithCredential(redirectResult.user, accountToLink);
           sessionStorage.removeItem(accountToLinkStorageKey);
         }
 
@@ -107,9 +113,9 @@ export class AuthService {
 
       return undefined;
     }
-    catch (error) {
+    catch (error: any) {
       if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
-        const availableProviders = await this.auth.fetchProvidersForEmail(error.email);
+        const availableProviders = await fetchSignInMethodsForEmail(this.auth, error.email);
 
         sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
 
@@ -128,18 +134,18 @@ export class AuthService {
     }
   }
 
-  private login(provider: firebase.auth.AuthProvider): void {
+  private login(provider: AuthProvider): void {
     sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
 
-    this.auth.signInWithRedirect(provider).then(() => {}, err => console.error(err));
+    signInWithRedirect(this.auth, provider).then(() => {}, err => console.error(err));
   }
 
   private getCredentialInstance(credentialData: any) {
     switch (credentialData.providerId) {
       case 'facebook.com':
-        return firebase.auth.FacebookAuthProvider.credential(credentialData.accessToken);
+        return FacebookAuthProvider.credential(credentialData.accessToken);
       case 'google.com':
-        return firebase.auth.GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
+        return GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
       default:
         throw new Error(`Provider "${credentialData.providerId}" is not supported.`);
     }
