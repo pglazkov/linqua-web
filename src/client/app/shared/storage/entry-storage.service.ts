@@ -1,6 +1,6 @@
 import { Inject, Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
-import { Observable, Subscriber, from, ReplaySubject, BehaviorSubject, connectable, Connectable, map, filter, concatMap, takeWhile, tap, distinctUntilChanged, mergeWith } from 'rxjs';
+import { Observable, Subscriber, ReplaySubject, map, filter, concatMap, takeWhile, distinctUntilChanged, mergeWith, share } from 'rxjs';
 import { AuthService } from '../auth';
 import { firebaseAppToken } from 'ng-firebase-lite';
 import { FirebaseApp } from 'firebase/app';
@@ -46,14 +46,14 @@ export interface LearnedEntriesStats {
   learnedEntryCount: number;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class EntryStorageService {
   readonly stats$: Observable<LearnedEntriesStats | undefined>;
 
   private readonly db: Firestore;
 
   private persistenceEnabled$: Observable<boolean> | undefined;
-  private latestStats$ = new BehaviorSubject<LearnedEntriesStats | undefined>(undefined);
+  private latestStats: LearnedEntriesStats | undefined;
   private clientCalculatedStats$ = new ReplaySubject<LearnedEntriesStats | undefined>();
 
   constructor(@Inject(firebaseAppToken) fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
@@ -73,6 +73,7 @@ export class EntryStorageService {
     }
 
     this.stats$ = this.createStatsStream();
+    this.stats$.subscribe(v => this.latestStats = v);
   }
 
   getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
@@ -232,7 +233,7 @@ export class EntryStorageService {
   }
 
   private updateStats(updateCallback: (currentStats: LearnedEntriesStats) => LearnedEntriesStats): void {
-    const currentStats = this.latestStats$.getValue() || {
+    const currentStats = this.latestStats || {
       totalEntryCount: 0,
       learnedEntryCount: 0
     };
@@ -271,33 +272,22 @@ export class EntryStorageService {
     //   2. Query the DB for the statistics until we get data not from cache (since we have local
     //      persistent cache enabled for offline support)
     //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
-    const ret = connectable(
-      this.authService.isLoggedIn.pipe(
-        filter(isUserLoggedIn => !!isUserLoggedIn),
-        concatMap(_ => this.serverStats$),
-        // Take all values from cache until we get one NOT from cache (include it as well in the result).
-        takeWhile((c) => c.fromCache, true),
-        map((serverStats: StatsServerData) => {
-          return {
-            totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
-            learnedEntryCount: serverStats.entriesArchiveCount || 0
-          } as LearnedEntriesStats;
-        }),
-        mergeWith(this.clientCalculatedStats$),
-        distinctUntilChanged(this.compareStats),
-        tap((v: LearnedEntriesStats | undefined) => this.latestStats$.next(v))
-      ), { 
-        connector: () => new ReplaySubject<LearnedEntriesStats | undefined>(1) 
-      }
-    ) as Connectable<LearnedEntriesStats | undefined>;
-
-    ret.connect();
-
-    return new Observable((subscriber: Subscriber<LearnedEntriesStats | undefined>) => {
-      const sub = ret.subscribe(subscriber);
-
-      return () => sub.unsubscribe();
-    });
+    return this.authService.isLoggedIn.pipe(
+      filter(isUserLoggedIn => !!isUserLoggedIn),
+      concatMap(_ => this.serverStats$),
+      // Take all values from cache until we get one NOT from cache (include it as well in the result).
+      takeWhile((c) => c.fromCache, true),
+      map((serverStats: StatsServerData) => {
+        return {
+          totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
+          learnedEntryCount: serverStats.entriesArchiveCount || 0
+        } as LearnedEntriesStats;
+      }),
+      mergeWith(this.clientCalculatedStats$),
+      distinctUntilChanged(this.compareStats),
+      // Cache latest result and replay it for each new subscriber
+      share({ connector: () => new ReplaySubject<LearnedEntriesStats | undefined>(1) })
+    );
   }
 
   private compareStats(x: LearnedEntriesStats | undefined, y: LearnedEntriesStats | undefined): boolean {
