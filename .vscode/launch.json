@@ -5,35 +5,45 @@
   "version": "0.2.0",
   "configurations": [
     {
-            "name": "Launch",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:3000",
-            "port": 9222,
-            "webRoot": "${workspaceRoot}",
-            "sourceMaps": true,
-            "smartStep": true
-        },
-        {
-            "name": "Attach",
-            "type": "chrome",
-            "request": "attach",
-            "url": "http://localhost:3000*",
-            "port": 9222,
-            "webRoot": "${workspaceRoot}",
-            "sourceMaps": true,
-            "smartStep": true
-        },
-        {
-            "name": "Attach to Unit Tests",
-            "type": "chrome",
-            "request": "attach",
-            "url": "http://localhost:9876*",
-            "port": 9223,
-            "webRoot": "${workspaceRoot}",
-            "sourceMaps": true,
-            "trace": true,
-            "smartStep": true
-        }
+      "name": "Launch",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "port": 9222,
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true,
+      "smartStep": true
+    },
+    {
+      "name": "Attach",
+      "type": "chrome",
+      "request": "attach",
+      "url": "http://localhost:3000*",
+      "port": 9222,
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true,
+      "smartStep": true
+    },
+    {
+      "name": "Attach to Unit Tests",
+      "type": "chrome",
+      "request": "attach",
+      "url": "http://localhost:9876*",
+      "port": 9223,
+      "webRoot": "${workspaceRoot}",
+      "sourceMaps": true,
+      "trace": true,
+      "smartStep": true
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Firebase Functions Emulator",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
   ]
 }
