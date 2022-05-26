@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { firebaseAppToken } from 'ng-firebase-lite';
 import { AuthErrorCodes } from './firebase-auth-error-codes';
-import { Observable, ReplaySubject } from 'rxjs';
+import { map, Observable, ReplaySubject } from 'rxjs';
 import { FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect, connectAuthEmulator } from "firebase/auth";
 import { environment } from 'environments/environment';
@@ -24,7 +24,7 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable()
 export class AuthService {
-  private isLoggedInValueSubject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
+  private authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
   private readonly auth: Auth;
 
   constructor(@Inject(firebaseAppToken) fba: FirebaseApp) {
@@ -35,7 +35,7 @@ export class AuthService {
     }
 
     this.auth.onAuthStateChanged(() => {
-      this.isLoggedInValueSubject.next(!!this.auth.currentUser);
+      this.authStateChangedSubject.next(this.auth.currentUser);
     });
   }
 
@@ -74,8 +74,12 @@ export class AuthService {
     };
   }
 
+  get authStateChanged(): Observable<User | null> {
+    return this.authStateChangedSubject.asObservable();
+  }
+
   get isLoggedIn(): Observable<boolean> {
-    return this.isLoggedInValueSubject.asObservable();
+    return this.authStateChangedSubject.asObservable().pipe(map(user => !!user));
   }
 
   get shouldHandleRedirectResult() {

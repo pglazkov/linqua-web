@@ -4,7 +4,7 @@ import { Entry, EntryStorageService, TimeGroupService } from 'shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
-import { firstValueFrom, Subject, Unsubscribable, filter, first, map } from 'rxjs';
+import { firstValueFrom, Subject, Unsubscribable, filter, first, map, take } from 'rxjs';
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
@@ -249,7 +249,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           mainMessage: 'All done',
           extendedMessage: 'Congratulations!'
         };
-      })
+      }),
+      take(1)
     );
   }
 

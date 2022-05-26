@@ -111,7 +111,13 @@
               { "glob": "favicon.ico", "input": "src/client", "output": "/" },
               "src/client/manifest.webmanifest"
             ],
-            "scripts": []
+            "scripts": [],
+            "fileReplacements": [
+              {
+                "replace": "src/client/environments/environment.ts",
+                "with": "src/client/environments/environment.test.ts"
+              }
+            ]
           }
         },
         "lint": {

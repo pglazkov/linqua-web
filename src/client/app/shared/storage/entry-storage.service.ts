@@ -1,6 +1,6 @@
 import { Inject, Injectable, NgZone } from '@angular/core';
 import { Entry } from '../model';
-import { Observable, Subscriber, ReplaySubject, map, filter, concatMap, takeWhile, distinctUntilChanged, mergeWith, share } from 'rxjs';
+import { Observable, Subscriber, ReplaySubject, map, filter, distinctUntilChanged, share, switchMap, take, Subject, debounceTime } from 'rxjs';
 import { AuthService } from '../auth';
 import { firebaseAppToken } from 'ng-firebase-lite';
 import { FirebaseApp } from 'firebase/app';
@@ -46,16 +46,18 @@ export interface LearnedEntriesStats {
   learnedEntryCount: number;
 }
 
+let enableIndexedDbPersistencePromise: Promise<void> | undefined;
+
 @Injectable({ providedIn: 'root' })
 export class EntryStorageService {
-  readonly stats$: Observable<LearnedEntriesStats | undefined>;
+  stats$!: Observable<LearnedEntriesStats>;
 
   private readonly db: Firestore;
 
   private persistenceEnabled$: Observable<boolean> | undefined;
-  private latestStats: LearnedEntriesStats | undefined;
-  private clientCalculatedStats$ = new ReplaySubject<LearnedEntriesStats | undefined>();
-
+  private latestStats$ = new ReplaySubject<LearnedEntriesStats>(1);
+  private clientCalculatedStats$ = new Subject<LearnedEntriesStats>();
+  
   constructor(@Inject(firebaseAppToken) fba: FirebaseApp, private authService: AuthService, private http: HttpClient, private zone: NgZone) {
     this.db = getFirestore(fba);
 
@@ -65,16 +67,13 @@ export class EntryStorageService {
     else {
       // Enable persistance only when not using emulator because emulated database is cleared automatically, but local cache is not, so there might be discrepancies.
       // See a note here: https://firebase.google.com/docs/emulator-suite/connect_firestore#android_apple_platforms_and_web_sdks
-      enableIndexedDbPersistence(this.db).then(() => {
-        console.log('Offline persistance successfully enabled.');
-      }, err => {
-        console.warn('Enabling offline persistance failed. Error ' + err);
-      });
+      
+      this.enableFirebaseOfflinePersistance();
     }
 
     this.stats$ = this.createStatsStream();
-    this.stats$.subscribe(v => this.latestStats = v);
-  }
+    this.stats$.subscribe(this.latestStats$);
+  }  
 
   getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
     return this.http.get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
@@ -156,7 +155,7 @@ export class EntryStorageService {
   }
 
   async delete(id: string): Promise<void> {
-    this.updateStats(currentStats => {
+    this.updateStats(currentStats => {      
       return {
         totalEntryCount: currentStats.totalEntryCount - 1,
         learnedEntryCount: currentStats.learnedEntryCount
@@ -232,32 +231,36 @@ export class EntryStorageService {
     });
   }
 
-  private updateStats(updateCallback: (currentStats: LearnedEntriesStats) => LearnedEntriesStats): void {
-    const currentStats = this.latestStats || {
-      totalEntryCount: 0,
-      learnedEntryCount: 0
-    };
-
-    this.clientCalculatedStats$.next(updateCallback(currentStats));
+  private updateStats(calculateClientStats: (currentStats: LearnedEntriesStats) => LearnedEntriesStats): void {
+    this.latestStats$.pipe(take(1)).subscribe(currentStats => {
+      const clientStats = calculateClientStats(currentStats);
+      this.clientCalculatedStats$.next(clientStats);
+    });
   }
 
   private get serverStats$(): Observable<StatsServerData> {
-    return Observable.create((subscriber: Subscriber<StatsServerData>) => {
+    return new Observable((subscriber: Subscriber<StatsServerData>) => {
       const snapshotUpdates$ = new ReplaySubject<StatsServerData>();
 
       const unsubscribeFromUserSnapshotChanges = onSnapshot(this.userRef, { includeMetadataChanges: true }, s => {
-        this.zone.run(() => {
-          const data: UserData | undefined = s.data();
+        this.zone.run(() => {          
+          const data: UserData | undefined = s.data();          
 
-          snapshotUpdates$.next({
+          const statsData = {
             fromCache: s.metadata.fromCache,
             entriesCount: data ? data['entries-count'] : 0,
             entriesArchiveCount: data ? data['entries-archive-count'] : 0
-          } as StatsServerData);
+          } as StatsServerData;
+
+          snapshotUpdates$.next(statsData);
         });
       });
 
-      const sub = snapshotUpdates$.subscribe(subscriber);
+      const sub = snapshotUpdates$.pipe(
+        // Throttle updates because when an entry is archived, updates
+        // to both properties happen one after another
+        debounceTime(100)
+      ).subscribe(subscriber);
 
       return () => {
         unsubscribeFromUserSnapshotChanges();
@@ -266,31 +269,27 @@ export class EntryStorageService {
     });
   }
 
-  private createStatsStream(): Observable<LearnedEntriesStats | undefined> {
-    // The logic of the following stream is as follows:
-    //   1. Wait until user is logged in
-    //   2. Query the DB for the statistics until we get data not from cache (since we have local
-    //      persistent cache enabled for offline support)
-    //   3. Continuously watch the client-side updates to the statistics (updated when user adds/removes/archives records).
-    return this.authService.isLoggedIn.pipe(
-      filter(isUserLoggedIn => !!isUserLoggedIn),
-      concatMap(_ => this.serverStats$),
-      // Take all values from cache until we get one NOT from cache (include it as well in the result).
-      takeWhile((c) => c.fromCache, true),
+  private createStatsStream(): Observable<LearnedEntriesStats> {
+    return this.authService.authStateChanged.pipe(
+      filter(user => !!user),
+      switchMap(_ => this.serverStats$),
       map((serverStats: StatsServerData) => {
         return {
           totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),
           learnedEntryCount: serverStats.entriesArchiveCount || 0
         } as LearnedEntriesStats;
       }),
-      mergeWith(this.clientCalculatedStats$),
+      // Because stats are calculated on the server in a cloud function, it may take time before 
+      // they are pushed to the client, so in the meantime we also calculate the stats on the client,
+      // so that user sees the updates immediately
+      // mergeWith(this.clientCalculatedStats$),
       distinctUntilChanged(this.compareStats),
       // Cache latest result and replay it for each new subscriber
-      share({ connector: () => new ReplaySubject<LearnedEntriesStats | undefined>(1) })
+      share({ connector: () => new ReplaySubject<LearnedEntriesStats>(1) })
     );
   }
 
-  private compareStats(x: LearnedEntriesStats | undefined, y: LearnedEntriesStats | undefined): boolean {
+  private compareStats(x: LearnedEntriesStats, y: LearnedEntriesStats): boolean {
     if (x === y) {
       return true;
     }
@@ -301,5 +300,20 @@ export class EntryStorageService {
 
     return x.totalEntryCount === y.totalEntryCount
       && x.learnedEntryCount === y.learnedEntryCount;
+  }
+
+  private enableFirebaseOfflinePersistance() {
+    if (!enableIndexedDbPersistencePromise) {
+      // Make sure enableIndexedDbPersistence is called only once even if there are multiple instances of this
+      // service.
+      enableIndexedDbPersistencePromise = enableIndexedDbPersistence(this.db);
+    }
+    else {
+      enableIndexedDbPersistencePromise.then(() => {
+        console.log('Offline persistance successfully enabled.');
+      }, err => {
+        console.warn('Enabling offline persistance failed. Error ' + err);
+      });
+    }
   }
 }
