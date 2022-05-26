@@ -1,6 +1,6 @@
 {
   "name": "linqua",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -15,7 +15,7 @@
     "build": "ng build --configuration development",
     "build:prod": "ng build --configuration production",
     "test:watch": "ng test",
-    "test:watch:with-delay": "sleep 5 && ng test",    
+    "test:watch:with-delay": "sleep 5 && ng test",
     "ng-test": "ng test --watch=false --no-progress --browsers=ChromeNoSandbox",
     "test": "firebase emulators:exec --only functions,auth,firestore './test.sh'",
     "lint": "ng lint",
