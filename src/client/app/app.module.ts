@@ -27,6 +27,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 const materialModules = [
   MatListModule,
@@ -47,7 +48,8 @@ const materialModules = [
     HomeComponent,
     EntryEditorDialogComponent,
     EntryItemComponent,
-    RandomEntryComponent
+    RandomEntryComponent,
+    AboutDialogComponent
   ],
   imports: [
     CommonModule,

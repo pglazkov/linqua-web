@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthResult, AuthService, EntryStorageService } from 'shared';
 import { firstValueFrom, first } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 export enum States {
   Unknown,
@@ -21,7 +23,7 @@ export class AppComponent implements OnInit {
 
   redirectAuthResult: AuthResult | undefined;
 
-  constructor(private af: AuthService, private entryStorageService: EntryStorageService) {
+  constructor(private af: AuthService, private entryStorageService: EntryStorageService, private dialog: MatDialog) {
   }
 
   async ngOnInit() {
@@ -49,6 +51,10 @@ export class AppComponent implements OnInit {
 
   onLoginSuccess() {
     this.state = States.LoggedIn;
+  }
+
+  onLogoClick() {
+    this.dialog.open(AboutDialogComponent);
   }
 
   private async initState(): Promise<void> {
