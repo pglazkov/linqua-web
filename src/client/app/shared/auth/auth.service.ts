@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { firebaseAppToken } from 'ng-firebase-lite';
-import { AuthErrorCodes } from './firebase-auth-error-codes';
+import { FirebaseAuthErrorCode } from './firebase-auth-error-code';
 import { map, Observable, ReplaySubject } from 'rxjs';
 import { FirebaseApp } from 'firebase/app';
 import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect, connectAuthEmulator } from "firebase/auth";
@@ -118,7 +118,7 @@ export class AuthService {
       return undefined;
     }
     catch (error: any) {
-      if (error.code === AuthErrorCodes.AccountExistsWithDifferentCredential) {
+      if (error.code === FirebaseAuthErrorCode.AccountExistsWithDifferentCredential) {
         const availableProviders = await fetchSignInMethodsForEmail(this.auth, error.email);
 
         sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
