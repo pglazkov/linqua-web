@@ -2,7 +2,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { AuthService } from './auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthTokenInterceptor } from './auth-token.interceptor';
-import { LoginControlComponent } from './login-control/login-control.component';
+import { LoginComponent } from './login/login.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -19,8 +19,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatButtonModule
   ],
-  exports: [LoginControlComponent],
-  declarations: [LoginControlComponent],
+  exports: [LoginComponent],
+  declarations: [LoginComponent],
   providers: []
 })
 export class AuthModule {

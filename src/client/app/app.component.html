@@ -48,7 +48,7 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="states.LoginNeeded">
-        <app-login-control [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login-control>
+        <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login>
       </ng-container>
 
       <ng-container *ngSwitchDefault>

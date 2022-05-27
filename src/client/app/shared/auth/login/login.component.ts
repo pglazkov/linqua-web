@@ -9,11 +9,11 @@ const demoAccount = {
 };
 
 @Component({
-  selector: 'app-login-control',
-  templateUrl: './login-control.component.html',
-  styleUrls: ['./login-control.component.scss']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class LoginControlComponent {
+export class LoginComponent {
 
   @Output() loginSuccess = new EventEmitter<void>();
 
