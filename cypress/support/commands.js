@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, connectAuthEmulator } from 'firebase/auth';
+import { firebaseConfig } from '@linqua/firebase-config';
 
 // ***********************************************
 // This example commands.js shows you how to
@@ -27,13 +28,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPas
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-const firebaseApp = initializeApp({
-  apiKey: 'AIzaSyAzraaEABvAbytZVZRVlguP7XEB1hjY_dE',
-  authDomain: 'linqua-cab88.firebaseapp.com',
-  projectId: 'linqua-cab88',
-  storageBucket: 'linqua-cab88.appspot.com',
-  messagingSenderId: '64353876836'
-});
+const firebaseApp = initializeApp(firebaseConfig);
 
 const auth = getAuth(firebaseApp);
 
