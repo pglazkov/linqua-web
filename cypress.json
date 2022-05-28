@@ -3,7 +3,6 @@
   "chromeWebSecurity": false,
   "defaultCommandTimeout": 60000,
   "env": {
-    "USE_EMULATOR": true,
-    "CREATE_TEST_ACCOUNT": true
+    "USE_EMULATOR": true
   }
 }
