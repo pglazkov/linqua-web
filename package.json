@@ -29,7 +29,10 @@
     "npm-run-all": "npm-run-all",
     "ci": "run-s lint test e2e:ci build:prod",
     "deploy:firebase": "firebase deploy",
-    "deploy": "run-s ci deploy:firebase"
+    "deploy:firebase:hosting": "firebase deploy --only hosting",
+    "deploy": "run-s ci deploy:firebase",
+    "deploy:only-frontend": "run-s ci deploy:firebase:hosting",
+    "deploy:only-frontend:skip-ci": "run-s build:prod deploy:firebase:hosting"
   },
   "private": true,
   "dependencies": {
