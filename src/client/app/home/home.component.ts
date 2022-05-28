@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
-import { Entry, EntryStorageService, TimeGroupService } from 'shared';
+import { Entry, EntryStorageService, TimeGroupService } from '@linqua/shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';

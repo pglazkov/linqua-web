@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthResult } from 'shared';
+import { AuthResult } from '@linqua/shared';
 
 const demoAccount = {
   email: 'demo@linqua-app.com',

@@ -1,7 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Entry, TranslationService } from 'shared';
+import { Entry, TranslationService } from '@linqua/shared';
 
 @Component({
   selector: 'app-entry-editor-dialog',

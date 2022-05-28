@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Entry } from 'shared';
+import { Entry } from '@linqua/shared';
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
 
 @Component({

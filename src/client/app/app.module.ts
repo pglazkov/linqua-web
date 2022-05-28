@@ -12,7 +12,7 @@ import { environment } from 'environments/environment';
 
 
 
-import { AuthModule, TimeGroupingModule, TranslationModule } from 'shared';
+import { AuthModule, TimeGroupingModule, TranslationModule } from '@linqua/shared';
 import { CommonModule } from '@angular/common';
 import { EntryEditorDialogComponent } from './entry-editor-dialog';
 import { HomeComponent, EntryItemComponent, RandomEntryComponent } from './home';

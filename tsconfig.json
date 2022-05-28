@@ -25,7 +25,7 @@
     ],
     "baseUrl": "src/client",
     "paths": {
-      "shared": [ "app/shared" ],
+      "@linqua/shared": [ "app/shared" ],
       "@linqua/firebase-config": [ "app/firebase-config.ts" ]
     }
   },
