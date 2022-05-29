@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CurrentDateProvider } from '../util';
 
 export enum TimeGroupKey {
   Older,
@@ -108,11 +109,11 @@ export interface TimeGroup {
 
 @Injectable()
 export class TimeGroupService {
-  constructor() {
+  constructor(private readonly currentDateProvider: CurrentDateProvider) {
   }
 
   getTimeGroup(target: Date, reference?: Date): TimeGroup {
-    reference = reference || new Date();
+    reference = reference || this.currentDateProvider.getCurrentDate();
 
     const result = (relativeToToday: number): TimeGroup => {
       const group = groupTimeScale[relativeToToday + indexOfToday];
@@ -173,10 +174,6 @@ export class TimeGroupService {
           return result(13);
         }
       }
-    }
-
-    if (Math.abs(target.getMonth() - reference.getMonth()) === 1) {
-      return result(Math.sign(ts) * (-13));
     }
 
     return result(Math.sign(ts) * (-14));

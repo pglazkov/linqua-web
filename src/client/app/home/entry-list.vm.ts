@@ -1,5 +1,5 @@
 import { EntryListItemViewModel } from './entry-list-item.vm';
-import { createSortComparer, Entry, TimeGroupService } from '@linqua/shared';
+import { createSortComparer, CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 
 const entryDeletionAnimationDuration = 200;
@@ -13,7 +13,7 @@ export class EntryListViewModel {
 
   groups: EntryListTimeGroupViewModel[] = [];
 
-  constructor(entries: Entry[], private timeGroupService: TimeGroupService) {
+  constructor(entries: Entry[], private readonly timeGroupService: TimeGroupService, private readonly currentDateProvider: CurrentDateProvider) {
     const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
 
     for (const entry of sortedEntries) {
@@ -84,7 +84,7 @@ export class EntryListViewModel {
   private findOrCreateTimeGroupForEntry(entry: EntryListItemViewModel) {
     let entryDate = entry.addedOn;
     if (!entryDate) {
-      entryDate = new Date();
+      entryDate = this.currentDateProvider.getCurrentDate();
     }
 
     const dateWithoutTime = new Date(entryDate);

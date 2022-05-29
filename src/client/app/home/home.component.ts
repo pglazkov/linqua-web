@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
-import { Entry, EntryStorageService, TimeGroupService } from '@linqua/shared';
+import { CurrentDateProvider, Entry, EntryStorageService, TimeGroupService } from '@linqua/shared';
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
@@ -51,11 +51,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(private dialog: MatDialog,
-              private storage: EntryStorageService,
-              private randomEntryService: RandomEntryService,
-              private viewContainer: ViewContainerRef,
-              private timeGroupService: TimeGroupService) {
+  constructor(private readonly dialog: MatDialog,
+              private readonly storage: EntryStorageService,
+              private readonly randomEntryService: RandomEntryService,
+              private readonly viewContainer: ViewContainerRef,
+              private readonly timeGroupService: TimeGroupService,
+              private readonly currentDateProvider: CurrentDateProvider) {
     this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 
@@ -135,7 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     if (result) {
       Object.assign(entry, result);
-      entry.updatedOn = new Date();
+      entry.updatedOn = this.currentDateProvider.getCurrentDate();
 
       if (this.randomEntry && this.randomEntry.id === entry.id) {
         this.randomEntry = entry;
@@ -275,7 +276,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private onListStateChange(newState: EntryListState) {
-    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService);
+    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService, this.currentDateProvider);
 
     if (this.listVm) {
       this.listVm.mergeFrom(newListVm);

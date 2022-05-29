@@ -110,4 +110,15 @@ describe('TimeGroupService', () => {
     const group = service.getTimeGroup(olderThanTwoMonths, now);
     expect(group.key).toBe(TimeGroupKey.Older);
   }));
+
+  it('[bug] last month previous year', inject([TimeGroupService], (service: TimeGroupService) => {
+    // This test was intended to reproduce and fix a bug where "last month" was returned for a date that was
+    // last month, but on a different year
+    const lastMonthPreviousYear = new Date(now.getTime());
+    lastMonthPreviousYear.setDate(now.getDate() - 32);
+    lastMonthPreviousYear.setFullYear(lastMonthPreviousYear.getFullYear() - 1);
+
+    const group = service.getTimeGroup(lastMonthPreviousYear, now);
+    expect(group.key).toBe(TimeGroupKey.Older);
+  }));
 });
