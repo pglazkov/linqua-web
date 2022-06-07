@@ -14,25 +14,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '16'
           cache: 'yarn'
 
-      - run: npm install -g firebase-tools
-      - run: yarn install --frozen-lockfile --immutable  
-      - run: yarn install --frozen-lockfile --immutable        
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+      - name: YARN Install (in root)
+        run: yarn install --frozen-lockfile --immutable  
+      - name: YARN Install (in function)
+        run: yarn install --frozen-lockfile --immutable        
         working-directory: ./src/functions
 
-      - run: yarn lint 
-      - run: yarn test
+      - name: Lint
+        run: yarn lint 
+      - name: Run Unit Tests
+        run: yarn test
 
-      - env:
+      - name: Setup Firebase Token for Translation API
+        env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
         working-directory: ./src/functions      
 
-      - run: yarn e2e:ci
-      - run: yarn build:prod
+      - name: Run E2E Tests
+        run: yarn e2e:ci
+      - name: Run Production Build
+        run: yarn build:prod
