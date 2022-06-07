@@ -32,11 +32,7 @@ jobs:
       - env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
-        working-directory: ./src/functions
-
-      # - env:
-      #     GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
-      #   run: firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY"        
+        working-directory: ./src/functions      
 
       - run: yarn e2e:ci
-      - run: build:prod
+      - run: yarn build:prod
