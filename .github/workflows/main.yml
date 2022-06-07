@@ -24,14 +24,19 @@ jobs:
       - run: npm install -g firebase-tools
       - run: yarn install --frozen-lockfile --immutable  
       - run: yarn install --frozen-lockfile --immutable        
-        working-directory: ./src/functions      
+        working-directory: ./src/functions
 
       - run: yarn lint 
       - run: yarn test
 
       - env:
-          GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
-        run: firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY"        
-        
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
+        working-directory: ./src/functions
+
+      # - env:
+      #     GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
+      #   run: firebase functions:config:set translateapi.key="$GOOGLE_CLOUD_API_KEY"        
+
       - run: yarn e2e:ci
       - run: build:prod
