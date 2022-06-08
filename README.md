@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/pglazkov/Linqua.Web.svg?branch=master)](https://travis-ci.org/pglazkov/Linqua.Web?branch=master)
+![CI Build](https://github.com/pglazkov/linqua-web/actions/workflows/main.yml/badge.svg)
 
 # Linqua
 ## Vacabulary training tool
