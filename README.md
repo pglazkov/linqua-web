@@ -1,4 +1,4 @@
-![CI Build](https://github.com/pglazkov/linqua-web/.github/workflows/main.yml/badge.svg)
+![CI Build](https://github.com/pglazkov/linqua-web/actions/workflows/main.yml/badge.svg)
 
 # Linqua
 ## Vacabulary training tool
