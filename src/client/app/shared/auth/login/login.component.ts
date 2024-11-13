@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../auth.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthResult } from '@linqua/shared';
 
 const demoAccount = {
@@ -19,14 +19,14 @@ export class LoginComponent {
 
   @Input() redirectAuthResult: AuthResult | undefined;
 
-  loginForm: FormGroup;
-  userNameControl: FormControl;
+  loginForm: UntypedFormGroup;
+  userNameControl: UntypedFormControl;
 
   isLoggingIn = false;
   errorMessage: string | undefined;
 
-  constructor(public af: AuthService, private fb: FormBuilder) {
-    this.userNameControl = new FormControl('', [Validators.required, Validators.email]);
+  constructor(public af: AuthService, private fb: UntypedFormBuilder) {
+    this.userNameControl = new UntypedFormControl('', [Validators.required, Validators.email]);
     this.loginForm = fb.group({
       userName: this.userNameControl,
       password: ['', Validators.required]
