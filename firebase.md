@@ -6,7 +6,7 @@
 # Setup local dev environment (test functions locally):
 
 * `npm install -g firebase-tools`
-* `yarn install` in `src/functions` directory
+* `npm install` in `src/functions` directory
 * `firebase login`
 * Make sure to set the Translate API key as describe above
 * Run `firebase functions:config:get > .runtimeconfig.json` in `src/functions` directory

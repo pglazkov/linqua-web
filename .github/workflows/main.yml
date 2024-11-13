@@ -16,33 +16,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          cache: 'yarn'
+          node-version: '20'
 
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
-      - name: YARN Install (in root)
-        run: yarn install --frozen-lockfile --immutable  
-      - name: YARN Install (in function)
-        run: yarn install --frozen-lockfile --immutable        
+      - name: NPM Install (in root)
+        run: npm ci
+      - name: NPM Install (in function)
+        run: npm ci
         working-directory: ./src/functions
 
       - name: Lint
-        run: yarn lint 
+        run: npm run lint
       - name: Run Unit Tests
-        run: yarn test
+        run: npm run test
 
       - name: Setup Firebase Token for Translation API
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
-        working-directory: ./src/functions      
+        working-directory: ./src/functions
 
       - name: Run E2E Tests
-        run: yarn e2e:ci
+        run: npm run e2e:ci
       - name: Run Production Build
-        run: yarn build:prod
+        run: npm run build:prod

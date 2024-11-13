@@ -1,2 +1,2 @@
 #!/bin/sh
-yarn ng-test
+npm run ng-test

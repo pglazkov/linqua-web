@@ -1,2 +1,2 @@
 #!/bin/sh
-yarn e2e:start:ng:local-api
+npm run e2e:start:ng:local-api
