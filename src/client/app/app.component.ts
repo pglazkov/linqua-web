@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthResult, AuthService, EntryStorageService } from '@linqua/shared';
 import { firstValueFrom, first } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
 
 export enum States {

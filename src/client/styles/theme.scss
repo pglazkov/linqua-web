@@ -1,0 +1,17 @@
+// @import 'node_modules/@angular/material/theming';
+@use '@angular/material' as mat;
+@use "variables.scss" as vars;
+
+@include mat.core();
+
+$theme: mat.define-light-theme((
+  color: (
+    primary: vars.$primary,
+    accent: vars.$accent,
+    warn: vars.$warn,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($theme);

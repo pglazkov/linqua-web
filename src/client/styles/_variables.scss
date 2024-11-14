@@ -1,4 +1,4 @@
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
 
 //== Media queries breakpoints
 //
@@ -29,7 +29,7 @@ $screen-xs-max:              ($screen-sm-min - 1);
 $screen-sm-max:              ($screen-md-min - 1);
 $screen-md-max:              ($screen-lg-min - 1);
 
-$primary: mat-palette($mat-deep-purple);
-$accent:  mat-palette($mat-amber, A200, A100, A400);
-$warn: mat-palette($mat-red);
-$green: mat-palette($mat-green);
+$primary: mat.define-palette(mat.$deep-purple-palette);
+$accent:  mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$warn: mat.define-palette(mat.$red-palette);
+$green: mat.define-palette(mat.$green-palette);

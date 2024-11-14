@@ -1,4 +1,5 @@
-@import "../../styles/variables";
+@use '@angular/material' as mat;
+@use "variables" as vars;
 
 :host {
   display: flex;
@@ -17,7 +18,7 @@
   }
 
   .random-entry, .entry-list__group {
-    @media (min-width: $screen-tablet) {
+    @media (min-width: vars.$screen-tablet) {
       width: 700px;
       margin-left: auto;
       margin-right: auto;
@@ -46,7 +47,7 @@
     .entry-list__group__header {
       display: flex;
       h3 {
-        color: mat-color($primary);
+        color: mat.get-color-from-palette(vars.$primary);
       }
 
       .mat-divider {
@@ -54,7 +55,7 @@
         align-self: center;
         margin-top: -8px;
         margin-right: 16px;
-        background: mat-color($primary);
+        background: mat.get-color-from-palette(vars.$primary);
       }
     }
   }

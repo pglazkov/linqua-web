@@ -45,6 +45,7 @@
               "src/client/manifest.webmanifest"
             ],
             "styles": [
+              "src/client/styles/theme.scss",
               "src/client/styles/styles.scss"
             ],
             "scripts": [],
@@ -112,6 +113,7 @@
             "karmaConfig": "src/client/karma.conf.js",
             "inlineStyleLanguage": "scss",
             "styles": [
+              "src/client/styles/theme.scss",
               "src/client/styles/styles.scss"
             ],
             "assets": [
