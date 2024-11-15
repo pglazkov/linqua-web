@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
 import { AuthService } from '../auth/auth.service';
@@ -58,7 +58,7 @@ function genEntry(addedOnMinutesOffset?: number): Entry {
   });
 }
 
-async function generateUserAndLogin(): Promise<UserCredential> {  
+async function generateUserAndLogin(): Promise<UserCredential> {
   const userEmail = `${uniqueId('unit-test')}-${new Date().valueOf()}@linqua-app.com`;
   const userPassword = 'unit-test-pass';
 
@@ -90,14 +90,13 @@ describe('EntryStorageService', () => {
     cred = await generateUserAndLogin();
 
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientModule,
-        HttpClientTestingModule
-      ],
+      imports: [],
       providers: [
-        AuthService,
-        EntryStorageService,
-        { provide: firebaseAppToken, useValue: firebaseApp }
+          AuthService,
+          EntryStorageService,
+          { provide: firebaseAppToken, useValue: firebaseApp },
+          provideHttpClient(withInterceptorsFromDi()),
+          provideHttpClientTesting()
       ]
     });
 
@@ -110,15 +109,15 @@ describe('EntryStorageService', () => {
     ]).then(() => {
       const results: EntriesResult[] = [];
 
-      service.getEntriesStream().pipe(take(2)).subscribe({ 
+      service.getEntriesStream().pipe(take(2)).subscribe({
         next: (entries) => {
-          results.push(entries);      
+          results.push(entries);
 
           if (results.length === 2) {
             expect(results[0].fromCache).toBe(true);
             expect(results[1].fromCache).toBe(false);
           }
-        }, 
+        },
         error: done.fail,
         complete: () => done()
       });
@@ -140,7 +139,7 @@ describe('EntryStorageService', () => {
       expect(lastEntryId)
         .toBe(spec.expectedPageEnd.id, `Expected page to end with ${JSON.stringify(spec.expectedPageEnd)}`);
     };
-    
+
     const page1Doc1 = genEntry();
     const page1Doc2 = genEntry(-2);
     const page1Doc3 = genEntry(-3);
@@ -162,14 +161,14 @@ describe('EntryStorageService', () => {
       // Page 3
       page3Doc1, page3Doc2
     ]).then(() => {
-      service.getEntriesStream(undefined, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({ 
+      service.getEntriesStream(undefined, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
         next: page1Result => {
           verifyPage(page1Result, {
             expectedDocCount: pageSize,
             expectedPageStart: page1Doc1,
             expectedPageEnd: page1Doc3
           });
-    
+
           service.getEntriesStream(page1Result.loadMoreToken, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
             next: page2Result => {
               verifyPage(page2Result, {
@@ -177,7 +176,7 @@ describe('EntryStorageService', () => {
                 expectedPageStart: page2Doc1,
                 expectedPageEnd: page2Doc3
               });
-      
+
               service.getEntriesStream(page2Result.loadMoreToken, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
                 next: page3Result => {
                   verifyPage(page3Result, {
@@ -190,9 +189,9 @@ describe('EntryStorageService', () => {
                 complete: () => done()
               });
             },
-            error: done.fail              
+            error: done.fail
           });
-        }, 
+        },
         error: done.fail
       });
     }, done.fail);
@@ -223,17 +222,17 @@ describe('EntryStorageService', () => {
 
     let sub: Subscription;
 
-    sub = service.stats$.pipe(take(4)).subscribe({ 
+    sub = service.stats$.pipe(take(4)).subscribe({
       next: result => {
-        callbackCount++;          
-        
+        callbackCount++;
+
         // No data
         if (callbackCount === 1) {
           expect(result.totalEntryCount).toBe(0);
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(entry);
-        } 
+        }
         else if (callbackCount === 2) {
           // After initial entry was added
           expect(result.totalEntryCount).toBe(1);
@@ -241,40 +240,40 @@ describe('EntryStorageService', () => {
 
           // Now archive/unarchive the entry
           service.archive(entry.id);
-        } 
+        }
         else if (callbackCount === 3) {
           // After archive
-          expect(result.totalEntryCount).toBe(1);          
+          expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(1);
 
           service.unarchive(entry.id);
         }
         else if (callbackCount === 4) {
           // After unqrchive
-          expect(result.totalEntryCount).toBe(1);          
+          expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
         }
-      }, 
+      },
       error: done.fail,
       complete: done
-    });  
+    });
   });
 
   it('stats$ - delete entry - should emit updated stats', (done: DoneFn) => {
     const entry = genEntry();
     let callbackCount = 0;
 
-    service.stats$.pipe(take(3)).subscribe({ 
+    service.stats$.pipe(take(3)).subscribe({
       next: result => {
-        callbackCount++;          
-        
+        callbackCount++;
+
         // No data
         if (callbackCount === 1) {
           expect(result.totalEntryCount).toBe(0);
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(entry);
-        } 
+        }
         else if (callbackCount === 2) {
           // After initial entry was added
           expect(result.totalEntryCount).toBe(1);
@@ -282,13 +281,13 @@ describe('EntryStorageService', () => {
 
           // Now delete the entry
           service.delete(entry.id);
-        } 
+        }
         else if (callbackCount === 3) {
           // After delete
-          expect(result.totalEntryCount).toBe(0);          
+          expect(result.totalEntryCount).toBe(0);
           expect(result.learnedEntryCount).toBe(0);
         }
-      }, 
+      },
       error: done.fail,
       complete: done
     });
@@ -297,23 +296,23 @@ describe('EntryStorageService', () => {
   it('stats$ - add entry - should emit updated stats', (done: DoneFn) => {
     let callbackCount = 0;
 
-    service.stats$.pipe(take(2)).subscribe({ 
+    service.stats$.pipe(take(2)).subscribe({
       next: result => {
-        callbackCount++;          
-        
+        callbackCount++;
+
         // No data
         if (callbackCount === 1) {
           expect(result.totalEntryCount).toBe(0);
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(genEntry());
-        } 
+        }
         else if (callbackCount === 2) {
           // After entry was added
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
-        } 
-      }, 
+        }
+      },
       error: done.fail,
       complete: done
     });

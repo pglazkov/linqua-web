@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { TranslationService } from './translation.service';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @NgModule({
-  imports: [HttpClientModule],
   exports: [],
   declarations: [],
-  providers: [TranslationService],
+  imports: [],
+  providers: [
+    TranslationService,
+    provideHttpClient(withInterceptorsFromDi()),
+  ]
 })
 export class TranslationModule {
 }

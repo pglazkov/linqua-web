@@ -18,12 +18,16 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/wwwroot",
+            "outputPath": {
+              "base": "dist/wwwroot",
+              "browser": ""
+            },
             "index": "src/client/index.html",
-            "main": "src/client/main.ts",
-            "polyfills": "src/client/polyfills.ts",
+            "polyfills": [
+              "src/client/polyfills.ts"
+            ],
             "tsConfig": "src/client/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
@@ -49,7 +53,8 @@
               "src/client/styles/styles.scss"
             ],
             "scripts": [],
-            "preserveSymlinks": true
+            "preserveSymlinks": true,
+            "browser": "src/client/main.ts"
           },
           "configurations": {
             "production": {
@@ -72,13 +77,10 @@
                 }
               ],
               "outputHashing": "all",
-              "serviceWorker": true,
-              "ngswConfigPath": "src/client/ngsw-config.json"
+              "serviceWorker": "src/client/ngsw-config.json"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
