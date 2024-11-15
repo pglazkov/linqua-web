@@ -6,7 +6,7 @@ import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListViewModel } from './entry-list.vm';
 import { firstValueFrom, Subject, Unsubscribable, filter, first, map, take } from 'rxjs';
 import { RandomEntryService } from './random-entry/random-entry.service';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 
 interface EntryListState {

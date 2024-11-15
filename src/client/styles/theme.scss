@@ -1,4 +1,3 @@
-// @import 'node_modules/@angular/material/theming';
 @use '@angular/material' as mat;
 @use "variables.scss" as vars;
 
@@ -10,7 +9,9 @@ $theme: mat.define-light-theme((
     accent: vars.$accent,
     warn: vars.$warn,
   ),
-  typography: mat.define-typography-config(),
+  typography: mat.define-typography-config(
+    $font-family: 'Roboto',
+  ),
   density: 0,
 ));
 

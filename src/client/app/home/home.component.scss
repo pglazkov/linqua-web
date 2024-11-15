@@ -26,13 +26,8 @@
   }
 
   .entry-list__list-item {
-    &.mat-list-item {
-      height: auto;
-    }
-
-    ::ng-deep.mat-list-item-content {
-      padding: 0;
-    }
+    height: auto;
+    padding: 0;
   }
 
   .entry-list__list-item + .entry-list__list-item {
@@ -53,7 +48,6 @@
       .mat-divider {
         flex: 1;
         align-self: center;
-        margin-top: -8px;
         margin-right: 16px;
         background: mat.get-color-from-palette(vars.$primary);
       }

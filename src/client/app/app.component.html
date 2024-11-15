@@ -13,10 +13,12 @@
     </div>
 
     <header class="toolbar__header">
-      <a class="app-name" mat-button (click)="onLogoClick()">
-        <img src="assets/logo.png" />
-        <span>LINQUA</span>
-      </a>
+      <button class="app-name-button" mat-button (click)="onLogoClick()">
+        <div class="app-name-button__content">
+          <img src="assets/logo.png" />
+          <span>LINQUA</span>
+        </div>
+      </button>
     </header>
 
     <div class="toolbar__side-content toolbar__side-content-right">

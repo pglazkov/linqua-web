@@ -35,13 +35,15 @@
       display: flex;
       justify-content: center;
 
-      .app-name {
+      .app-name-button {
         font-family: 'Arima Madurai', cursive;
         font-size: 18px;
         padding-top: 3px;
 
-        img {
-          margin-right: 3px;
+        .app-name-button__content {
+          display: flex;
+          align-items: center;
+          gap: 4px;
         }
       }
     }

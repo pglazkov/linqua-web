@@ -46,7 +46,7 @@
       flex: 1;
       display: flex;
       justify-content: center;
-      margin-left: 80px; // This has to be equal to the width of .right-content
+      margin-left: 96px; // This has to be equal to the width of .right-content
 
       .loading-next-button {
         opacity: 0.8;
@@ -58,7 +58,7 @@
     }
 
     .right-content {
-      width: 80px;
+      width: 96px;
     }
   }
 }
