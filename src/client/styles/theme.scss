@@ -3,13 +3,13 @@
 
 @include mat.core();
 
-$theme: mat.define-light-theme((
+$theme: mat.m2-define-light-theme((
   color: (
     primary: vars.$primary,
     accent: vars.$accent,
     warn: vars.$warn,
   ),
-  typography: mat.define-typography-config(
+  typography: mat.m2-define-typography-config(
     $font-family: 'Roboto',
   ),
   density: 0,

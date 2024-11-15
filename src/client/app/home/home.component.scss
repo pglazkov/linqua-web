@@ -42,14 +42,14 @@
     .entry-list__group__header {
       display: flex;
       h3 {
-        color: mat.get-color-from-palette(vars.$primary);
+        color: mat.m2-get-color-from-palette(vars.$primary);
       }
 
       .mat-divider {
         flex: 1;
         align-self: center;
         margin-right: 16px;
-        background: mat.get-color-from-palette(vars.$primary);
+        background: mat.m2-get-color-from-palette(vars.$primary);
       }
     }
   }

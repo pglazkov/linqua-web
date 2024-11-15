@@ -38,7 +38,7 @@
 
 :host-context(.learned) {
   .mark-learned-button {
-    color: mat.get-color-from-palette(vars.$green);
+    color: mat.m2-get-color-from-palette(vars.$green);
   }
 
   .content {
