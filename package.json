@@ -47,7 +47,7 @@
     "@angular/platform-browser-dynamic": "^18.2.12",
     "@angular/router": "^18.2.12",
     "@angular/service-worker": "^18.2.12",
-    "firebase": "~9.7.0",
+    "firebase": "~11.0.2",
     "lodash-es": "^4.17.21",
     "ng-firebase-lite": "^3.0.1",
     "rxjs": "~7.5.0",
