@@ -8,13 +8,13 @@
 
   <mat-card appearance="outlined" class="login-buttons-card">
     <mat-card-content>
-      <button mat-raised-button (click)="loginWithGoogle()">
+      <button mat-raised-button (click)="loginWithGoogle()" data-test-id="login-with-google-btn">
         <div class="login-button-content">
           <img width="30" src="assets/google-logo.png" /><span>Login with Google</span>
         </div>
       </button>
 
-      <button mat-raised-button (click)="loginWithFacebook()">
+      <button mat-raised-button (click)="loginWithFacebook()" data-test-id="login-with-facebook-btn">
         <div class="login-button-content">
           <img width="30" src="assets/facebook-logo.png" /><span>Login with Facebook</span>
         </div>

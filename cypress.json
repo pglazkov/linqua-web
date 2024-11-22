@@ -1,8 +1,0 @@
-{
-  "baseUrl": "http://localhost:4200",
-  "chromeWebSecurity": false,
-  "defaultCommandTimeout": 60000,
-  "env": {
-    "USE_EMULATOR": true
-  }
-}

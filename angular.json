@@ -92,10 +92,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "linqua:build:production"
+              "buildTarget": "linqua:build:production",
+              "proxyConfig": "proxy.conf.prod.json"
             },
             "development": {
-              "buildTarget": "linqua:build:development"
+              "buildTarget": "linqua:build:development",
+              "proxyConfig": "proxy.conf.local.json"
             }
           },
           "defaultConfiguration": "development"
@@ -147,6 +149,17 @@
               "src/client/**/*.ts",
               "src/client/**/*.html"
             ]
+          }
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "devServerTarget": "linqua:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "linqua:serve:production"
+            }
           }
         }
       }
