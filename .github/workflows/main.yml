@@ -41,8 +41,18 @@ jobs:
         run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
         working-directory: ./src/functions
 
+      - name: List files in /src/functions
+        run: |
+          ls
+        working-directory: ./src/functions
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
+      - name: List files in /src/functions
+        run: |
+          ls
+        working-directory: ./src/functions
 
       - name: Run E2E Tests
         env:
