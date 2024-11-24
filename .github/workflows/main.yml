@@ -35,6 +35,12 @@ jobs:
       - name: Run Unit Tests
         run: npm run test
 
+      - name: Debug
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: firebase functions:config:get --token $FIREBASE_TOKEN
+        working-directory: ./src/functions
+
       - name: Setup Firebase Token for Translation API
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
