@@ -46,6 +46,10 @@ jobs:
           ls
         working-directory: ./src/functions
 
+      - name: List files in root
+        run: |
+          ls
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
