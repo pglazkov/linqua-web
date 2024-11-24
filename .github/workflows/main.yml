@@ -43,7 +43,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
 
       - name: Setup Firebase Config (Debug)
-        run: firebase functions:config:get
+        run: firebase functions:config:get --debug
         working-directory: ./src/functions
 
       - name: Setup Firebase Config
