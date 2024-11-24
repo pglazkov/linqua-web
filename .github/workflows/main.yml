@@ -35,25 +35,13 @@ jobs:
       - name: Run Unit Tests
         run: npm run test
 
+      # Based on https://stackoverflow.com/a/75735415
       - name: Set GOOGLE_APPLICATION_CREDENTIALS env
         env:
           GOOGLE_APPLICATION_CREDENTIALS_CONTENTS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
           echo $GOOGLE_APPLICATION_CREDENTIALS_CONTENTS > $HOME/gcloud.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
-
-      - name: Setup Firebase Config (Debug)
-        run: firebase functions:config:get --debug
-        working-directory: ./src/functions
-
-      - name: Setup Firebase Config
-        run: firebase functions:config:get > .runtimeconfig.json
-        working-directory: ./src/functions
-
-      - name: List files in /src/functions
-        run: |
-          ls -a
-        working-directory: ./src/functions
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
