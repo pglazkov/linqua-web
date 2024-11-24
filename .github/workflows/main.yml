@@ -43,6 +43,10 @@ jobs:
           echo $GOOGLE_APPLICATION_CREDENTIALS_CONTENTS > $HOME/gcloud.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
 
+      - name: Setup Firebase Config
+        run: firebase functions:config:get > .runtimeconfig.json
+        working-directory: ./src/functions
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
