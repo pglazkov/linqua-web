@@ -35,16 +35,19 @@ jobs:
       - name: Run Unit Tests
         run: npm run test
 
-      - name: Debug
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS env
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase functions:config:get --token $FIREBASE_TOKEN
+          GOOGLE_APPLICATION_CREDENTIALS_CONTENTS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        run: |
+          echo $GOOGLE_APPLICATION_CREDENTIALS_CONTENTS > $HOME/gcloud.json
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json" >> $GITHUB_ENV
+
+      - name: Setup Firebase Config (Debug)
+        run: firebase functions:config:get
         working-directory: ./src/functions
 
-      - name: Setup Firebase Token for Translation API
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase functions:config:get --token $FIREBASE_TOKEN > .runtimeconfig.json
+      - name: Setup Firebase Config
+        run: firebase functions:config:get > .runtimeconfig.json
         working-directory: ./src/functions
 
       - name: List files in /src/functions
