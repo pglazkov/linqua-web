@@ -12,6 +12,9 @@
 * Run `firebase functions:config:get > .runtimeconfig.json` in `src/functions` directory
 * Use Postman to execute HTTP requests against API (with `Authentication` header value taken from requests that browser makes after you login to the app)
 
+# Setup CI
+* [Use Firebase CLI with CI](https://firebase.google.com/docs/cli#cli-ci-systems)
+
 # Links
 
 * [Environment Configuration](https://firebase.google.com/docs/functions/config-env)
