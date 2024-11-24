@@ -43,20 +43,11 @@ jobs:
 
       - name: List files in /src/functions
         run: |
-          ls
+          ls -a
         working-directory: ./src/functions
-
-      - name: List files in root
-        run: |
-          ls
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-
-      - name: List files in /src/functions
-        run: |
-          ls
-        working-directory: ./src/functions
 
       - name: Run E2E Tests
         env:
