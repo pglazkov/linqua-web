@@ -3,7 +3,7 @@ import { Translation } from './translation';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TranslationService {
   constructor(private http: HttpClient) {
   }
