@@ -1,12 +1,20 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogContent } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Entry, TranslationService } from '@linqua/shared';
+import { MatFormField, MatHint, MatSuffix } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { NgIf } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-entry-editor-dialog',
-  templateUrl: './entry-editor-dialog.component.html',
-  styleUrls: ['./entry-editor-dialog.component.scss']
+    selector: 'app-entry-editor-dialog',
+    templateUrl: './entry-editor-dialog.component.html',
+    styleUrls: ['./entry-editor-dialog.component.scss'],
+    standalone: true,
+    imports: [MatDialogContent, FormsModule, ReactiveFormsModule, MatFormField, MatInput, NgIf, MatHint, MatProgressSpinner, MatSuffix, MatButton, MatIcon]
 })
 export class EntryEditorDialogComponent {
   isTranslating: boolean = false;

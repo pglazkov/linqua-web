@@ -107,7 +107,7 @@ export interface TimeGroup {
   englishName: string;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class TimeGroupService {
   constructor(private readonly currentDateProvider: CurrentDateProvider) {
   }

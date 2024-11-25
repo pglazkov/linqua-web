@@ -3,6 +3,14 @@ import { AuthResult, AuthService, EntryStorageService } from '@linqua/shared';
 import { firstValueFrom, first } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+import { MatToolbar } from '@angular/material/toolbar';
+import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+import { MatButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { HomeComponent } from './home/home.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { LoginComponent } from './shared/auth/login/login.component';
 
 export enum States {
   Unknown,
@@ -12,9 +20,11 @@ export enum States {
 }
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: true,
+    imports: [MatToolbar, NgIf, MatIcon, MatButton, MatMenuTrigger, MatMenu, MatMenuItem, NgSwitch, NgSwitchCase, HomeComponent, MatProgressSpinner, LoginComponent, NgSwitchDefault, AsyncPipe]
 })
 export class AppComponent implements OnInit {
   states = States;

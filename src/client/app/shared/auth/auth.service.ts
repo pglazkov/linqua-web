@@ -22,7 +22,7 @@ export interface User {
 const accountToLinkStorageKey = 'account-to-link';
 const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
   private readonly auth: Auth;

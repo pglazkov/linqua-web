@@ -9,7 +9,7 @@ interface CacheEntry {
   entries: EntryConfig[];
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class RandomEntryService {
 
   private batch$: Observable<Entry[]>;

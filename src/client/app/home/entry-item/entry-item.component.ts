@@ -1,10 +1,17 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { EntryListItemViewModel } from '../entry-list-item.vm';
+import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatListItemTitle, MatListItemLine } from '@angular/material/list';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
 
 @Component({
-  selector: 'app-entry-item',
-  templateUrl: './entry-item.component.html',
-  styleUrls: ['./entry-item.component.scss']
+    selector: 'app-entry-item',
+    templateUrl: './entry-item.component.html',
+    styleUrls: ['./entry-item.component.scss'],
+    standalone: true,
+    imports: [MatCard, MatCardContent, MatListItemTitle, MatListItemLine, MatIconButton, MatIcon, MatMenuTrigger, MatMenu, MatMenuItem]
 })
 export class EntryItemComponent {
   @Input() entry!: EntryListItemViewModel;
