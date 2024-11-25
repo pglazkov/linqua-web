@@ -5,7 +5,12 @@ export class EntryListTimeGroupViewModel {
   name: string;
   entries: EntryListItemViewModel[];
 
-  constructor(private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number, order: number, name: string, entries: EntryListItemViewModel[]) {
+  constructor(
+    private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number,
+    order: number,
+    name: string,
+    entries: EntryListItemViewModel[],
+  ) {
     this.order = order;
     this.name = name;
     this.entries = entries;
@@ -31,8 +36,7 @@ export class EntryListTimeGroupViewModel {
 
       if (thisEntry) {
         this.entries[this.entries.indexOf(thisEntry)] = otherEntry;
-      }
-      else {
+      } else {
         this.entries.push(otherEntry);
       }
     }

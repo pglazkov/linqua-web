@@ -17,30 +17,28 @@ module.exports = (req, res) => {
     qs: {
       key: functions.config().translateapi.key,
       q: original,
-      target: targetLang
+      target: targetLang,
     },
     json: true,
-    resolveWithFullResponse: true
+    resolveWithFullResponse: true,
   };
 
-  console.log("[translate] Request to Translate API: " + JSON.stringify(options));
+  console.log('[translate] Request to Translate API: ' + JSON.stringify(options));
 
-  request(options).then(
-    response => {
-      console.log('[translate] Response from Translate API: ' + JSON.stringify(response));
+  request(options).then(response => {
+    console.log('[translate] Response from Translate API: ' + JSON.stringify(response));
 
-      if (response.statusCode === 200) {
-        let translation = {};
+    if (response.statusCode === 200) {
+      let translation = {};
 
-        let firstTranslation = response.body.data.translations[0];
+      let firstTranslation = response.body.data.translations[0];
 
-        translation.detectedSourceLanguage = firstTranslation.detectedSourceLanguage;
-        translation[targetLang] = firstTranslation.translatedText;
+      translation.detectedSourceLanguage = firstTranslation.detectedSourceLanguage;
+      translation[targetLang] = firstTranslation.translatedText;
 
-        res.status(200).json(translation);
-      }
-      else {
-        res.status(500).send(response.body);
-      }
-    });
-}
+      res.status(200).json(translation);
+    } else {
+      res.status(500).send(response.body);
+    }
+  });
+};

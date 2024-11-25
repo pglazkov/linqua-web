@@ -1,12 +1,13 @@
 <ng-container *ngIf="listVm; else loading">
-
   <mat-list #list class="entry-list" data-test-id="entry-list">
     <div class="random-entry" *ngIf="randomEntry || isLoadingRandomEntry">
-      <app-random-entry [entry]="randomEntry"
-                        (nextEntryRequest)="onUpdateRandomEntryRequested()"
-                        (editRequest)="onEditRandomEntryRequested(randomEntry!)"
-                        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
-                        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"></app-random-entry>
+      <app-random-entry
+        [entry]="randomEntry"
+        (nextEntryRequest)="onUpdateRandomEntryRequested()"
+        (editRequest)="onEditRandomEntryRequested(randomEntry!)"
+        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
+        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
+      ></app-random-entry>
     </div>
 
     <ng-container *ngIf="listVm.groups.length > 0; else empty">
@@ -18,14 +19,19 @@
           <mat-divider></mat-divider>
         </div>
 
-        <mat-list-item *ngFor="let entry of group.entries; trackBy: trackByEntry" class="entry-list__list-item"
-                       [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-                       (@entryCardEnterLeave.done)="entry.isNew = false"
-                       data-test-id="entry-list-item">
-          <app-entry-item [entry]="entry"
-                          (editRequest)="onEditRequested(entry)"
-                          (deleteRequest)="onDeleteRequested(entry, group)"
-                          (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)">
+        <mat-list-item
+          *ngFor="let entry of group.entries; trackBy: trackByEntry"
+          class="entry-list__list-item"
+          [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
+          (@entryCardEnterLeave.done)="entry.isNew = false"
+          data-test-id="entry-list-item"
+        >
+          <app-entry-item
+            [entry]="entry"
+            (editRequest)="onEditRequested(entry)"
+            (deleteRequest)="onDeleteRequested(entry, group)"
+            (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
+          >
           </app-entry-item>
         </mat-list-item>
       </div>
@@ -41,12 +47,13 @@
   <ng-template #empty>
     <div class="empty-list-container mat-typography">
       <ng-container *ngIf="emptyListInfo$ | async; let emptyListInfo">
-        <p class="mat-subtitle-2" data-test-id="empty-list-main-message">{{ emptyListInfo.mainMessage }}</p>
+        <p class="mat-subtitle-2" data-test-id="empty-list-main-message">
+          {{ emptyListInfo.mainMessage }}
+        </p>
         <p>{{ emptyListInfo.extendedMessage }}</p>
       </ng-container>
     </div>
   </ng-template>
-
 </ng-container>
 
 <ng-template #loading>
@@ -61,4 +68,6 @@
   </div>
 </ng-template>
 
-<button mat-fab (click)="addNewEntry()" class="new-entry-fab" data-test-id="add-button"><mat-icon>add</mat-icon></button>
+<button mat-fab (click)="addNewEntry()" class="new-entry-fab" data-test-id="add-button">
+  <mat-icon>add</mat-icon>
+</button>

@@ -1,30 +1,46 @@
+import { AsyncPipe, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { AuthResult, AuthService, EntryStorageService } from '@linqua/shared';
-import { firstValueFrom, first } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { AboutDialogComponent } from './about-dialog/about-dialog.component';
-import { MatToolbar } from '@angular/material/toolbar';
-import { NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault, AsyncPipe } from '@angular/common';
-import { MatIcon } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
-import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
-import { HomeComponent } from './home/home.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatToolbar } from '@angular/material/toolbar';
+import { AuthResult, AuthService, EntryStorageService } from '@linqua/shared';
+import { first, firstValueFrom } from 'rxjs';
+
+import { AboutDialogComponent } from './about-dialog/about-dialog.component';
+import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './shared/auth/login/login.component';
 
 export enum States {
   Unknown,
   LoginNeeded,
   HandleLoginRedirect,
-  LoggedIn
+  LoggedIn,
 }
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: true,
-    imports: [MatToolbar, NgIf, MatIcon, MatButton, MatMenuTrigger, MatMenu, MatMenuItem, NgSwitch, NgSwitchCase, HomeComponent, MatProgressSpinner, LoginComponent, NgSwitchDefault, AsyncPipe]
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  standalone: true,
+  imports: [
+    MatToolbar,
+    NgIf,
+    MatIcon,
+    MatButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    NgSwitch,
+    NgSwitchCase,
+    HomeComponent,
+    MatProgressSpinner,
+    LoginComponent,
+    NgSwitchDefault,
+    AsyncPipe,
+  ],
 })
 export class AppComponent implements OnInit {
   states = States;
@@ -33,8 +49,11 @@ export class AppComponent implements OnInit {
 
   redirectAuthResult: AuthResult | undefined;
 
-  constructor(private af: AuthService, private entryStorageService: EntryStorageService, private dialog: MatDialog) {
-  }
+  constructor(
+    private af: AuthService,
+    private entryStorageService: EntryStorageService,
+    private dialog: MatDialog,
+  ) {}
 
   async ngOnInit() {
     await this.initState();
@@ -80,10 +99,8 @@ export class AppComponent implements OnInit {
 
     if (!isLoggedIn) {
       this.state = States.LoginNeeded;
-    }
-    else {
+    } else {
       this.state = States.LoggedIn;
     }
   }
 }
-

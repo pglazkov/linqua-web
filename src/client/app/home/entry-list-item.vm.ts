@@ -39,7 +39,7 @@ export class EntryListItemViewModel {
   readonly model: Entry;
 
   constructor(entry: Entry | EntryConfig) {
-    this.model = (entry instanceof Entry) ? entry : new Entry(entry);
+    this.model = entry instanceof Entry ? entry : new Entry(entry);
     this.isNew = false;
   }
 

@@ -1,10 +1,9 @@
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
-
-import { Observable, from, first, map, switchMap } from 'rxjs';
-import { firebaseAppToken } from 'ng-firebase-lite';
 import { FirebaseApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
+import { firebaseAppToken } from 'ng-firebase-lite';
+import { first, from, map, Observable, switchMap } from 'rxjs';
 
 @Injectable()
 export class AuthTokenInterceptor implements HttpInterceptor {
@@ -24,8 +23,8 @@ export class AuthTokenInterceptor implements HttpInterceptor {
           if (token) {
             return request.clone({
               setHeaders: {
-                Authorization: `Bearer ${token}`
-              }
+                Authorization: `Bearer ${token}`,
+              },
             });
           }
 
@@ -33,7 +32,7 @@ export class AuthTokenInterceptor implements HttpInterceptor {
         }),
         switchMap(req => {
           return next.handle(req);
-        })
+        }),
       );
     }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Entry, EntryConfig, EntryStorageService, AuthService } from '@linqua/shared';
+import { AuthService, Entry, EntryConfig, EntryStorageService } from '@linqua/shared';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
@@ -11,10 +11,12 @@ interface CacheEntry {
 
 @Injectable({ providedIn: 'root' })
 export class RandomEntryService {
-
   private batch$: Observable<Entry[]>;
 
-  constructor(private storage: EntryStorageService, private authService: AuthService) {
+  constructor(
+    private storage: EntryStorageService,
+    private authService: AuthService,
+  ) {
     this.batch$ = this.loadBatch();
   }
 
@@ -88,8 +90,7 @@ export class RandomEntryService {
       batchSubject.complete();
 
       result = batchSubject;
-    }
-    else {
+    } else {
       result = this.preloadNextBatch();
     }
 
@@ -113,8 +114,7 @@ export class RandomEntryService {
       const cacheEntry: CacheEntry = { entries: entries };
 
       this.persistentCacheStorage.setItem(this.persistentCacheKey, JSON.stringify(cacheEntry));
-    }
-    else {
+    } else {
       this.persistentCacheStorage.removeItem(this.persistentCacheKey);
     }
   }

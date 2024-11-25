@@ -1,10 +1,23 @@
 import { Inject, Injectable } from '@angular/core';
-import { firebaseAppToken } from 'ng-firebase-lite';
-import { FirebaseAuthErrorCode } from './firebase-auth-error-code';
-import { map, Observable, ReplaySubject } from 'rxjs';
-import { FirebaseApp } from 'firebase/app';
-import { getAuth, Auth, FacebookAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult, linkWithCredential, fetchSignInMethodsForEmail, AuthProvider, signInWithRedirect, connectAuthEmulator } from "firebase/auth";
 import { environment } from 'environments/environment';
+import { FirebaseApp } from 'firebase/app';
+import {
+  Auth,
+  AuthProvider,
+  connectAuthEmulator,
+  FacebookAuthProvider,
+  fetchSignInMethodsForEmail,
+  getAuth,
+  getRedirectResult,
+  GoogleAuthProvider,
+  linkWithCredential,
+  signInWithEmailAndPassword,
+  signInWithRedirect,
+} from 'firebase/auth';
+import { firebaseAppToken } from 'ng-firebase-lite';
+import { map, Observable, ReplaySubject } from 'rxjs';
+
+import { FirebaseAuthErrorCode } from './firebase-auth-error-code';
 
 export interface AuthResult {
   success: boolean;
@@ -41,7 +54,9 @@ export class AuthService {
 
   get userId(): string {
     if (!this.auth.currentUser) {
-      throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "userId" property.');
+      throw new Error(
+        'User is not logged in (yet). Please check "isLoggedIn"` before accessing the "userId" property.',
+      );
     }
 
     return this.auth.currentUser.uid;
@@ -55,7 +70,7 @@ export class AuthService {
     const user = this.auth.currentUser;
 
     let photoURL: string | null = user.photoURL;
-    const providerId: string = user.providerData.map(p => p ? p.providerId : '').join('/');
+    const providerId: string = user.providerData.map(p => (p ? p.providerId : '')).join('/');
 
     if (user.providerData.length > 0) {
       const providerUserInfo = user.providerData[0];
@@ -70,7 +85,7 @@ export class AuthService {
       email: user.email,
       photoURL: photoURL,
       providerId: providerId,
-      uid: user.uid
+      uid: user.uid,
     };
   }
 
@@ -103,7 +118,6 @@ export class AuthService {
       const redirectResult = await getRedirectResult(this.auth);
 
       if (redirectResult) {
-
         const accountToLinkData = sessionStorage.getItem(accountToLinkStorageKey);
         const accountToLink = accountToLinkData ? this.getCredentialInstance(JSON.parse(accountToLinkData)) : undefined;
 
@@ -116,8 +130,7 @@ export class AuthService {
       }
 
       return undefined;
-    }
-    catch (error: any) {
+    } catch (error: any) {
       if (error.code === FirebaseAuthErrorCode.AccountExistsWithDifferentCredential) {
         const availableProviders = await fetchSignInMethodsForEmail(this.auth, error.email);
 
@@ -125,15 +138,14 @@ export class AuthService {
 
         return {
           success: false,
-          error: 'There is already an account with this email. Please login using ' + availableProviders
+          error: 'There is already an account with this email. Please login using ' + availableProviders,
         };
       }
 
       console.error(error);
 
       return { success: false, error: JSON.stringify(error) };
-    }
-    finally {
+    } finally {
       sessionStorage.removeItem(loginWithRedirectInProgressKey);
     }
   }
@@ -141,7 +153,10 @@ export class AuthService {
   private login(provider: AuthProvider): void {
     sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
 
-    signInWithRedirect(this.auth, provider).then(() => {}, err => console.error(err));
+    signInWithRedirect(this.auth, provider).then(
+      () => {},
+      err => console.error(err),
+    );
   }
 
   private getCredentialInstance(credentialData: any) {

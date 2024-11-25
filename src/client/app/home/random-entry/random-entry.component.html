@@ -12,12 +12,22 @@
 
       <div class="toolbox" *ngIf="entry">
         <div class="center-content">
-          <button class="loading-next-button" *ngIf="!nextRequested; else loadingNext" mat-icon-button (click)="requestNext()">
+          <button
+            class="loading-next-button"
+            *ngIf="!nextRequested; else loadingNext"
+            mat-icon-button
+            (click)="requestNext()"
+          >
             <mat-icon aria-label="Refresh word of the day">autorenew</mat-icon>
           </button>
 
           <ng-template #loadingNext>
-            <mat-spinner class="loading-next-spinner" mode="indeterminate" [diameter]="20" [strokeWidth]="2"></mat-spinner>
+            <mat-spinner
+              class="loading-next-spinner"
+              mode="indeterminate"
+              [diameter]="20"
+              [strokeWidth]="2"
+            ></mat-spinner>
           </ng-template>
         </div>
 

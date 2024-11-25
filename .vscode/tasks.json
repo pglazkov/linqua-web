@@ -8,9 +8,7 @@
     {
       "label": "start",
       "type": "shell",
-      "args": [
-        "start"
-      ],
+      "args": ["start"],
       "isBackground": true,
       "problemMatcher": [],
       "group": {
@@ -21,10 +19,7 @@
     {
       "label": "test",
       "type": "shell",
-      "args": [
-        "run",
-        "test"
-      ],
+      "args": ["run", "test"],
       "problemMatcher": [],
       "group": {
         "_id": "test",
@@ -34,10 +29,7 @@
     {
       "label": "test:watch",
       "type": "shell",
-      "args": [
-        "run",
-        "test:watch"
-      ],
+      "args": ["run", "test:watch"],
       "isBackground": true,
       "problemMatcher": []
     }

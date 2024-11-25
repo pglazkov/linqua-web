@@ -1,4 +1,4 @@
-@use "../../../../styles/variables" as vars;
+@use '../../../../styles/variables' as vars;
 
 :host {
   display: flex;
@@ -24,7 +24,8 @@ section {
   align-items: stretch;
   flex-direction: column;
 
-  h1, .login-caption {
+  h1,
+  .login-caption {
     align-self: center;
   }
 
@@ -111,7 +112,3 @@ section {
     margin-top: 8px;
   }
 }
-
-
-
-

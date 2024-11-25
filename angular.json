@@ -25,15 +25,11 @@
               "browser": ""
             },
             "index": "src/client/index.html",
-            "polyfills": [
-              "src/client/polyfills.ts"
-            ],
+            "polyfills": ["src/client/polyfills.ts"],
             "tsConfig": "src/client/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/client/styles"
-              ]
+              "includePaths": ["src/client/styles"]
             },
             "assets": [
               {
@@ -48,10 +44,7 @@
               },
               "src/client/manifest.webmanifest"
             ],
-            "styles": [
-              "src/client/styles/theme.scss",
-              "src/client/styles/styles.scss"
-            ],
+            "styles": ["src/client/styles/theme.scss", "src/client/styles/styles.scss"],
             "scripts": [],
             "preserveSymlinks": true,
             "browser": "src/client/main.ts"
@@ -116,10 +109,7 @@
             "tsConfig": "src/client/tsconfig.spec.json",
             "karmaConfig": "src/client/karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "styles": [
-              "src/client/styles/theme.scss",
-              "src/client/styles/styles.scss"
-            ],
+            "styles": ["src/client/styles/theme.scss", "src/client/styles/styles.scss"],
             "assets": [
               {
                 "glob": "**/*",
@@ -145,10 +135,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/client/**/*.ts",
-              "src/client/**/*.html"
-            ]
+            "lintFilePatterns": ["src/client/**/*.ts", "src/client/**/*.html"]
           }
         },
         "e2e": {
@@ -167,9 +154,7 @@
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ]
+    "schematicCollections": ["@angular-eslint/schematics"]
   },
   "schematics": {
     "@angular-eslint/schematics:application": {

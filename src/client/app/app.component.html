@@ -23,7 +23,7 @@
 
     <div class="toolbar__side-content toolbar__side-content-right">
       <ng-container *ngIf="isLoggedIn | async">
-        <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu">
+        <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu" />
         <mat-menu #menu="matMenu" yPosition="below">
           <button mat-menu-item (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>
@@ -53,8 +53,7 @@
         <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login>
       </ng-container>
 
-      <ng-container *ngSwitchDefault>
-      </ng-container>
+      <ng-container *ngSwitchDefault> </ng-container>
     </ng-container>
   </main>
 

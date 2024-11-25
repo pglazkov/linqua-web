@@ -1,19 +1,23 @@
-import { TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-
-import { EntriesResult, EntryStorageService } from './entry-storage.service';
-import { AuthService } from '../auth/auth.service';
-
-import uniqueId from 'lodash-es/uniqueId';
-import { Entry } from '../model';
-
+import { TestBed } from '@angular/core/testing';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, connectAuthEmulator, UserCredential } from 'firebase/auth';
-import { addDoc, collection, doc, getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import {
+  connectAuthEmulator,
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  UserCredential,
+} from 'firebase/auth';
+import { addDoc, collection, connectFirestoreEmulator, doc, getFirestore } from 'firebase/firestore';
+import uniqueId from 'lodash-es/uniqueId';
 import { firebaseAppToken } from 'ng-firebase-lite';
 import { filter, Subscription, take } from 'rxjs';
+
 import { firebaseConfig } from '../../firebase-config';
+import { AuthService } from '../auth/auth.service';
+import { Entry } from '../model';
+import { EntriesResult, EntryStorageService } from './entry-storage.service';
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -33,7 +37,7 @@ async function createTestUserData(uid: string, entries: Entry[]): Promise<Entry[
       addedOn: entry.addedOn.getTime(),
       updatedOn: entry.addedOn.getTime(),
       originalText: entry.originalText,
-      translation: entry.translation
+      translation: entry.translation,
     };
 
     const newEntryRef = await addDoc(entryCollectionRef, entryData);
@@ -54,7 +58,7 @@ function genEntry(addedOnMinutesOffset?: number): Entry {
     addedOn: addedOn,
     updatedOn: addedOn,
     originalText: 'test',
-    translation: 'test'
+    translation: 'test',
   });
 }
 
@@ -66,8 +70,7 @@ async function generateUserAndLogin(): Promise<UserCredential> {
 
   try {
     user = await createUserWithEmailAndPassword(auth, userEmail, userPassword);
-  }
-  catch (error: any) {
+  } catch (error: any) {
     switch (error.message) {
       case 'auth/email-already-in-use':
         // Test user already exists, skipping creation.
@@ -92,52 +95,64 @@ describe('EntryStorageService', () => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
-          AuthService,
-          EntryStorageService,
-          { provide: firebaseAppToken, useValue: firebaseApp },
-          provideHttpClient(withInterceptorsFromDi()),
-          provideHttpClientTesting()
-      ]
+        AuthService,
+        EntryStorageService,
+        { provide: firebaseAppToken, useValue: firebaseApp },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
     });
 
     service = TestBed.inject(EntryStorageService);
   });
 
   it('getEntriesStream - should emit twice - fromCache=true,false', (done: DoneFn) => {
-    createTestUserData(cred.user.uid, [
-      genEntry()
-    ]).then(() => {
+    createTestUserData(cred.user.uid, [genEntry()]).then(() => {
       const results: EntriesResult[] = [];
 
-      service.getEntriesStream().pipe(take(2)).subscribe({
-        next: (entries) => {
-          results.push(entries);
+      service
+        .getEntriesStream()
+        .pipe(take(2))
+        .subscribe({
+          next: entries => {
+            results.push(entries);
 
-          if (results.length === 2) {
-            expect(results[0].fromCache).toBe(true);
-            expect(results[1].fromCache).toBe(false);
-          }
-        },
-        error: done.fail,
-        complete: () => done()
-      });
+            if (results.length === 2) {
+              expect(results[0].fromCache).toBe(true);
+              expect(results[1].fromCache).toBe(false);
+            }
+          },
+          error: done.fail,
+          complete: () => done(),
+        });
     }, done.fail);
   });
 
   it('getEntriesStream - paging', (done: DoneFn) => {
     const pageSize = 3;
 
-    const verifyPage = (result: EntriesResult, spec: { expectedPageStart: Entry, expectedPageEnd: Entry, expectedDocCount: number }) => {
+    const verifyPage = (
+      result: EntriesResult,
+      spec: {
+        expectedPageStart: Entry;
+        expectedPageEnd: Entry;
+        expectedDocCount: number;
+      },
+    ) => {
       expect(result.entries.length).toBe(spec.expectedDocCount);
 
       const firstEntryId = result.entries[0].id;
       const lastEntryId = result.entries[result.entries.length - 1].id;
 
-      expect(firstEntryId)
-        .toBe(spec.expectedPageStart.id, `Expected page to start with ${JSON.stringify(spec.expectedPageStart)}`);
+      expect(firstEntryId).toBe(
+        spec.expectedPageStart.id,
+        `Expected page to start with ${JSON.stringify(spec.expectedPageStart)}`,
+      );
 
-      expect(lastEntryId)
-        .toBe(spec.expectedPageEnd.id, `Expected page to end with ${JSON.stringify(spec.expectedPageEnd)}`);
+      expect(lastEntryId).toBe(
+        spec.expectedPageEnd.id,
+        `Expected page to end with ${JSON.stringify(spec.expectedPageEnd)}`,
+      );
     };
 
     const page1Doc1 = genEntry();
@@ -153,67 +168,93 @@ describe('EntryStorageService', () => {
 
     createTestUserData(cred.user.uid, [
       // Page 1
-      page1Doc1, page1Doc2, page1Doc3,
+      page1Doc1,
+      page1Doc2,
+      page1Doc3,
 
       // Page 2
-      page2Doc1, page2Doc2, page2Doc3,
+      page2Doc1,
+      page2Doc2,
+      page2Doc3,
 
       // Page 3
-      page3Doc1, page3Doc2
+      page3Doc1,
+      page3Doc2,
     ]).then(() => {
-      service.getEntriesStream(undefined, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
-        next: page1Result => {
-          verifyPage(page1Result, {
-            expectedDocCount: pageSize,
-            expectedPageStart: page1Doc1,
-            expectedPageEnd: page1Doc3
-          });
+      service
+        .getEntriesStream(undefined, pageSize)
+        .pipe(
+          filter(x => !x.fromCache),
+          take(1),
+        )
+        .subscribe({
+          next: page1Result => {
+            verifyPage(page1Result, {
+              expectedDocCount: pageSize,
+              expectedPageStart: page1Doc1,
+              expectedPageEnd: page1Doc3,
+            });
 
-          service.getEntriesStream(page1Result.loadMoreToken, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
-            next: page2Result => {
-              verifyPage(page2Result, {
-                expectedDocCount: pageSize,
-                expectedPageStart: page2Doc1,
-                expectedPageEnd: page2Doc3
-              });
-
-              service.getEntriesStream(page2Result.loadMoreToken, pageSize).pipe(filter(x => !x.fromCache), take(1)).subscribe({
-                next: page3Result => {
-                  verifyPage(page3Result, {
-                    expectedDocCount: 2,
-                    expectedPageStart: page3Doc1,
-                    expectedPageEnd: page3Doc2
+            service
+              .getEntriesStream(page1Result.loadMoreToken, pageSize)
+              .pipe(
+                filter(x => !x.fromCache),
+                take(1),
+              )
+              .subscribe({
+                next: page2Result => {
+                  verifyPage(page2Result, {
+                    expectedDocCount: pageSize,
+                    expectedPageStart: page2Doc1,
+                    expectedPageEnd: page2Doc3,
                   });
+
+                  service
+                    .getEntriesStream(page2Result.loadMoreToken, pageSize)
+                    .pipe(
+                      filter(x => !x.fromCache),
+                      take(1),
+                    )
+                    .subscribe({
+                      next: page3Result => {
+                        verifyPage(page3Result, {
+                          expectedDocCount: 2,
+                          expectedPageStart: page3Doc1,
+                          expectedPageEnd: page3Doc2,
+                        });
+                      },
+                      error: done.fail,
+                      complete: () => done(),
+                    });
                 },
                 error: done.fail,
-                complete: () => done()
               });
-            },
-            error: done.fail
-          });
-        },
-        error: done.fail
-      });
+          },
+          error: done.fail,
+        });
     }, done.fail);
   });
 
   it('stats$ - should emit correct counts', (done: DoneFn) => {
-    service.stats$.pipe(filter(x => x.totalEntryCount === 3), take(1)).subscribe({
-      next: result => {
-        expect(result).toBeDefined();
+    service.stats$
+      .pipe(
+        filter(x => x.totalEntryCount === 3),
+        take(1),
+      )
+      .subscribe({
+        next: result => {
+          expect(result).toBeDefined();
 
-        if (result) {
-          expect(result.totalEntryCount).toBe(3);
-          expect(result.learnedEntryCount).toBe(0);
-        }
-      },
-      error: done.fail,
-      complete: done
-    });
+          if (result) {
+            expect(result.totalEntryCount).toBe(3);
+            expect(result.learnedEntryCount).toBe(0);
+          }
+        },
+        error: done.fail,
+        complete: done,
+      });
 
-    createTestUserData(cred.user.uid, [
-      genEntry(), genEntry(), genEntry()
-    ]).catch(done.fail);
+    createTestUserData(cred.user.uid, [genEntry(), genEntry(), genEntry()]).catch(done.fail);
   });
 
   it('stats$ - archive/unarchive entry - should emit updated stats', (done: DoneFn) => {
@@ -232,30 +273,27 @@ describe('EntryStorageService', () => {
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(entry);
-        }
-        else if (callbackCount === 2) {
+        } else if (callbackCount === 2) {
           // After initial entry was added
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
 
           // Now archive/unarchive the entry
           service.archive(entry.id);
-        }
-        else if (callbackCount === 3) {
+        } else if (callbackCount === 3) {
           // After archive
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(1);
 
           service.unarchive(entry.id);
-        }
-        else if (callbackCount === 4) {
+        } else if (callbackCount === 4) {
           // After unqrchive
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
         }
       },
       error: done.fail,
-      complete: done
+      complete: done,
     });
   });
 
@@ -273,23 +311,21 @@ describe('EntryStorageService', () => {
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(entry);
-        }
-        else if (callbackCount === 2) {
+        } else if (callbackCount === 2) {
           // After initial entry was added
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
 
           // Now delete the entry
           service.delete(entry.id);
-        }
-        else if (callbackCount === 3) {
+        } else if (callbackCount === 3) {
           // After delete
           expect(result.totalEntryCount).toBe(0);
           expect(result.learnedEntryCount).toBe(0);
         }
       },
       error: done.fail,
-      complete: done
+      complete: done,
     });
   });
 
@@ -306,15 +342,14 @@ describe('EntryStorageService', () => {
           expect(result.learnedEntryCount).toBe(0);
 
           service.addOrUpdate(genEntry());
-        }
-        else if (callbackCount === 2) {
+        } else if (callbackCount === 2) {
           // After entry was added
           expect(result.totalEntryCount).toBe(1);
           expect(result.learnedEntryCount).toBe(0);
         }
       },
       error: done.fail,
-      complete: done
+      complete: done,
     });
   });
 });

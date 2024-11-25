@@ -1,3 +1,3 @@
 export enum FirebaseAuthErrorCode {
-  AccountExistsWithDifferentCredential = 'auth/account-exists-with-different-credential'
+  AccountExistsWithDifferentCredential = 'auth/account-exists-with-different-credential',
 }

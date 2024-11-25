@@ -1,19 +1,22 @@
-import { EntryListItemViewModel } from './entry-list-item.vm';
 import { createSortComparer, CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
+
+import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 
 const entryDeletionAnimationDuration = 200;
 
 export class EntryListViewModel {
-  static readonly entrySortCompareFunc =
-    createSortComparer((o: { addedOn: Date }) => o.addedOn, 'desc');
+  static readonly entrySortCompareFunc = createSortComparer((o: { addedOn: Date }) => o.addedOn, 'desc');
 
-  static readonly groupSortComparerFunc =
-    createSortComparer((g: EntryListTimeGroupViewModel) => g.order, 'desc');
+  static readonly groupSortComparerFunc = createSortComparer((g: EntryListTimeGroupViewModel) => g.order, 'desc');
 
   groups: EntryListTimeGroupViewModel[] = [];
 
-  constructor(entries: Entry[], private readonly timeGroupService: TimeGroupService, private readonly currentDateProvider: CurrentDateProvider) {
+  constructor(
+    entries: Entry[],
+    private readonly timeGroupService: TimeGroupService,
+    private readonly currentDateProvider: CurrentDateProvider,
+  ) {
     const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
 
     for (const entry of sortedEntries) {
@@ -44,8 +47,7 @@ export class EntryListViewModel {
 
       if (thisGroup) {
         thisGroup.mergeFrom(otherGroup);
-      }
-      else {
+      } else {
         this.groups.push(otherGroup);
       }
     }
@@ -69,7 +71,12 @@ export class EntryListViewModel {
     }
   }
 
-  findViewModelsForEntry(entry: Entry): { entryVm: EntryListItemViewModel; entryGroupVm: EntryListTimeGroupViewModel } | undefined {
+  findViewModelsForEntry(entry: Entry):
+    | {
+        entryVm: EntryListItemViewModel;
+        entryGroupVm: EntryListTimeGroupViewModel;
+      }
+    | undefined {
     for (const groupVm of this.groups) {
       const entryVm = groupVm.entries.find(x => x.id === entry.id);
 
@@ -95,7 +102,12 @@ export class EntryListViewModel {
     let group = this.groups.find(g => g.name === timeGroup.englishName);
 
     if (!group) {
-      group = new EntryListTimeGroupViewModel(EntryListViewModel.entrySortCompareFunc, timeGroup.order, timeGroup.englishName, []);
+      group = new EntryListTimeGroupViewModel(
+        EntryListViewModel.entrySortCompareFunc,
+        timeGroup.order,
+        timeGroup.englishName,
+        [],
+      );
 
       this.groups.unshift(group);
       this.groups.sort(EntryListViewModel.groupSortComparerFunc);

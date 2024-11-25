@@ -4,7 +4,7 @@ admin.initializeApp();
 
 const express = require('express');
 const cookieParser = require('cookie-parser')();
-const cors = require('cors')({origin: true});
+const cors = require('cors')({ origin: true });
 const tokenValidationMiddleware = require('./firebase-token-validation-middleware');
 const translateApi = require('./api/translate');
 const randomApi = require('./api/random');

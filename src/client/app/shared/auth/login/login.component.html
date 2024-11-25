@@ -4,7 +4,9 @@
 
 <section>
   <h1 class="mat-headline-5">Login</h1>
-  <span class="login-caption mat-caption">Login is required to use the app.<br/>Please choose one of the following options to login:</span>
+  <span class="login-caption mat-caption"
+    >Login is required to use the app.<br />Please choose one of the following options to login:</span
+  >
 
   <mat-card appearance="outlined" class="login-buttons-card">
     <mat-card-content>
@@ -26,24 +28,34 @@
     <mat-card-content>
       <form class="login-form" id="loginForm" [formGroup]="loginForm" (ngSubmit)="onLoginFormSubmit()" novalidate>
         <mat-form-field class="username-form-field">
-          <input matInput type="email" placeholder="email" formControlName="userName">
-          <mat-error *ngIf="loginForm.get('userName')?.invalid">{{getUserNameError()}}</mat-error>
+          <input matInput type="email" placeholder="email" formControlName="userName" />
+          <mat-error *ngIf="loginForm.get('userName')?.invalid">{{ getUserNameError() }}</mat-error>
         </mat-form-field>
 
         <mat-form-field class="password-form-field">
-          <input matInput type="password" placeholder="password" formControlName="password">
+          <input matInput type="password" placeholder="password" formControlName="password" />
         </mat-form-field>
       </form>
     </mat-card-content>
     <mat-card-actions class="actions-container">
-      <button mat-raised-button button type="submit" form="loginForm" [color]="'accent'" [disabled]="!loginForm.valid || isLoggingIn">login</button>
+      <button
+        mat-raised-button
+        button
+        type="submit"
+        form="loginForm"
+        [color]="'accent'"
+        [disabled]="!loginForm.valid || isLoggingIn"
+      >
+        login
+      </button>
     </mat-card-actions>
-
   </mat-card>
 
   <mat-card appearance="outlined" class="demo-login-card">
     <mat-card-content class="actions-container">
-      <button mat-raised-button button (click)="loginWithDemoAccount()" [disabled]="isLoggingIn">Login with Demo Account</button>
+      <button mat-raised-button button (click)="loginWithDemoAccount()" [disabled]="isLoggingIn">
+        Login with Demo Account
+      </button>
     </mat-card-content>
   </mat-card>
 </section>

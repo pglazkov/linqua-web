@@ -1,7 +1,8 @@
-import { CurrentDateProvider, Entry, TimeGroupService } from "@linqua/shared";
-import { uniqueId } from "lodash-es";
-import { EntryListItemViewModel } from "./entry-list-item.vm";
-import { EntryListViewModel } from "./entry-list.vm";
+import { CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
+import { uniqueId } from 'lodash-es';
+
+import { EntryListViewModel } from './entry-list.vm';
+import { EntryListItemViewModel } from './entry-list-item.vm';
 
 const currentDate = new Date(2018, 3, 15, 12, 0, 0, 0);
 
@@ -17,7 +18,7 @@ function genEntry(addedOnDaysOffset?: number): Entry {
     addedOn: addedOn,
     updatedOn: addedOn,
     originalText: 'test',
-    translation: 'test'
+    translation: 'test',
   });
 }
 
@@ -38,7 +39,7 @@ describe('EntryListViewModel', () => {
       genEntry(-1), // Yesterday
       genEntry(-7), // Last week
       genEntry(-30), // Last month
-      genEntry(-60) // Older
+      genEntry(-60), // Older
     ];
 
     const sut = new EntryListViewModel(entries, timeGroupService, currentDateProvider);
@@ -51,7 +52,10 @@ describe('EntryListViewModel', () => {
     expect(sut.groups[4].name).toBe('Older');
 
     for (let i = 0; i < sut.groups.length - 1; i++) {
-      expect(sut.groups[i].order > sut.groups[i + 1].order).toBe(true, `Expected group ${sut.groups[i].name} to come before group ${sut.groups[i + 1].name}`);
+      expect(sut.groups[i].order > sut.groups[i + 1].order).toBe(
+        true,
+        `Expected group ${sut.groups[i].name} to come before group ${sut.groups[i + 1].name}`,
+      );
     }
   });
 
@@ -59,7 +63,7 @@ describe('EntryListViewModel', () => {
     const initialEntries = [
       genEntry(), // Today
       genEntry(-25), // Last month
-      genEntry(-60) // Older
+      genEntry(-60), // Older
     ];
 
     const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
@@ -69,15 +73,16 @@ describe('EntryListViewModel', () => {
     expect(sut.groups[1].name).toBe('Last month');
     expect(sut.groups[2].name).toBe('Older');
 
-    
     const updatedEntries = [
       ...initialEntries,
       genEntry(-7), // Last week
       genEntry(-30), // Last month
-      genEntry(-90) // Older
+      genEntry(-90), // Older
     ];
 
-    sut.mergeFrom(new EntryListViewModel(updatedEntries, new TimeGroupService(currentDateProvider), currentDateProvider));
+    sut.mergeFrom(
+      new EntryListViewModel(updatedEntries, new TimeGroupService(currentDateProvider), currentDateProvider),
+    );
 
     const orderedGroups = sut.groups.sort(EntryListViewModel.groupSortComparerFunc);
 
@@ -95,7 +100,7 @@ describe('EntryListViewModel', () => {
   it('addEntry - should be added to existing group', () => {
     const initialEntries = [
       genEntry(-25), // Last month
-      genEntry(-60) // Older
+      genEntry(-60), // Older
     ];
 
     const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
@@ -107,7 +112,7 @@ describe('EntryListViewModel', () => {
     expect(sut.groups[1].entries.length).toBe(1);
 
     sut.addEntry(
-      new EntryListItemViewModel(genEntry(-20)) // Last month
+      new EntryListItemViewModel(genEntry(-20)), // Last month
     );
 
     expect(sut.groups.length).toBe(2);
@@ -118,7 +123,7 @@ describe('EntryListViewModel', () => {
   it('addEntry - new group should be created if does not exist', () => {
     const initialEntries = [
       genEntry(-25), // Last month
-      genEntry(-60) // Older
+      genEntry(-60), // Older
     ];
 
     const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
@@ -130,7 +135,7 @@ describe('EntryListViewModel', () => {
     expect(sut.groups[1].entries.length).toBe(1);
 
     sut.addEntry(
-      new EntryListItemViewModel(genEntry()) // Today
+      new EntryListItemViewModel(genEntry()), // Today
     );
 
     expect(sut.groups.length).toBe(3);

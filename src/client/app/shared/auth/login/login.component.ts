@@ -1,47 +1,66 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AuthService } from '../auth.service';
-import { FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AuthResult } from '@linqua/shared';
 import { NgIf } from '@angular/common';
-import { MatCard, MatCardContent, MatCardActions } from '@angular/material/card';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { MatFormField, MatError } from '@angular/material/form-field';
+import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
+import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { AuthResult } from '@linqua/shared';
+
+import { AuthService } from '../auth.service';
 
 const demoAccount = {
   email: 'demo@linqua-app.com',
-  password: 'p@ssw0rd'
+  password: 'p@ssw0rd',
 };
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    standalone: true,
-    imports: [NgIf, MatCard, MatCardContent, MatButton, FormsModule, ReactiveFormsModule, MatFormField, MatInput, MatError, MatCardActions]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [
+    NgIf,
+    MatCard,
+    MatCardContent,
+    MatButton,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormField,
+    MatInput,
+    MatError,
+    MatCardActions,
+  ],
 })
 export class LoginComponent {
-
   @Output() loginSuccess = new EventEmitter<void>();
 
   @Input() redirectAuthResult: AuthResult | undefined;
 
   loginForm = new FormGroup({
-    userName: new FormControl('', { validators: [Validators.required, Validators.email], nonNullable: true }),
-    password: new FormControl('', { validators: [Validators.required], nonNullable: true }),
+    userName: new FormControl('', {
+      validators: [Validators.required, Validators.email],
+      nonNullable: true,
+    }),
+    password: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
   });
 
   isLoggingIn = false;
   errorMessage: string | undefined;
 
-  constructor(public af: AuthService) {
-  }
+  constructor(public af: AuthService) {}
 
   getUserNameError() {
     const userName = this.loginForm.controls.userName;
 
-    return userName.hasError('required') ? 'Please enter the email address of the user' :
-      userName.hasError('email') ? 'This does not look like a valid email' : '';
+    return userName.hasError('required')
+      ? 'Please enter the email address of the user'
+      : userName.hasError('email')
+        ? 'This does not look like a valid email'
+        : '';
   }
 
   loginWithFacebook() {
@@ -70,11 +89,9 @@ export class LoginComponent {
     try {
       await this.af.loginWithEmailAndPassword(email, password);
       this.loginSuccess.emit();
-    }
-    catch (error: any) {
+    } catch (error: any) {
       this.errorMessage = error;
-    }
-    finally {
+    } finally {
       this.isLoggingIn = false;
     }
   }

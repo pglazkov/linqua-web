@@ -18,26 +18,15 @@
     "resolveJsonModule": true,
     "target": "ES2022",
     "module": "es2020",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "baseUrl": "src/client",
     "paths": {
-      "@linqua/shared": [
-        "app/shared"
-      ],
-      "@linqua/firebase-config": [
-        "app/firebase-config.ts"
-      ]
+      "@linqua/shared": ["app/shared"],
+      "@linqua/firebase-config": ["app/firebase-config.ts"]
     },
     "useDefineForClassFields": false
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/functions",
-  ],
+  "exclude": ["node_modules", "dist", "src/functions"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,

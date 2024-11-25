@@ -41,9 +41,7 @@
       "name": "Attach to Firebase Functions Emulator",
       "port": 9229,
       "restart": true,
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

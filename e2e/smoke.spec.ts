@@ -31,9 +31,7 @@ test.describe('linqua', () => {
 
     const entryList = page.getByTestId('entry-list');
 
-    const addedListItem = entryList
-      .getByTestId('entry-list-item')
-      .filter({ hasText: 'voertuig' });
+    const addedListItem = entryList.getByTestId('entry-list-item').filter({ hasText: 'voertuig' });
 
     await expect(addedListItem).toBeVisible();
 
@@ -44,6 +42,3 @@ test.describe('linqua', () => {
     await expect(page.getByTestId('empty-list-main-message')).toContainText('It is lonely here...');
   });
 });
-
-
-

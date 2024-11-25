@@ -7,10 +7,20 @@
       </div>
 
       <div class="toolbox">
-        <button mat-icon-button class="mark-learned-button" (click)="toggleIsLearned()" data-test-id="mark-learned-button">
+        <button
+          mat-icon-button
+          class="mark-learned-button"
+          (click)="toggleIsLearned()"
+          data-test-id="mark-learned-button"
+        >
           <mat-icon>done</mat-icon>
         </button>
-        <button mat-icon-button [matMenuTriggerFor]="menu" data-test-id="open-action-menu-button" [disabled]="entry.isLearned">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          data-test-id="open-action-menu-button"
+          [disabled]="entry.isLearned"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" data-test-id="action-menu">

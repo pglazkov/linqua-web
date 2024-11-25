@@ -1,4 +1,4 @@
-import { TestBed, inject } from '@angular/core/testing';
+import { inject, TestBed } from '@angular/core/testing';
 
 import { TimeGroupKey, TimeGroupService } from './time-group.service';
 
@@ -7,7 +7,7 @@ const now = new Date(Date.parse('2018-03-31T13:58+0000')); // Saturday
 describe('TimeGroupService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [TimeGroupService]
+      providers: [TimeGroupService],
     });
   });
 

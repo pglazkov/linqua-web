@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use "variables" as vars;
+@use 'variables' as vars;
 
 :host {
   display: flex;
@@ -17,7 +17,8 @@
     margin-bottom: 16px;
   }
 
-  .random-entry, .entry-list__group {
+  .random-entry,
+  .entry-list__group {
     @media (min-width: vars.$screen-tablet) {
       width: 700px;
       margin-left: auto;
