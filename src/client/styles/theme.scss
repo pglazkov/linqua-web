@@ -1,0 +1,18 @@
+@use '@angular/material' as mat;
+@use "variables.scss" as vars;
+
+@include mat.core();
+
+$theme: mat.m2-define-light-theme((
+  color: (
+    primary: vars.$primary,
+    accent: vars.$accent,
+    warn: vars.$warn,
+  ),
+  typography: mat.m2-define-typography-config(
+    $font-family: 'Roboto',
+  ),
+  density: 0,
+));
+
+@include mat.all-component-themes($theme);

@@ -12,6 +12,10 @@
 * Run `firebase functions:config:get > .runtimeconfig.json` in `src/functions` directory
 * Use Postman to execute HTTP requests against API (with `Authentication` header value taken from requests that browser makes after you login to the app)
 
+# Setup CI
+* Create `GOOGLE_APPLICATION_CREDENTIALS` secret in GitHub with contents of a service account that hase "Firebase Admin" role.
+  * Service account can be set up here: https://console.cloud.google.com/iam-admin/serviceaccounts?authuser=0&hl=en&inv=1&invt=AbiVqQ&project=linqua-cab88
+
 # Links
 
 * [Environment Configuration](https://firebase.google.com/docs/functions/config-env)

@@ -1,4 +1,5 @@
-@import "../../styles/variables";
+@use '@angular/material' as mat;
+@use "variables" as vars;
 
 :host {
   display: flex;
@@ -17,7 +18,7 @@
   }
 
   .random-entry, .entry-list__group {
-    @media (min-width: $screen-tablet) {
+    @media (min-width: vars.$screen-tablet) {
       width: 700px;
       margin-left: auto;
       margin-right: auto;
@@ -25,13 +26,8 @@
   }
 
   .entry-list__list-item {
-    &.mat-list-item {
-      height: auto;
-    }
-
-    ::ng-deep.mat-list-item-content {
-      padding: 0;
-    }
+    height: auto;
+    padding: 0;
   }
 
   .entry-list__list-item + .entry-list__list-item {
@@ -46,15 +42,14 @@
     .entry-list__group__header {
       display: flex;
       h3 {
-        color: mat-color($primary);
+        color: mat.m2-get-color-from-palette(vars.$primary);
       }
 
       .mat-divider {
         flex: 1;
         align-self: center;
-        margin-top: -8px;
         margin-right: 16px;
-        background: mat-color($primary);
+        background: mat.m2-get-color-from-palette(vars.$primary);
       }
     }
   }

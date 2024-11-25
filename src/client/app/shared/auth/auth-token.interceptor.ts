@@ -1,10 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 
 import { Observable, from, first, map, switchMap } from 'rxjs';
 import { firebaseAppToken } from 'ng-firebase-lite';

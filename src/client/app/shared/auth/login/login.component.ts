@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../auth.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthResult } from '@linqua/shared';
 
 const demoAccount = {
@@ -19,23 +19,22 @@ export class LoginComponent {
 
   @Input() redirectAuthResult: AuthResult | undefined;
 
-  loginForm: FormGroup;
-  userNameControl: FormControl;
+  loginForm = new FormGroup({
+    userName: new FormControl('', { validators: [Validators.required, Validators.email], nonNullable: true }),
+    password: new FormControl('', { validators: [Validators.required], nonNullable: true }),
+  });
 
   isLoggingIn = false;
   errorMessage: string | undefined;
 
-  constructor(public af: AuthService, private fb: FormBuilder) {
-    this.userNameControl = new FormControl('', [Validators.required, Validators.email]);
-    this.loginForm = fb.group({
-      userName: this.userNameControl,
-      password: ['', Validators.required]
-    });
+  constructor(public af: AuthService) {
   }
 
   getUserNameError() {
-    return this.userNameControl.hasError('required') ? 'Please enter the email address of the user' :
-      this.userNameControl.hasError('email') ? 'This does not look like a valid email' : '';
+    const userName = this.loginForm.controls.userName;
+
+    return userName.hasError('required') ? 'Please enter the email address of the user' :
+      userName.hasError('email') ? 'This does not look like a valid email' : '';
   }
 
   loginWithFacebook() {
@@ -55,7 +54,7 @@ export class LoginComponent {
       return;
     }
 
-    await this.loginWithEmailAndPassword(this.loginForm.value.userName, this.loginForm.value.password);
+    await this.loginWithEmailAndPassword(this.loginForm.value.userName!, this.loginForm.value.password!);
   }
 
   private async loginWithEmailAndPassword(email: string, password: string) {

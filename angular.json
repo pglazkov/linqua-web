@@ -18,13 +18,17 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/wwwroot",
+            "outputPath": {
+              "base": "dist/wwwroot",
+              "browser": ""
+            },
             "index": "src/client/index.html",
-            "main": "src/client/main.ts",
-            "polyfills": "src/client/polyfills.ts",
-            "tsConfig": "src/client/tsconfig.app.json",            
+            "polyfills": [
+              "src/client/polyfills.ts"
+            ],
+            "tsConfig": "src/client/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -32,15 +36,25 @@
               ]
             },
             "assets": [
-              { "glob": "**/*", "input": "src/client/assets", "output": "/assets" },
-              { "glob": "favicon.ico", "input": "src/client", "output": "/" },
+              {
+                "glob": "**/*",
+                "input": "src/client/assets",
+                "output": "/assets"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src/client",
+                "output": "/"
+              },
               "src/client/manifest.webmanifest"
             ],
             "styles": [
+              "src/client/styles/theme.scss",
               "src/client/styles/styles.scss"
             ],
             "scripts": [],
-            "preserveSymlinks": true
+            "preserveSymlinks": true,
+            "browser": "src/client/main.ts"
           },
           "configurations": {
             "production": {
@@ -48,7 +62,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -63,13 +77,10 @@
                 }
               ],
               "outputHashing": "all",
-              "serviceWorker": true,
-              "ngswConfigPath": "src/client/ngsw-config.json"
+              "serviceWorker": "src/client/ngsw-config.json"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -81,10 +92,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "linqua:build:production"
+              "buildTarget": "linqua:build:production",
+              "proxyConfig": "proxy.conf.prod.json"
             },
             "development": {
-              "browserTarget": "linqua:build:development"
+              "buildTarget": "linqua:build:development",
+              "proxyConfig": "proxy.conf.local.json"
             }
           },
           "defaultConfiguration": "development"
@@ -92,7 +105,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "linqua:build"
+            "buildTarget": "linqua:build"
           }
         },
         "test": {
@@ -104,11 +117,20 @@
             "karmaConfig": "src/client/karma.conf.js",
             "inlineStyleLanguage": "scss",
             "styles": [
+              "src/client/styles/theme.scss",
               "src/client/styles/styles.scss"
             ],
             "assets": [
-              { "glob": "**/*", "input": "src/client/assets", "output": "/assets" },
-              { "glob": "favicon.ico", "input": "src/client", "output": "/" },
+              {
+                "glob": "**/*",
+                "input": "src/client/assets",
+                "output": "/assets"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src/client",
+                "output": "/"
+              },
               "src/client/manifest.webmanifest"
             ],
             "scripts": [],
@@ -128,13 +150,33 @@
               "src/client/**/*.html"
             ]
           }
+        },
+        "e2e": {
+          "builder": "playwright-ng-schematics:playwright",
+          "options": {
+            "devServerTarget": "linqua:serve:development"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "linqua:serve:production"
+            }
+          }
         }
       }
     }
   },
-  "defaultProject": "linqua",
   "cli": {
     "analytics": false,
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
+  },
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
   }
 }

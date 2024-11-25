@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Entry, TranslationService } from '@linqua/shared';
 
 @Component({
@@ -9,22 +9,20 @@ import { Entry, TranslationService } from '@linqua/shared';
   styleUrls: ['./entry-editor-dialog.component.scss']
 })
 export class EntryEditorDialogComponent {
-  entryForm: FormGroup;
   isTranslating: boolean = false;
   translationError: boolean = false;
   detectedLanguage: string | undefined;
+
+  entryForm = new FormGroup({
+    originalText: new FormControl('', { validators: Validators.required, nonNullable: true }),
+    translation: new FormControl<string | undefined>('', [Validators.required]),
+  });
 
   @ViewChild('translationTextArea', { static: true }) translationTextArea!: ElementRef;
 
   constructor(
       private dialogRef: MatDialogRef<EntryEditorDialogComponent>,
-      private fb: FormBuilder,
       private translationService: TranslationService) {
-
-    this.entryForm = fb.group({
-      originalText: ['', Validators.required],
-      translation: ['']
-    });
   }
 
   setEntry(entry: Entry) {

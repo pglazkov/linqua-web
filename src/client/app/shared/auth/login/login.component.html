@@ -3,20 +3,26 @@
 </div>
 
 <section>
-  <h1 class="mat-headline">Login</h1>
+  <h1 class="mat-headline-5">Login</h1>
   <span class="login-caption mat-caption">Login is required to use the app.<br/>Please choose one of the following options to login:</span>
 
-  <mat-card class="login-buttons-card">
-    <button mat-raised-button (click)="loginWithGoogle()">
-      <img width="30" src="assets/google-logo.png" /> Login with Google
-    </button>
+  <mat-card appearance="outlined" class="login-buttons-card">
+    <mat-card-content>
+      <button mat-raised-button (click)="loginWithGoogle()" data-test-id="login-with-google-btn">
+        <div class="login-button-content">
+          <img width="30" src="assets/google-logo.png" /><span>Login with Google</span>
+        </div>
+      </button>
 
-    <button mat-raised-button (click)="loginWithFacebook()">
-      <img width="30" src="assets/facebook-logo.png" /> Login with Facebook
-    </button>
+      <button mat-raised-button (click)="loginWithFacebook()" data-test-id="login-with-facebook-btn">
+        <div class="login-button-content">
+          <img width="30" src="assets/facebook-logo.png" /><span>Login with Facebook</span>
+        </div>
+      </button>
+    </mat-card-content>
   </mat-card>
 
-  <mat-card class="username-password-login-card">
+  <mat-card appearance="outlined" class="username-password-login-card">
     <mat-card-content>
       <form class="login-form" id="loginForm" [formGroup]="loginForm" (ngSubmit)="onLoginFormSubmit()" novalidate>
         <mat-form-field class="username-form-field">
@@ -35,7 +41,7 @@
 
   </mat-card>
 
-  <mat-card class="demo-login-card">
+  <mat-card appearance="outlined" class="demo-login-card">
     <mat-card-content class="actions-container">
       <button mat-raised-button button (click)="loginWithDemoAccount()" [disabled]="isLoggingIn">Login with Demo Account</button>
     </mat-card-content>

@@ -1,4 +1,5 @@
-@import "variables";
+@use '@angular/material' as mat;
+@use "variables" as vars;
 
 :host {
   display: flex;
@@ -37,7 +38,7 @@
 
 :host-context(.learned) {
   .mark-learned-button {
-    color: mat-color($green);
+    color: mat.m2-get-color-from-palette(vars.$green);
   }
 
   .content {

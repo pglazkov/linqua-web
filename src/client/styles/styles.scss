@@ -1,7 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css?family=Arima+Madurai:500');
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
-@import 'theme.scss';
 
 html, body {
   display: flex;
@@ -10,5 +9,5 @@ html, body {
   margin: 0px;
   overflow: hidden;
   box-sizing: border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 }

@@ -22,8 +22,7 @@
                        [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
                        (@entryCardEnterLeave.done)="entry.isNew = false"
                        data-test-id="entry-list-item">
-          <app-entry-item mat-line
-                          [entry]="entry"
+          <app-entry-item [entry]="entry"
                           (editRequest)="onEditRequested(entry)"
                           (deleteRequest)="onDeleteRequested(entry, group)"
                           (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)">
@@ -42,7 +41,7 @@
   <ng-template #empty>
     <div class="empty-list-container mat-typography">
       <ng-container *ngIf="emptyListInfo$ | async; let emptyListInfo">
-        <p class="mat-body-2" data-test-id="empty-list-main-message">{{ emptyListInfo.mainMessage }}</p>
+        <p class="mat-subtitle-2" data-test-id="empty-list-main-message">{{ emptyListInfo.mainMessage }}</p>
         <p>{{ emptyListInfo.extendedMessage }}</p>
       </ng-container>
     </div>

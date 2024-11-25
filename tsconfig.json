@@ -6,18 +6,17 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
+    "esModuleInterop": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "ES2022",
     "module": "es2020",
     "lib": [
       "es2020",
@@ -25,15 +24,19 @@
     ],
     "baseUrl": "src/client",
     "paths": {
-      "@linqua/shared": [ "app/shared" ],
-      "@linqua/firebase-config": [ "app/firebase-config.ts" ]
-    }
+      "@linqua/shared": [
+        "app/shared"
+      ],
+      "@linqua/firebase-config": [
+        "app/firebase-config.ts"
+      ]
+    },
+    "useDefineForClassFields": false
   },
   "exclude": [
     "node_modules",
     "dist",
     "src/functions",
-    "cypress"
   ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
