@@ -11,17 +11,17 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatCardModule,
-    MatButtonModule
-  ],
-  exports: [LoginComponent],
-  declarations: [LoginComponent],
-  providers: []
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatCardModule,
+        MatButtonModule,
+        LoginComponent
+    ],
+    exports: [LoginComponent],
+    providers: []
 })
 export class AuthModule {
   static forRoot(): ModuleWithProviders<AuthModule> {

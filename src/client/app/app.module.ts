@@ -43,36 +43,34 @@ const materialModules = [
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    EntryEditorDialogComponent,
-    EntryItemComponent,
-    RandomEntryComponent,
-    AboutDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    FormsModule,
-    ReactiveFormsModule,
-    ...materialModules,
-    TranslationModule,
-    FirebaseAppModule.initializeApp(firebaseConfig),
-    AuthModule.forRoot(),
-    TimeGroupingModule.forRoot()
-  ],
-  providers: [
-    RandomEntryService
-  ],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent],
+    imports: [
+        CommonModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: environment.production,
+            // Register the ServiceWorker as soon as the application is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000'
+        }),
+        FormsModule,
+        ReactiveFormsModule,
+        ...materialModules,
+        TranslationModule,
+        FirebaseAppModule.initializeApp(firebaseConfig),
+        AuthModule.forRoot(),
+        TimeGroupingModule.forRoot(),
+        HomeComponent,
+        EntryEditorDialogComponent,
+        EntryItemComponent,
+        RandomEntryComponent,
+        AboutDialogComponent
+    ],
+    providers: [
+        RandomEntryService
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {
 

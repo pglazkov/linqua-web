@@ -8,6 +8,14 @@ import { firstValueFrom, Subject, Unsubscribable, filter, first, map, take } fro
 import { RandomEntryService } from './random-entry/random-entry.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
+import { NgIf, NgFor, AsyncPipe } from '@angular/common';
+import { MatList, MatListSubheaderCssMatStyler, MatListItem } from '@angular/material/list';
+import { RandomEntryComponent } from './random-entry/random-entry.component';
+import { MatDivider } from '@angular/material/divider';
+import { EntryItemComponent } from './entry-item/entry-item.component';
+import { MatButton, MatFabButton } from '@angular/material/button';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatIcon } from '@angular/material/icon';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -16,24 +24,26 @@ interface EntryListState {
 }
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
-  animations: [
-    trigger('entryCardEnterLeave', [
-      state('in', style({ opacity: 1, height: '*' })),
-      transition('void => new', [
-        animate('0.4s', keyframes([
-          style({ opacity: 0, height: 0, offset: 0 }),
-          style({ opacity: 0, height: '*', offset: 0.3 }),
-          style({ opacity: 1, height: '*', offset: 1.0 })
-        ]))
-      ]),
-      transition('* => void', [
-        animate('0.2s ease-in', style({transform: 'translateX(100%)'}))
-      ])
-    ])
-  ]
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    animations: [
+        trigger('entryCardEnterLeave', [
+            state('in', style({ opacity: 1, height: '*' })),
+            transition('void => new', [
+                animate('0.4s', keyframes([
+                    style({ opacity: 0, height: 0, offset: 0 }),
+                    style({ opacity: 0, height: '*', offset: 0.3 }),
+                    style({ opacity: 1, height: '*', offset: 1.0 })
+                ]))
+            ]),
+            transition('* => void', [
+                animate('0.2s ease-in', style({ transform: 'translateX(100%)' }))
+            ])
+        ])
+    ],
+    standalone: true,
+    imports: [NgIf, MatList, RandomEntryComponent, NgFor, MatListSubheaderCssMatStyler, MatDivider, MatListItem, EntryItemComponent, MatButton, MatProgressSpinner, MatFabButton, MatIcon, AsyncPipe]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   listVm: EntryListViewModel | undefined;
