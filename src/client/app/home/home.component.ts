@@ -1,5 +1,5 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -46,10 +46,8 @@ interface EntryListState {
   ],
   standalone: true,
   imports: [
-    NgIf,
     MatList,
     RandomEntryComponent,
-    NgFor,
     MatListSubheaderCssMatStyler,
     MatDivider,
     MatListItem,

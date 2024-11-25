@@ -1,6 +1,8 @@
-<div class="error-message" *ngIf="errorMessage || (redirectAuthResult && redirectAuthResult.error)">
-  {{ errorMessage || (redirectAuthResult && redirectAuthResult.error) }}
-</div>
+@if (errorMessage || (redirectAuthResult && redirectAuthResult.error)) {
+  <div class="error-message">
+    {{ errorMessage || (redirectAuthResult && redirectAuthResult.error) }}
+  </div>
+}
 
 <section>
   <h1 class="mat-headline-5">Login</h1>
@@ -29,7 +31,9 @@
       <form class="login-form" id="loginForm" [formGroup]="loginForm" (ngSubmit)="onLoginFormSubmit()" novalidate>
         <mat-form-field class="username-form-field">
           <input matInput type="email" placeholder="email" formControlName="userName" />
-          <mat-error *ngIf="loginForm.get('userName')?.invalid">{{ getUserNameError() }}</mat-error>
+          @if (loginForm.get('userName')?.invalid) {
+            <mat-error>{{ getUserNameError() }}</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field class="password-form-field">

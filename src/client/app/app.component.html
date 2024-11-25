@@ -1,15 +1,17 @@
 <div class="container">
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-      <ng-container *ngIf="isLoggedIn | async">
-        <div class="stats" *ngIf="stats$ | async; let statItem">
-          <mat-icon class="stats__icon">done_all</mat-icon>
-          <div class="stats__numbers">
-            <span class="stats__numbers__learned">{{ statItem.learnedEntryCount }}</span>
-            <span class="stats__numbers__total">/ {{ statItem.totalEntryCount }}</span>
+      @if (isLoggedIn | async) {
+        @if (stats$ | async; as statItem) {
+          <div class="stats">
+            <mat-icon class="stats__icon">done_all</mat-icon>
+            <div class="stats__numbers">
+              <span class="stats__numbers__learned">{{ statItem.learnedEntryCount }}</span>
+              <span class="stats__numbers__total">/ {{ statItem.totalEntryCount }}</span>
+            </div>
           </div>
-        </div>
-      </ng-container>
+        }
+      }
     </div>
 
     <header class="toolbar__header">
@@ -22,7 +24,7 @@
     </header>
 
     <div class="toolbar__side-content toolbar__side-content-right">
-      <ng-container *ngIf="isLoggedIn | async">
+      @if (isLoggedIn | async) {
         <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu" />
         <mat-menu #menu="matMenu" yPosition="below">
           <button mat-menu-item (click)="logout()">
@@ -30,31 +32,28 @@
             <span>logout</span>
           </button>
         </mat-menu>
-      </ng-container>
+      }
     </div>
   </mat-toolbar>
 
   <main>
-    <ng-container [ngSwitch]="state">
-      <ng-container *ngSwitchCase="states.LoggedIn">
+    @switch (state) {
+      @case (states.LoggedIn) {
         <app-home></app-home>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="states.HandleLoginRedirect">
+      }
+      @case (states.HandleLoginRedirect) {
         <div class="handle-login-redirect-container">
           Just a moment, verifying login...
           <div class="spinner">
             <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
           </div>
         </div>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="states.LoginNeeded">
+      }
+      @case (states.LoginNeeded) {
         <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login>
-      </ng-container>
-
-      <ng-container *ngSwitchDefault> </ng-container>
-    </ng-container>
+      }
+      @default {}
+    }
   </main>
 
   <footer></footer>

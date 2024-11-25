@@ -1,72 +1,70 @@
-<ng-container *ngIf="listVm; else loading">
+@if (listVm) {
   <mat-list #list class="entry-list" data-test-id="entry-list">
-    <div class="random-entry" *ngIf="randomEntry || isLoadingRandomEntry">
-      <app-random-entry
-        [entry]="randomEntry"
-        (nextEntryRequest)="onUpdateRandomEntryRequested()"
-        (editRequest)="onEditRandomEntryRequested(randomEntry!)"
-        (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
-        (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
-      ></app-random-entry>
-    </div>
-
-    <ng-container *ngIf="listVm.groups.length > 0; else empty">
-      <div class="entry-list__group" *ngFor="let group of listVm.groups; trackBy: trackByGroup">
-        <div class="entry-list__group__header">
-          <h3 mat-subheader>
-            {{ group.name }}
-          </h3>
-          <mat-divider></mat-divider>
+    @if (randomEntry || isLoadingRandomEntry) {
+      <div class="random-entry">
+        <app-random-entry
+          [entry]="randomEntry"
+          (nextEntryRequest)="onUpdateRandomEntryRequested()"
+          (editRequest)="onEditRandomEntryRequested(randomEntry!)"
+          (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
+          (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
+        ></app-random-entry>
+      </div>
+    }
+    @if (listVm.groups.length > 0) {
+      @for (group of listVm.groups; track trackByGroup($index, group)) {
+        <div class="entry-list__group">
+          <div class="entry-list__group__header">
+            <h3 mat-subheader>
+              {{ group.name }}
+            </h3>
+            <mat-divider></mat-divider>
+          </div>
+          @for (entry of group.entries; track trackByEntry($index, entry)) {
+            <mat-list-item
+              class="entry-list__list-item"
+              [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
+              (@entryCardEnterLeave.done)="entry.isNew = false"
+              data-test-id="entry-list-item"
+            >
+              <app-entry-item
+                [entry]="entry"
+                (editRequest)="onEditRequested(entry)"
+                (deleteRequest)="onDeleteRequested(entry, group)"
+                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
+              >
+              </app-entry-item>
+            </mat-list-item>
+          }
         </div>
-
-        <mat-list-item
-          *ngFor="let entry of group.entries; trackBy: trackByEntry"
-          class="entry-list__list-item"
-          [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-          (@entryCardEnterLeave.done)="entry.isNew = false"
-          data-test-id="entry-list-item"
-        >
-          <app-entry-item
-            [entry]="entry"
-            (editRequest)="onEditRequested(entry)"
-            (deleteRequest)="onDeleteRequested(entry, group)"
-            (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
-          >
-          </app-entry-item>
-        </mat-list-item>
-      </div>
-
+      }
       <div class="entry-list__footer">
-        <ng-container *ngIf="canLoadMore">
-          <button *ngIf="!isLoadingMore; else loadingMore" mat-raised-button (click)="loadMore()">load more</button>
-        </ng-container>
+        @if (canLoadMore) {
+          @if (!isLoadingMore) {
+            <button mat-raised-button (click)="loadMore()">load more</button>
+          } @else {
+            <div class="loading-spinner-container">
+              <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
+            </div>
+          }
+        }
       </div>
-    </ng-container>
+    } @else {
+      <div class="empty-list-container mat-typography">
+        @if (emptyListInfo$ | async; as emptyListInfo) {
+          <p class="mat-subtitle-2" data-test-id="empty-list-main-message">
+            {{ emptyListInfo.mainMessage }}
+          </p>
+          <p>{{ emptyListInfo.extendedMessage }}</p>
+        }
+      </div>
+    }
   </mat-list>
-
-  <ng-template #empty>
-    <div class="empty-list-container mat-typography">
-      <ng-container *ngIf="emptyListInfo$ | async; let emptyListInfo">
-        <p class="mat-subtitle-2" data-test-id="empty-list-main-message">
-          {{ emptyListInfo.mainMessage }}
-        </p>
-        <p>{{ emptyListInfo.extendedMessage }}</p>
-      </ng-container>
-    </div>
-  </ng-template>
-</ng-container>
-
-<ng-template #loading>
+} @else {
   <div class="loading-spinner-container">
     <mat-spinner mode="indeterminate"></mat-spinner>
   </div>
-</ng-template>
-
-<ng-template #loadingMore>
-  <div class="loading-spinner-container">
-    <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
-  </div>
-</ng-template>
+}
 
 <button mat-fab (click)="addNewEntry()" class="new-entry-fab" data-test-id="add-button">
   <mat-icon>add</mat-icon>

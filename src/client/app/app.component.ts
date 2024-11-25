@@ -1,4 +1,4 @@
-import { AsyncPipe, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -27,18 +27,14 @@ export enum States {
   standalone: true,
   imports: [
     MatToolbar,
-    NgIf,
     MatIcon,
     MatButton,
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    NgSwitch,
-    NgSwitchCase,
     HomeComponent,
     MatProgressSpinner,
     LoginComponent,
-    NgSwitchDefault,
     AsyncPipe,
   ],
 })

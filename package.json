@@ -17,6 +17,7 @@
     "ng-test": "ng test --watch=false --no-progress --browsers=ChromeHeadlessCI",
     "test": "firebase emulators:exec --only functions,auth,firestore './test.sh'",
     "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
     "e2e": "playwright test",
     "e2e:watch": "playwright test --ui",
     "e2e:ng": "ng e2e",
@@ -29,7 +30,8 @@
     "deploy:firebase:hosting": "firebase deploy --only hosting",
     "deploy": "run-s ci deploy:firebase",
     "deploy:only-frontend": "run-s ci deploy:firebase:hosting",
-    "deploy:only-frontend:skip-ci": "run-s build:prod deploy:firebase:hosting"
+    "deploy:only-frontend:skip-ci": "run-s build:prod deploy:firebase:hosting",
+    "format": "npx prettier --write ."
   },
   "private": true,
   "dependencies": {

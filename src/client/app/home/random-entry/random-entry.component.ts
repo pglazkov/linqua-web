@@ -1,5 +1,4 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
@@ -27,17 +26,7 @@ import { Entry } from '@linqua/shared';
     ]),
   ],
   standalone: true,
-  imports: [
-    MatCard,
-    MatCardContent,
-    NgIf,
-    MatIconButton,
-    MatIcon,
-    MatProgressSpinner,
-    MatMenuTrigger,
-    MatMenu,
-    MatMenuItem,
-  ],
+  imports: [MatCard, MatCardContent, MatIconButton, MatIcon, MatProgressSpinner, MatMenuTrigger, MatMenu, MatMenuItem],
 })
 export class RandomEntryComponent {
   @Input()

@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -20,7 +19,6 @@ import { Entry, TranslationService } from '@linqua/shared';
     ReactiveFormsModule,
     MatFormField,
     MatInput,
-    NgIf,
     MatHint,
     MatProgressSpinner,
     MatSuffix,

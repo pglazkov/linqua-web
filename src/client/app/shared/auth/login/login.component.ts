@@ -1,4 +1,3 @@
-import { NgIf } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
@@ -20,7 +19,6 @@ const demoAccount = {
   styleUrls: ['./login.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
     MatCard,
     MatCardContent,
     MatButton,
