@@ -1,3 +1,4 @@
+import { TestBed } from '@angular/core/testing';
 import { CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
 import { uniqueId } from 'lodash-es';
 
@@ -30,7 +31,11 @@ describe('EntryListViewModel', () => {
     currentDateProvider = jasmine.createSpyObj('CurrentDateProvider', ['getCurrentDate']);
     currentDateProvider.getCurrentDate.and.returnValue(currentDate);
 
-    timeGroupService = new TimeGroupService(currentDateProvider);
+    TestBed.configureTestingModule({
+      providers: [{ provide: CurrentDateProvider, useValue: currentDateProvider }, TimeGroupService],
+    });
+
+    timeGroupService = TestBed.inject(TimeGroupService);
   });
 
   it('should create correct time groups', () => {
@@ -80,9 +85,7 @@ describe('EntryListViewModel', () => {
       genEntry(-90), // Older
     ];
 
-    sut.mergeFrom(
-      new EntryListViewModel(updatedEntries, new TimeGroupService(currentDateProvider), currentDateProvider),
-    );
+    sut.mergeFrom(new EntryListViewModel(updatedEntries, timeGroupService, currentDateProvider));
 
     const orderedGroups = sut.groups.sort(EntryListViewModel.groupSortComparerFunc);
 

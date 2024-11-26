@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
@@ -31,6 +31,8 @@ const demoAccount = {
   ],
 })
 export class LoginComponent {
+  private readonly af = inject(AuthService);
+
   @Output() loginSuccess = new EventEmitter<void>();
 
   @Input() redirectAuthResult: AuthResult | undefined;
@@ -48,8 +50,6 @@ export class LoginComponent {
 
   isLoggingIn = false;
   errorMessage: string | undefined;
-
-  constructor(public af: AuthService) {}
 
   getUserNameError() {
     const userName = this.loginForm.controls.userName;

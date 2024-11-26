@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AuthService, Entry, EntryConfig, EntryStorageService } from '@linqua/shared';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
@@ -11,14 +11,10 @@ interface CacheEntry {
 
 @Injectable({ providedIn: 'root' })
 export class RandomEntryService {
-  private batch$: Observable<Entry[]>;
+  private readonly storage = inject(EntryStorageService);
+  private readonly authService = inject(AuthService);
 
-  constructor(
-    private storage: EntryStorageService,
-    private authService: AuthService,
-  ) {
-    this.batch$ = this.loadBatch();
-  }
+  private batch$ = this.loadBatch();
 
   getRandomEntry(): Observable<Entry | undefined> {
     const result = new ReplaySubject<Entry | undefined>();

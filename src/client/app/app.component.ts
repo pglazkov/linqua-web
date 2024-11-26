@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
@@ -39,17 +39,15 @@ export enum States {
   ],
 })
 export class AppComponent implements OnInit {
+  private readonly af = inject(AuthService);
+  private readonly entryStorageService = inject(EntryStorageService);
+  private readonly dialog = inject(MatDialog);
+
   states = States;
 
   state: States = States.Unknown;
 
   redirectAuthResult: AuthResult | undefined;
-
-  constructor(
-    private af: AuthService,
-    private entryStorageService: EntryStorageService,
-    private dialog: MatDialog,
-  ) {}
 
   async ngOnInit() {
     await this.initState();

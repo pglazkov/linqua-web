@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 import { CurrentDateProvider } from '../util';
 
@@ -110,7 +110,7 @@ export interface TimeGroup {
 
 @Injectable({ providedIn: 'root' })
 export class TimeGroupService {
-  constructor(private readonly currentDateProvider: CurrentDateProvider) {}
+  private readonly currentDateProvider = inject(CurrentDateProvider);
 
   getTimeGroup(target: Date, reference?: Date): TimeGroup {
     reference = reference || this.currentDateProvider.getCurrentDate();

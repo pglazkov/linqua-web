@@ -1,6 +1,6 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
@@ -60,6 +60,13 @@ interface EntryListState {
   ],
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  private readonly dialog = inject(MatDialog);
+  private readonly storage = inject(EntryStorageService);
+  private readonly randomEntryService = inject(RandomEntryService);
+  private readonly viewContainer = inject(ViewContainerRef);
+  private readonly timeGroupService = inject(TimeGroupService);
+  private readonly currentDateProvider = inject(CurrentDateProvider);
+
   listVm: EntryListViewModel | undefined;
   canLoadMore = false;
   loadMoreToken: any;
@@ -75,14 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private loadedEntries: Entry[] = [];
 
-  constructor(
-    private readonly dialog: MatDialog,
-    private readonly storage: EntryStorageService,
-    private readonly randomEntryService: RandomEntryService,
-    private readonly viewContainer: ViewContainerRef,
-    private readonly timeGroupService: TimeGroupService,
-    private readonly currentDateProvider: CurrentDateProvider,
-  ) {
+  constructor() {
     this.listStateSubject.subscribe(s => this.onListStateChange(s));
   }
 

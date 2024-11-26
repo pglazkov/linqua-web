@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FirebaseApp } from 'firebase/app';
 import {
@@ -9,7 +9,6 @@ import {
   deleteDoc,
   doc,
   enableIndexedDbPersistence,
-  Firestore,
   getFirestore,
   limit,
   onSnapshot,
@@ -78,22 +77,20 @@ let enableIndexedDbPersistencePromise: Promise<void> | undefined;
 
 @Injectable({ providedIn: 'root' })
 export class EntryStorageService {
+  private readonly authService = inject(AuthService);
+  private readonly http = inject(HttpClient);
+  private readonly zone = inject(NgZone);
+  private readonly fba = inject<FirebaseApp>(firebaseAppToken);
+
   stats$!: Observable<LearnedEntriesStats>;
 
-  private readonly db: Firestore;
+  private readonly db = getFirestore(this.fba);
 
   private persistenceEnabled$: Observable<boolean> | undefined;
   private latestStats$ = new ReplaySubject<LearnedEntriesStats>(1);
   private clientCalculatedStats$ = new Subject<LearnedEntriesStats>();
 
-  constructor(
-    @Inject(firebaseAppToken) fba: FirebaseApp,
-    private authService: AuthService,
-    private http: HttpClient,
-    private zone: NgZone,
-  ) {
-    this.db = getFirestore(fba);
-
+  constructor() {
     if (environment.useFirebaseEmulators) {
       connectFirestoreEmulator(this.db, 'localhost', 5002);
     } else {

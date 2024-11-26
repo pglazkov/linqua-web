@@ -1,8 +1,7 @@
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FirebaseApp } from 'firebase/app';
 import {
-  Auth,
   AuthProvider,
   connectAuthEmulator,
   FacebookAuthProvider,
@@ -37,12 +36,12 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
-  private readonly auth: Auth;
+  private readonly fba = inject<FirebaseApp>(firebaseAppToken);
 
-  constructor(@Inject(firebaseAppToken) fba: FirebaseApp) {
-    this.auth = getAuth(fba);
+  private readonly authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
+  private readonly auth = getAuth(this.fba);
 
+  constructor() {
     if (environment.useFirebaseEmulators) {
       connectAuthEmulator(this.auth, 'http://localhost:9099');
     }

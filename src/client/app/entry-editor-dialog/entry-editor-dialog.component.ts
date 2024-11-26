@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialogContent, MatDialogRef } from '@angular/material/dialog';
@@ -27,6 +27,9 @@ import { Entry, TranslationService } from '@linqua/shared';
   ],
 })
 export class EntryEditorDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<EntryEditorDialogComponent>>(MatDialogRef);
+  private readonly translationService = inject(TranslationService);
+
   isTranslating: boolean = false;
   translationError: boolean = false;
   detectedLanguage: string | undefined;
@@ -41,11 +44,6 @@ export class EntryEditorDialogComponent {
 
   @ViewChild('translationTextArea', { static: true })
   translationTextArea!: ElementRef;
-
-  constructor(
-    private dialogRef: MatDialogRef<EntryEditorDialogComponent>,
-    private translationService: TranslationService,
-  ) {}
 
   setEntry(entry: Entry) {
     this.entryForm.setValue({
