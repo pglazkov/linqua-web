@@ -1,5 +1,5 @@
-const functions = require('firebase-functions/v1');
 const fetch = require('node-fetch');
+const secrets = require('../util/secrets');
 
 module.exports = (req, res) => {
   const original = req.query.q;
@@ -14,7 +14,7 @@ module.exports = (req, res) => {
 
   const url =
     `https://www.googleapis.com/language/translate/v2?` +
-    `key=${functions.config().translateapi.key}&q=${original}&target=${targetLang}`;
+    `key=${secrets.values.translateApiKey}&q=${original}&target=${targetLang}`;
 
   console.log('[translate] Request to Translate API: ' + url);
 

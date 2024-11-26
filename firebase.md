@@ -1,7 +1,7 @@
 # Set API key for Translate API
 
 - Go to https://console.cloud.google.com/apis/credentials?project=linqua-cab88 and copy "Server key"
-- Run `firebase functions:config:set translateapi.key="<copied-key>"`
+- Run `firebase functions:secrets:set TRANSLATE_API_KEY` and set the value to the key copied in the previous step
 
 # Setup local dev environment (test functions locally):
 
@@ -9,7 +9,6 @@
 - `npm install` in `src/functions` directory
 - `firebase login`
 - Make sure to set the Translate API key as describe above
-- Run `firebase functions:config:get > .runtimeconfig.json` in `src/functions` directory
 - Use Postman to execute HTTP requests against API (with `Authentication` header value taken from requests that browser makes after you login to the app)
 
 # Setup CI
