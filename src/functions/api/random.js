@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-const url = require('url');
 
 module.exports = (req, res) => {
   const urlParsed = new URL(req.url);
