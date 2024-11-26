@@ -2,8 +2,8 @@ const admin = require('firebase-admin');
 const url = require('url');
 
 module.exports = (req, res) => {
-  const urlParsed = url.parse(req.url, true);
-  let batchSize = urlParsed.query.batch_size ? Number.parseInt(urlParsed.query.batch_size) : 1;
+  const urlParsed = new URL(req.url);
+  let batchSize = urlParsed.searchParams['batch_size'] ? Number.parseInt(urlParsed.searchParams['batch_size']) : 1;
 
   admin
     .firestore()
