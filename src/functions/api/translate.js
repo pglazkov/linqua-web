@@ -1,5 +1,5 @@
-const functions = require('firebase-functions');
-const request = require('request-promise');
+const functions = require('firebase-functions/v1');
+const fetch = require('node-fetch');
 
 module.exports = (req, res) => {
   const original = req.query.q;
@@ -12,32 +12,29 @@ module.exports = (req, res) => {
 
   console.log(`[translate] Execution started for text: "${original}"`);
 
-  const options = {
-    uri: 'https://www.googleapis.com/language/translate/v2',
-    qs: {
-      key: functions.config().translateapi.key,
-      q: original,
-      target: targetLang,
-    },
-    json: true,
-    resolveWithFullResponse: true,
-  };
+  const url =
+    `https://www.googleapis.com/language/translate/v2?` +
+    `key=${functions.config().translateapi.key}&q=${original}&target=${targetLang}`;
 
-  console.log('[translate] Request to Translate API: ' + JSON.stringify(options));
+  console.log('[translate] Request to Translate API: ' + url);
 
-  request(options).then(response => {
-    console.log('[translate] Response from Translate API: ' + JSON.stringify(response));
+  fetch(url).then(response => {
+    console.log('[translate] Response from Translate API (status): ' + response.statusText);
+    if (response.status === 200) {
+      return response.json().then(json => {
+        const translation = {};
 
-    if (response.statusCode === 200) {
-      let translation = {};
+        console.log('[translate] Response from Translate API (content): ' + JSON.stringify(json));
 
-      let firstTranslation = response.body.data.translations[0];
+        const firstTranslation = json.data.translations[0];
 
-      translation.detectedSourceLanguage = firstTranslation.detectedSourceLanguage;
-      translation[targetLang] = firstTranslation.translatedText;
+        translation.detectedSourceLanguage = firstTranslation.detectedSourceLanguage;
+        translation[targetLang] = firstTranslation.translatedText;
 
-      res.status(200).json(translation);
+        res.status(200).json(translation);
+      });
     } else {
+      console.log('[translate] Response from Translate API (error body): ' + response.body);
       res.status(500).send(response.body);
     }
   });

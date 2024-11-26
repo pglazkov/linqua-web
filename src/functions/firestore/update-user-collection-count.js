@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v1');
 const admin = require('firebase-admin');
 
 const db = admin.firestore();
@@ -19,22 +19,22 @@ module.exports = collectionName =>
     return db.runTransaction(t => {
       return t.get(userRef).then(userDoc => {
         return userDoc.ref
-          .collection(collectionName)
-          .get()
-          .then(collectionSnapshot => {
-            const newCount = collectionSnapshot.size;
+            .collection(collectionName)
+            .get()
+            .then(collectionSnapshot => {
+              const newCount = collectionSnapshot.size;
 
-            const updateData = {};
-            updateData[`${collectionName}-count`] = newCount;
+              const updateData = {};
+              updateData[`${collectionName}-count`] = newCount;
 
-            if (userDoc.exists) {
-              t.update(userRef, updateData);
-            } else {
-              t.set(userRef, updateData);
-            }
+              if (userDoc.exists) {
+                t.update(userRef, updateData);
+              } else {
+                t.set(userRef, updateData);
+              }
 
-            console.log('Count updated successfully. New count is: ' + newCount);
-          });
+              console.log('Count updated successfully. New count is: ' + newCount);
+            });
       });
     });
   });

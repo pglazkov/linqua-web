@@ -32,6 +32,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+      - name: Lint (functions)
+        run: npm run lint
+        working-directory: ./src/functions
       - name: Run Unit Tests
         run: npm run test
 
