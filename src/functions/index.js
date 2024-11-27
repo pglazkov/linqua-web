@@ -1,28 +1,31 @@
-const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('firebase-admin');
-admin.initializeApp();
-
 const express = require('express');
-const cookieParser = require('cookie-parser')();
-const cors = require('cors')({ origin: true });
-const tokenValidationMiddleware = require('./firebase-token-validation-middleware');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
+const tokenValidationMiddleware = require('./auth/firebase-token-validation-middleware');
 const translateApi = require('./api/translate');
 const randomApi = require('./api/random');
+const secrets = require('./util/secrets');
+
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 const main = express();
 const api = express();
 
 main.use('/api', api);
 
-api.use(cors);
-api.use(cookieParser);
+api.use(cors({ origin: true }));
+api.use(cookieParser());
 api.use(tokenValidationMiddleware);
 api.get('/translate', translateApi);
 api.get('/random', randomApi);
 
 // API entry point
-exports.main = functions.https.onRequest(main);
+exports.main = onRequest({ cors: true, secrets: secrets.keys.all }, main);
 
 // Firestore Triggers
-exports.entriesArchiveCountUpdate = require('./firestore/update-user-collection-count')('entries-archive');
-exports.entriesCountUpdate = require('./firestore/update-user-collection-count')('entries');
+exports.entriesArchiveCountUpdate = require('./firestore-triggers/update-user-collection-count')('entries-archive');
+exports.entriesCountUpdate = require('./firestore-triggers/update-user-collection-count')('entries');
