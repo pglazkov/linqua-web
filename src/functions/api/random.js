@@ -45,5 +45,5 @@ function getBatchSizeFromUrl(url) {
   }
 
   const searchParams = new URLSearchParams(urlFragments[1]);
-  return searchParams['batch_size'] ? Number.parseInt(searchParams['batch_size']) : 1;
+  return searchParams.has('batch_size') ? Number.parseInt(searchParams.get('batch_size')) : 1;
 }
