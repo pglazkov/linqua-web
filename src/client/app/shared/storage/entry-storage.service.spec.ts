@@ -9,17 +9,29 @@ import {
   signInWithEmailAndPassword,
   UserCredential,
 } from 'firebase/auth';
-import { addDoc, collection, connectFirestoreEmulator, doc, getFirestore } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  connectFirestoreEmulator,
+  doc,
+  getFirestore,
+  initializeFirestore,
+  memoryLocalCache,
+} from 'firebase/firestore';
 import uniqueId from 'lodash-es/uniqueId';
-import { firebaseAppToken } from 'ng-firebase-lite';
 import { filter, Subscription, take } from 'rxjs';
 
 import { firebaseConfig } from '../../firebase-config';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth';
+import { FirebaseService } from '../firebase';
 import { Entry } from '../model';
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
 
 const firebaseApp = initializeApp(firebaseConfig);
+
+initializeFirestore(firebaseApp, {
+  localCache: memoryLocalCache(),
+});
 
 const auth = getAuth(firebaseApp);
 connectAuthEmulator(auth, 'http://localhost:9099');
@@ -92,12 +104,14 @@ describe('EntryStorageService', () => {
   beforeEach(async () => {
     cred = await generateUserAndLogin();
 
+    const firebaseServiceMock = { auth, firestore: db };
+
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         AuthService,
         EntryStorageService,
-        { provide: firebaseAppToken, useValue: firebaseApp },
+        { provide: FirebaseService, useValue: firebaseServiceMock },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],

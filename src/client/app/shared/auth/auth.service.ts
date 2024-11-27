@@ -1,21 +1,17 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from 'environments/environment';
-import { FirebaseApp } from 'firebase/app';
 import {
   AuthProvider,
-  connectAuthEmulator,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
-  getAuth,
   getRedirectResult,
   GoogleAuthProvider,
   linkWithCredential,
   signInWithEmailAndPassword,
   signInWithRedirect,
 } from 'firebase/auth';
-import { firebaseAppToken } from 'ng-firebase-lite';
 import { map, Observable, ReplaySubject } from 'rxjs';
 
+import { FirebaseService } from '../firebase';
 import { FirebaseAuthErrorCode } from './firebase-auth-error-code';
 
 export interface AuthResult {
@@ -36,16 +32,12 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly fba = inject<FirebaseApp>(firebaseAppToken);
+  private readonly firebaseService = inject(FirebaseService);
 
   private readonly authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
-  private readonly auth = getAuth(this.fba);
+  private readonly auth = this.firebaseService.auth;
 
   constructor() {
-    if (environment.useFirebaseEmulators) {
-      connectAuthEmulator(this.auth, 'http://localhost:9099');
-    }
-
     this.auth.onAuthStateChanged(() => {
       this.authStateChangedSubject.next(this.auth.currentUser);
     });

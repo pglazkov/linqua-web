@@ -1,15 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, NgZone } from '@angular/core';
-import { environment } from 'environments/environment';
-import { FirebaseApp } from 'firebase/app';
 import {
   addDoc,
   collection,
-  connectFirestoreEmulator,
   deleteDoc,
   doc,
-  enableIndexedDbPersistence,
-  getFirestore,
   limit,
   onSnapshot,
   orderBy,
@@ -18,7 +13,6 @@ import {
   setDoc,
   startAt,
 } from 'firebase/firestore';
-import { firebaseAppToken } from 'ng-firebase-lite';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -34,6 +28,7 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../auth';
+import { FirebaseService } from '../firebase';
 import { Entry } from '../model';
 
 interface FirebaseEntry {
@@ -73,33 +68,21 @@ export interface LearnedEntriesStats {
   learnedEntryCount: number;
 }
 
-let enableIndexedDbPersistencePromise: Promise<void> | undefined;
-
 @Injectable({ providedIn: 'root' })
 export class EntryStorageService {
   private readonly authService = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly zone = inject(NgZone);
-  private readonly fba = inject<FirebaseApp>(firebaseAppToken);
+  private readonly firebaseService = inject(FirebaseService);
 
   stats$!: Observable<LearnedEntriesStats>;
 
-  private readonly db = getFirestore(this.fba);
+  private readonly db = this.firebaseService.firestore;
 
-  private persistenceEnabled$: Observable<boolean> | undefined;
   private latestStats$ = new ReplaySubject<LearnedEntriesStats>(1);
   private clientCalculatedStats$ = new Subject<LearnedEntriesStats>();
 
   constructor() {
-    if (environment.useFirebaseEmulators) {
-      connectFirestoreEmulator(this.db, 'localhost', 5002);
-    } else {
-      // Enable persistance only when not using emulator because emulated database is cleared automatically, but local cache is not, so there might be discrepancies.
-      // See a note here: https://firebase.google.com/docs/emulator-suite/connect_firestore#android_apple_platforms_and_web_sdks
-
-      this.enableFirebaseOfflinePersistance();
-    }
-
     this.stats$ = this.createStatsStream();
     this.stats$.subscribe(this.latestStats$);
   }
@@ -336,22 +319,5 @@ export class EntryStorageService {
     }
 
     return x.totalEntryCount === y.totalEntryCount && x.learnedEntryCount === y.learnedEntryCount;
-  }
-
-  private enableFirebaseOfflinePersistance() {
-    if (!enableIndexedDbPersistencePromise) {
-      // Make sure enableIndexedDbPersistence is called only once even if there are multiple instances of this
-      // service.
-      enableIndexedDbPersistencePromise = enableIndexedDbPersistence(this.db);
-    } else {
-      enableIndexedDbPersistencePromise.then(
-        () => {
-          console.log('Offline persistance successfully enabled.');
-        },
-        err => {
-          console.warn('Enabling offline persistance failed. Error ' + err);
-        },
-      );
-    }
   }
 }
