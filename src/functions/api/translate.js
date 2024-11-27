@@ -12,11 +12,19 @@ module.exports = (req, res) => {
 
   console.log(`[translate] Execution started for text: "${original}"`);
 
-  const url =
-    `https://www.googleapis.com/language/translate/v2?` +
-    `key=${secrets.values.translateApiKey}&q=${original}&target=${targetLang}`;
+  const translateApiKey = secrets.values.translateApiKey;
 
-  console.log('[translate] Request to Translate API: ' + url);
+  if (!translateApiKey) {
+    console.error(
+      `[translate] No Translate API key, please make sure the secret "${secrets.keys.translateApiKey}" is set.`,
+    );
+    return res.status(500).send('No Translate API key');
+  }
+
+  const url =
+    `https://www.googleapis.com/language/translate/v2?` + `key=${translateApiKey}&q=${original}&target=${targetLang}`;
+
+  console.log('[translate] Request to Translate API: ' + JSON.stringify({ original, targetLang }));
 
   fetch(url).then(response => {
     console.log('[translate] Response from Translate API (status): ' + response.statusText);
