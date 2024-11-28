@@ -22,7 +22,7 @@
     "e2e:watch": "playwright test --ui",
     "e2e:ng": "ng e2e",
     "e2e:ng:prod": "ng e2e --configuration production",
-    "e2e:ci": "firebase emulators:exec --only functions,auth,firestore './e2e-ci.sh'",
+    "e2e:ci": "firebase emulators:exec --log-verbosity SILENT --only functions,auth,firestore './e2e-ci.sh'",
     "http-server": "http-server",
     "npm-run-all": "npm-run-all",
     "ci": "run-s lint test e2e:ci build:prod",

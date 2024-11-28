@@ -1,40 +1,41 @@
 const admin = require('firebase-admin');
 
-module.exports = (req, res) => {
-  let batchSize = getBatchSizeFromUrl(req.url);
+module.exports = async (req, res, next) => {
+  try {
+    let batchSize = getBatchSizeFromUrl(req.url);
 
-  admin
-    .firestore()
-    .collection('users')
-    .doc(req.user.uid)
-    .collection('entries')
-    .get()
-    .then(
-      results => {
-        const resultMap = new Map();
+    // prettier-ignore
+    const results =
+      await admin
+        .firestore()
+        .collection('users')
+        .doc(req.user.uid)
+        .collection('entries')
+        .get();
 
-        batchSize = Math.min(batchSize, results.docs.length);
+    const resultMap = new Map();
 
-        while (resultMap.size < batchSize) {
-          const randomIndex = Math.floor(Math.random() * results.docs.length);
-          const randomDoc = results.docs[randomIndex];
+    batchSize = Math.min(batchSize, results.docs.length);
 
-          const randomDocData = randomDoc.data();
+    while (resultMap.size < batchSize) {
+      const randomIndex = Math.floor(Math.random() * results.docs.length);
+      const randomDoc = results.docs[randomIndex];
 
-          if (!resultMap.has(randomDoc.id)) {
-            resultMap.set(randomDoc.id, {
-              id: randomDoc.id,
-              data: randomDocData,
-            });
-          }
-        }
+      const randomDocData = randomDoc.data();
 
-        res.status(200).json({ batch: Array.from(resultMap.values()) });
-      },
-      e => {
-        res.status(500).json(e);
-      },
-    );
+      if (!resultMap.has(randomDoc.id)) {
+        resultMap.set(randomDoc.id, {
+          id: randomDoc.id,
+          data: randomDocData,
+        });
+      }
+    }
+
+    return res.status(200).json({ batch: Array.from(resultMap.values()) });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Unknown error occurred.');
+  }
 };
 
 function getBatchSizeFromUrl(url) {

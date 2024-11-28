@@ -8,6 +8,9 @@ const translateApi = require('./api/translate');
 const randomApi = require('./api/random');
 const secrets = require('./util/secrets');
 
+// see https://firebase.google.com/docs/functions/writing-and-viewing-logs?gen=2nd
+require('firebase-functions/logger/compat');
+
 if (!admin.apps.length) {
   admin.initializeApp();
 }

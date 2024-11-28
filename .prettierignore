@@ -14,3 +14,4 @@ dist/
 package.json
 package-lock.json
 .angular
+src/functions

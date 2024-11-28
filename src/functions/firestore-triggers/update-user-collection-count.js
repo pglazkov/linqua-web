@@ -17,25 +17,22 @@ module.exports = collectionName =>
 
     const userRef = db.collection('users').doc(event.params.userId);
 
-    return db.runTransaction(t => {
-      return t.get(userRef).then(userDoc => {
-        return userDoc.ref
-          .collection(collectionName)
-          .get()
-          .then(collectionSnapshot => {
-            const newCount = collectionSnapshot.size;
+    return db.runTransaction(async t => {
+      const userDoc = await t.get(userRef);
 
-            const updateData = {};
-            updateData[`${collectionName}-count`] = newCount;
+      const collectionSnapshot = await userDoc.ref.collection(collectionName).get();
 
-            if (userDoc.exists) {
-              t.update(userRef, updateData);
-            } else {
-              t.set(userRef, updateData);
-            }
+      const newCount = collectionSnapshot.size;
 
-            console.log('Count updated successfully. New count is: ' + newCount);
-          });
-      });
+      const updateData = {};
+      updateData[`${collectionName}-count`] = newCount;
+
+      if (userDoc.exists) {
+        t.update(userRef, updateData);
+      } else {
+        t.set(userRef, updateData);
+      }
+
+      console.log('Count updated successfully. New count is: ' + newCount);
     });
   });
