@@ -1,6 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { AuthService, Entry, EntryConfig, EntryStorageService } from '@linqua/shared';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+
+import { AuthService } from '../../auth';
+import { Entry, EntryConfig } from '../../model';
+import { EntryStorageService } from '../../storage';
 
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
 const BATCH_SIZE = 10;

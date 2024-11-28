@@ -6,7 +6,9 @@ import { MatFormField, MatHint, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { Entry, TranslationService } from '@linqua/shared';
+
+import { Entry } from '../model';
+import { TranslationService } from '../translation';
 
 @Component({
   selector: 'app-entry-editor-dialog',

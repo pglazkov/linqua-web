@@ -6,12 +6,13 @@ import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatToolbar } from '@angular/material/toolbar';
-import { AuthResult, AuthService, EntryStorageService } from '@linqua/shared';
 import { first, firstValueFrom } from 'rxjs';
 
 import { AboutDialogComponent } from './about-dialog/about-dialog.component';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './shared/auth/login/login.component';
+import { AuthResult, AuthService } from './auth';
+import { LoginComponent } from './auth/login.component';
+import { EntryListComponent } from './entry-list';
+import { EntryStorageService } from './storage';
 
 export enum States {
   Unknown,
@@ -32,7 +33,7 @@ export enum States {
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
-    HomeComponent,
+    EntryListComponent,
     MatProgressSpinner,
     LoginComponent,
     AsyncPipe,

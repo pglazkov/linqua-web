@@ -3,10 +3,10 @@ import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } fr
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { firebaseConfig } from '@linqua/firebase-config';
-import { AuthTokenInterceptor } from '@linqua/shared';
 import { FirebaseAppModule } from 'ng-firebase-lite';
 
 import { environment } from '../environments/environment';
+import { AuthTokenInterceptor } from './auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [

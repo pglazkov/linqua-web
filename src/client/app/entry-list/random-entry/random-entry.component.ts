@@ -5,7 +5,8 @@ import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { Entry } from '@linqua/shared';
+
+import { Entry } from '../../model';
 
 @Component({
   selector: 'app-random-entry',

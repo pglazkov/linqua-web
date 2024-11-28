@@ -4,9 +4,8 @@ import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatError, MatFormField } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { AuthResult } from '@linqua/shared';
 
-import { AuthService } from '../auth.service';
+import { AuthResult, AuthService } from './auth.service';
 
 const demoAccount = {
   email: 'demo@linqua-app.com',

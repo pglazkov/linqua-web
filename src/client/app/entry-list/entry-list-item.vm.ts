@@ -1,4 +1,4 @@
-import { Entry, EntryConfig } from '@linqua/shared';
+import { Entry, EntryConfig } from '../model';
 
 export class EntryListItemViewModel {
   get id() {

@@ -7,16 +7,19 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { CurrentDateProvider, Entry, EntryStorageService, TimeGroupService } from '@linqua/shared';
 import { filter, first, firstValueFrom, map, Subject, take, Unsubscribable } from 'rxjs';
 
 import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
+import { Entry } from '../model';
+import { EntryStorageService } from '../storage';
+import { CurrentDateProvider } from '../util';
 import { EntryItemComponent } from './entry-item/entry-item.component';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
+import { TimeGroupService } from './time-group.service';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -25,9 +28,9 @@ interface EntryListState {
 }
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  selector: 'app-entry-list',
+  templateUrl: './entry-list.component.html',
+  styleUrls: ['./entry-list.component.scss'],
   animations: [
     trigger('entryCardEnterLeave', [
       state('in', style({ opacity: 1, height: '*' })),
@@ -59,7 +62,7 @@ interface EntryListState {
     AsyncPipe,
   ],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class EntryListComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
   private readonly storage = inject(EntryStorageService);
   private readonly randomEntryService = inject(RandomEntryService);

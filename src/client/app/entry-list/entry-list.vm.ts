@@ -1,7 +1,8 @@
-import { createSortComparer, CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
-
+import { Entry } from '../model';
+import { createSortComparer, CurrentDateProvider } from '../util';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
+import { TimeGroupService } from './time-group.service';
 
 const entryDeletionAnimationDuration = 200;
 

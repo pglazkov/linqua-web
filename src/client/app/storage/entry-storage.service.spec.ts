@@ -1,6 +1,7 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firebaseConfig } from '@linqua/firebase-config';
 import { initializeApp } from 'firebase/app';
 import {
   connectAuthEmulator,
@@ -21,7 +22,6 @@ import {
 import uniqueId from 'lodash-es/uniqueId';
 import { filter, Subscription, take } from 'rxjs';
 
-import { firebaseConfig } from '../../firebase-config';
 import { AuthService } from '../auth';
 import { FirebaseService } from '../firebase';
 import { Entry } from '../model';

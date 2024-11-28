@@ -8,9 +8,7 @@ import { Translation } from './translation';
 export class TranslationService {
   private readonly http = inject(HttpClient);
 
-  async translate(text: string): Promise<Translation> {
-    const translation = await firstValueFrom(this.http.get<Translation>(`/api/translate?q=${text}`));
-
-    return translation;
+  translate(text: string): Promise<Translation> {
+    return firstValueFrom(this.http.get<Translation>(`/api/translate?q=${text}`));
   }
 }

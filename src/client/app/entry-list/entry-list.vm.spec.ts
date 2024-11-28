@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import { CurrentDateProvider, Entry, TimeGroupService } from '@linqua/shared';
-import { uniqueId } from 'lodash-es';
+import uniqueId from 'lodash-es/uniqueId';
 
+import { Entry } from '../model';
+import { CurrentDateProvider } from '../util';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
+import { TimeGroupService } from './time-group.service';
 
 const currentDate = new Date(2018, 3, 15, 12, 0, 0, 0);
 

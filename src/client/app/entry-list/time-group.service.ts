@@ -1,38 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 
 import { CurrentDateProvider } from '../util';
-
-export enum TimeGroupKey {
-  Older,
-  LastMonth,
-  WeeksAgo4,
-  WeeksAgo3,
-  WeeksAgo2,
-  LastWeek,
-  Monday,
-  Tuesday,
-  Wednesday,
-  Thursday,
-  Friday,
-  Saturday,
-  Sunday,
-  Yesterday,
-  Today,
-  Tomorrow,
-  Monday2,
-  Tuesday2,
-  Wednesday2,
-  Thursday2,
-  Friday2,
-  Saturday2,
-  Sunday2,
-  NextWeek,
-  In2Weeks,
-  In3Weeks,
-  In4Weeks,
-  NextMonth,
-  Newer,
-}
+import { TimeGroup, TimeGroupKey } from './time-group';
 
 const locale: { [localeName: string]: Map<TimeGroupKey, string> } = {
   en: new Map([
@@ -101,12 +70,6 @@ const groupTimeScale: TimeGroupKey[] = [
 ];
 
 const indexOfToday = groupTimeScale.indexOf(TimeGroupKey.Today);
-
-export interface TimeGroup {
-  key: TimeGroupKey;
-  order: number;
-  englishName: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class TimeGroupService {
