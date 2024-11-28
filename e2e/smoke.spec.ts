@@ -2,16 +2,11 @@ import { expect, test } from '@playwright/test';
 
 test.describe('linqua', () => {
   test.beforeEach(async ({ page }) => {
-    const testUser = `e2e-test-${new Date().valueOf()}@linqua-app.com`;
-
     await page.goto('/');
 
     await page.getByTestId('login-with-google-btn').click();
-
     await page.getByText('Add new account').click();
-
-    await page.locator('[id="email-input"]').fill(testUser);
-    await page.locator('[id="display-name-input"]').fill(testUser);
+    await page.click('#autogen-button');
     await page.click('#sign-in');
   });
 
