@@ -28,7 +28,7 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../auth';
-import { FirebaseService } from '../firebase';
+import { firestoreToken } from '../firebase';
 import { Entry } from '../model';
 
 interface FirebaseEntry {
@@ -73,11 +73,9 @@ export class EntryStorageService {
   private readonly authService = inject(AuthService);
   private readonly http = inject(HttpClient);
   private readonly zone = inject(NgZone);
-  private readonly firebaseService = inject(FirebaseService);
+  private readonly db = inject(firestoreToken);
 
   stats$!: Observable<LearnedEntriesStats>;
-
-  private readonly db = this.firebaseService.firestore;
 
   private latestStats$ = new ReplaySubject<LearnedEntriesStats>(1);
   private clientCalculatedStats$ = new Subject<LearnedEntriesStats>();

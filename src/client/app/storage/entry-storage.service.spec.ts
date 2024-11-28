@@ -23,7 +23,7 @@ import uniqueId from 'lodash-es/uniqueId';
 import { filter, Subscription, take } from 'rxjs';
 
 import { AuthService } from '../auth';
-import { FirebaseService } from '../firebase';
+import { firebaseAuthToken, firestoreToken } from '../firebase';
 import { Entry } from '../model';
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
 
@@ -104,14 +104,13 @@ describe('EntryStorageService', () => {
   beforeEach(async () => {
     cred = await generateUserAndLogin();
 
-    const firebaseServiceMock = { auth, firestore: db };
-
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         AuthService,
         EntryStorageService,
-        { provide: FirebaseService, useValue: firebaseServiceMock },
+        { provide: firebaseAuthToken, useValue: auth },
+        { provide: firestoreToken, useValue: db },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],

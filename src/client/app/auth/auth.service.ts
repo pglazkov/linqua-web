@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { map, Observable, ReplaySubject } from 'rxjs';
 
-import { FirebaseService } from '../firebase';
+import { firebaseAuthToken } from '../firebase';
 import { FirebaseAuthErrorCode } from './firebase-auth-error-code';
 
 export interface AuthResult {
@@ -32,10 +32,9 @@ const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly firebaseService = inject(FirebaseService);
+  private readonly auth = inject(firebaseAuthToken);
 
   private readonly authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
-  private readonly auth = this.firebaseService.auth;
 
   constructor() {
     this.auth.onAuthStateChanged(() => {
