@@ -8,7 +8,7 @@
           <span class="original-text">{{ entry.originalText }}</span>
           <span class="translation mdc-list-item__secondary-text">{{ entry.translation }}</span>
         } @else {
-          <mat-spinner mode="indeterminate" [diameter]="30" [strokeWidth]="3"></mat-spinner>
+          <mat-spinner mode="indeterminate" [diameter]="30" [strokeWidth]="3" />
         }
       </div>
 
@@ -20,12 +20,7 @@
                 <mat-icon aria-label="Refresh word of the day">autorenew</mat-icon>
               </button>
             } @else {
-              <mat-spinner
-                class="loading-next-spinner"
-                mode="indeterminate"
-                [diameter]="20"
-                [strokeWidth]="2"
-              ></mat-spinner>
+              <mat-spinner class="loading-next-spinner" mode="indeterminate" [diameter]="20" [strokeWidth]="2" />
             }
           </div>
           <div class="right-content">

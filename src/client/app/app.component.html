@@ -39,22 +39,20 @@
   <main>
     @switch (state) {
       @case (states.LoggedIn) {
-        <app-entry-list></app-entry-list>
+        <app-entry-list />
       }
       @case (states.HandleLoginRedirect) {
         <div class="handle-login-redirect-container">
           Just a moment, verifying login...
           <div class="spinner">
-            <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
+            <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5" />
           </div>
         </div>
       }
       @case (states.LoginNeeded) {
-        <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()"></app-login>
+        <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()" />
       }
       @default {}
     }
   </main>
-
-  <footer></footer>
 </div>

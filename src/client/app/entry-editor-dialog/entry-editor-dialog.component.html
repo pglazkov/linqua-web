@@ -25,13 +25,7 @@
         data-test-id="translation-text-input"
       ></textarea>
       @if (isTranslating) {
-        <mat-spinner
-          matSuffix
-          class="translation-spinner"
-          color="accent"
-          [diameter]="25"
-          [strokeWidth]="2"
-        ></mat-spinner>
+        <mat-spinner matSuffix class="translation-spinner" color="accent" [diameter]="25" [strokeWidth]="2" />
       }
     </mat-form-field>
 

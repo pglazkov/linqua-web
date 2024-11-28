@@ -8,7 +8,7 @@
           (editRequest)="onEditRandomEntryRequested(randomEntry!)"
           (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
           (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
-        ></app-random-entry>
+        />
       </div>
     }
     @if (listVm.groups.length > 0) {
@@ -18,7 +18,7 @@
             <h3 mat-subheader>
               {{ group.name }}
             </h3>
-            <mat-divider></mat-divider>
+            <mat-divider />
           </div>
           @for (entry of group.entries; track trackByEntry($index, entry)) {
             <mat-list-item
@@ -44,7 +44,7 @@
             <button mat-raised-button (click)="loadMore()">load more</button>
           } @else {
             <div class="loading-spinner-container">
-              <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5"></mat-spinner>
+              <mat-spinner mode="indeterminate" [diameter]="40" [strokeWidth]="5" />
             </div>
           }
         }
@@ -62,7 +62,7 @@
   </mat-list>
 } @else {
   <div class="loading-spinner-container">
-    <mat-spinner mode="indeterminate"></mat-spinner>
+    <mat-spinner mode="indeterminate" />
   </div>
 }
 
