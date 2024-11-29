@@ -9,7 +9,7 @@ import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/mat
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { filter, first, firstValueFrom, map, Subject, take, Unsubscribable } from 'rxjs';
 
-import { EntryEditorDialogComponent } from '../entry-editor-dialog/entry-editor-dialog.component';
+import { EntryEditorDialogComponent, EntryEditorDialogData } from '../entry-editor-dialog';
 import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
 import { CurrentDateProvider } from '../util';
@@ -159,8 +159,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const editorDialog = this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig({ isEdit: true }));
-    editorDialog.componentInstance.setEntry(entry);
+    const editorDialog = this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig({ entry }));
 
     const result: Entry = await firstValueFrom(editorDialog.afterClosed().pipe(first()));
 
@@ -317,20 +316,23 @@ export class EntryListComponent implements OnInit, OnDestroy {
     this.loadMoreToken = newState.loadMoreToken;
   }
 
-  private createEntryDialogConfig(config: { isEdit: boolean } = { isEdit: false }): MatDialogConfig {
-    let result = {
+  private createEntryDialogConfig(config: { entry?: Entry } = {}): MatDialogConfig {
+    const result = {
       viewContainerRef: this.viewContainer,
+      data: { entry: config.entry } as EntryEditorDialogData,
     };
 
+    const isEdit = !!config.entry;
+
     if (!this.isMobile()) {
-      if (!config.isEdit) {
-        result = Object.assign(result, {
+      if (!isEdit) {
+        Object.assign(result, {
           maxWidth: '500px',
           position: { bottom: '74px', right: '74px' },
         });
       }
     } else {
-      result = Object.assign(result, {
+      Object.assign(result, {
         width: '100vw',
         maxWidth: '100vw',
         position: { top: '56px' },

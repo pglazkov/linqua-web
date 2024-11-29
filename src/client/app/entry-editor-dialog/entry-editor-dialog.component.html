@@ -9,8 +9,8 @@
         (keypress)="onOriginalTextKeyPress($event)"
         data-test-id="original-text-input"
       ></textarea>
-      @if (detectedLanguage) {
-        <mat-hint align="end">{{ detectedLanguage }}</mat-hint>
+      @if (detectedLanguage()) {
+        <mat-hint align="end">{{ detectedLanguage() }}</mat-hint>
       }
     </mat-form-field>
 
@@ -24,7 +24,7 @@
         (keypress)="onTranslationTextKeyPress($event)"
         data-test-id="translation-text-input"
       ></textarea>
-      @if (isTranslating) {
+      @if (isTranslating()) {
         <mat-spinner matSuffix class="translation-spinner" color="accent" [diameter]="25" [strokeWidth]="2" />
       }
     </mat-form-field>
@@ -33,30 +33,29 @@
       <button
         mat-raised-button
         type="button"
-        [disabled]="!entryForm.value.originalText || isTranslating"
+        [disabled]="!entryForm.value.originalText || isTranslating()"
         (click)="translate()"
-        [color]="!translationError ? 'primary' : 'warn'"
+        [color]="!translationError() ? 'primary' : 'warn'"
         data-test-id="translate-button"
       >
-        @if (!isTranslating) {
+        @if (!isTranslating()) {
           <mat-icon>translate</mat-icon>
         }
-        @if (!isTranslating && !translationError) {
+        @if (!isTranslating() && !translationError()) {
           <span>translate</span>
         }
-        @if (!isTranslating && translationError) {
+        @if (!isTranslating() && translationError()) {
           <span>retry</span>
         }
-        @if (isTranslating) {
+        @if (isTranslating()) {
           <span>translating...</span>
         }
       </button>
 
       <button
         mat-raised-button
-        button
         type="submit"
-        [disabled]="!entryForm.valid || isTranslating"
+        [disabled]="!entryForm.valid || isTranslating()"
         [color]="entryForm.get('translation')?.value ? 'accent' : undefined"
         data-test-id="submit-button"
       >
