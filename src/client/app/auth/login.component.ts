@@ -1,4 +1,5 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
@@ -27,16 +28,17 @@ const demoAccount = {
     MatInput,
     MatError,
     MatCardActions,
+    NgOptimizedImage,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   private readonly af = inject(AuthService);
 
-  @Output() loginSuccess = new EventEmitter<void>();
+  readonly loginSuccess = output();
+  readonly redirectAuthResult = input<AuthResult | undefined>();
 
-  @Input() redirectAuthResult: AuthResult | undefined;
-
-  loginForm = new FormGroup({
+  protected readonly loginForm = new FormGroup({
     userName: new FormControl('', {
       validators: [Validators.required, Validators.email],
       nonNullable: true,
@@ -47,10 +49,10 @@ export class LoginComponent {
     }),
   });
 
-  isLoggingIn = false;
-  errorMessage: string | undefined;
+  protected readonly isLoggingIn = signal(false);
+  protected readonly errorMessage = signal<string | undefined>(undefined);
 
-  getUserNameError() {
+  protected getUserNameError(): string {
     const userName = this.loginForm.controls.userName;
 
     return userName.hasError('required')
@@ -60,19 +62,19 @@ export class LoginComponent {
         : '';
   }
 
-  loginWithFacebook() {
+  protected loginWithFacebook(): void {
     this.af.loginWithFacebook();
   }
 
-  loginWithGoogle() {
+  protected loginWithGoogle(): void {
     this.af.loginWithGoogle();
   }
 
-  async loginWithDemoAccount() {
-    await this.loginWithEmailAndPassword(demoAccount.email, demoAccount.password);
+  protected loginWithDemoAccount(): Promise<void> {
+    return this.loginWithEmailAndPassword(demoAccount.email, demoAccount.password);
   }
 
-  async onLoginFormSubmit() {
+  protected async onLoginFormSubmit(): Promise<void> {
     if (!this.loginForm.valid) {
       return;
     }
@@ -80,16 +82,16 @@ export class LoginComponent {
     await this.loginWithEmailAndPassword(this.loginForm.value.userName!, this.loginForm.value.password!);
   }
 
-  private async loginWithEmailAndPassword(email: string, password: string) {
-    this.isLoggingIn = true;
+  private async loginWithEmailAndPassword(email: string, password: string): Promise<void> {
+    this.isLoggingIn.set(true);
 
     try {
       await this.af.loginWithEmailAndPassword(email, password);
       this.loginSuccess.emit();
     } catch (error: any) {
-      this.errorMessage = error;
+      this.errorMessage.set(error);
     } finally {
-      this.isLoggingIn = false;
+      this.isLoggingIn.set(false);
     }
   }
 }

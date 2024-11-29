@@ -1,6 +1,7 @@
-@if (errorMessage || (redirectAuthResult && redirectAuthResult.error)) {
+@let error = errorMessage() || redirectAuthResult()?.error;
+@if (error) {
   <div class="error-message">
-    {{ errorMessage || (redirectAuthResult && redirectAuthResult.error) }}
+    {{ error }}
   </div>
 }
 
@@ -14,13 +15,15 @@
     <mat-card-content>
       <button mat-raised-button (click)="loginWithGoogle()" data-test-id="login-with-google-btn">
         <div class="login-button-content">
-          <img width="30" src="assets/google-logo.png" /><span>Login with Google</span>
+          <img ngSrc="assets/google-logo.png" alt="google logo" height="30" width="30" />
+          <span>Login with Google</span>
         </div>
       </button>
 
       <button mat-raised-button (click)="loginWithFacebook()" data-test-id="login-with-facebook-btn">
         <div class="login-button-content">
-          <img width="30" src="assets/facebook-logo.png" /><span>Login with Facebook</span>
+          <img ngSrc="assets/facebook-logo.png" alt="facebook logo" height="30" width="30" />
+          <span>Login with Facebook</span>
         </div>
       </button>
     </mat-card-content>
@@ -44,11 +47,10 @@
     <mat-card-actions class="actions-container">
       <button
         mat-raised-button
-        button
         type="submit"
         form="loginForm"
         [color]="'accent'"
-        [disabled]="!loginForm.valid || isLoggingIn"
+        [disabled]="!loginForm.valid || isLoggingIn()"
       >
         login
       </button>
@@ -57,7 +59,7 @@
 
   <mat-card appearance="outlined" class="demo-login-card">
     <mat-card-content class="actions-container">
-      <button mat-raised-button button (click)="loginWithDemoAccount()" [disabled]="isLoggingIn">
+      <button mat-raised-button (click)="loginWithDemoAccount()" [disabled]="isLoggingIn()">
         Login with Demo Account
       </button>
     </mat-card-content>
