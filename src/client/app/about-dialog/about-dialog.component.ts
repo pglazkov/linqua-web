@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatDialogContent } from '@angular/material/dialog';
 import { environment } from 'environments/environment';
 
@@ -8,6 +8,7 @@ import { environment } from 'environments/environment';
   styleUrls: ['./about-dialog.component.scss'],
   standalone: true,
   imports: [MatDialogContent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AboutDialogComponent {
   version = environment.version;
