@@ -6,7 +6,6 @@ import { environment } from 'environments/environment';
   selector: 'app-about-dialog',
   templateUrl: './about-dialog.component.html',
   styleUrls: ['./about-dialog.component.scss'],
-  standalone: true,
   imports: [MatDialogContent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

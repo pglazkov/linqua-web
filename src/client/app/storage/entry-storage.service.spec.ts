@@ -20,7 +20,7 @@ import {
   memoryLocalCache,
 } from 'firebase/firestore';
 import uniqueId from 'lodash-es/uniqueId';
-import { filter, Subscription, take } from 'rxjs';
+import { filter, take } from 'rxjs';
 
 import { AuthService } from '../auth';
 import { firebaseAuthToken, firestoreToken } from '../firebase';
@@ -82,7 +82,9 @@ async function generateUserAndLogin(): Promise<UserCredential> {
 
   try {
     user = await createUserWithEmailAndPassword(auth, userEmail, userPassword);
-  } catch (error: any) {
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     switch (error.message) {
       case 'auth/email-already-in-use':
         // Test user already exists, skipping creation.
@@ -274,9 +276,7 @@ describe('EntryStorageService', () => {
     const entry = genEntry();
     let callbackCount = 0;
 
-    let sub: Subscription;
-
-    sub = service.stats$.pipe(take(4)).subscribe({
+    service.stats$.pipe(take(4)).subscribe({
       next: result => {
         callbackCount++;
 

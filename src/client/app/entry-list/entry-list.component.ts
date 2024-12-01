@@ -24,7 +24,7 @@ import { TimeGroupService } from './time-group.service';
 interface EntryListState {
   loadedEntries: Entry[];
   canLoadMore: boolean;
-  loadMoreToken: any;
+  loadMoreToken: unknown;
 }
 
 @Component({
@@ -47,7 +47,6 @@ interface EntryListState {
       transition('* => void', [animate('0.2s ease-in', style({ transform: 'translateX(100%)' }))]),
     ]),
   ],
-  standalone: true,
   imports: [
     MatList,
     RandomEntryComponent,
@@ -72,7 +71,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
   listVm: EntryListViewModel | undefined;
   canLoadMore = false;
-  loadMoreToken: any;
+  loadMoreToken: unknown;
   isLoadingMore = false;
   isLoadingRandomEntry = false;
   randomEntry: Entry | undefined;

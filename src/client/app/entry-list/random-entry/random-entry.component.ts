@@ -26,7 +26,6 @@ import { Entry } from '../../model';
       ]),
     ]),
   ],
-  standalone: true,
   imports: [MatCard, MatCardContent, MatIconButton, MatIcon, MatProgressSpinner, MatMenuTrigger, MatMenu, MatMenuItem],
 })
 export class RandomEntryComponent {

@@ -11,7 +11,6 @@ import { EntryListItemViewModel } from '../entry-list-item.vm';
   selector: 'app-entry-item',
   templateUrl: './entry-item.component.html',
   styleUrls: ['./entry-item.component.scss'],
-  standalone: true,
   imports: [
     MatCard,
     MatCardContent,

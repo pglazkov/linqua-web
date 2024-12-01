@@ -18,7 +18,6 @@ export interface EntryEditorDialogData {
   selector: 'app-entry-editor-dialog',
   templateUrl: './entry-editor-dialog.component.html',
   styleUrls: ['./entry-editor-dialog.component.scss'],
-  standalone: true,
   imports: [
     MatDialogContent,
     FormsModule,

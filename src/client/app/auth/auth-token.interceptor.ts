@@ -8,7 +8,7 @@ import { firebaseAuthToken } from '../firebase';
 export class AuthTokenInterceptor implements HttpInterceptor {
   private readonly auth = inject(firebaseAuthToken);
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const user = this.auth.currentUser;
 
     if (user) {

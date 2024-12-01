@@ -1,5 +1,5 @@
-export function createSortComparer<T>(
-  propertyGetter: (o: T) => any,
+export function createSortComparer<T, R>(
+  propertyGetter: (o: T) => R,
   direction: 'asc' | 'desc' = 'asc',
 ): (a: T, b: T) => number {
   return (a, b) =>

@@ -45,7 +45,7 @@ interface RandomEntryResponse {
 export interface EntriesResult {
   hasMore: boolean;
   entries: Entry[];
-  loadMoreToken: any;
+  loadMoreToken: unknown;
   fromCache: boolean;
 }
 
@@ -53,9 +53,7 @@ export const DEFAULT_PAGE_SIZE = 20;
 
 type UserProperty = 'entries-count' | 'entries-archive-count';
 
-type UserData = {
-  [k in UserProperty]?: number;
-};
+type UserData = Partial<Record<UserProperty, number>>;
 
 interface StatsServerData {
   fromCache: boolean;
@@ -85,18 +83,18 @@ export class EntryStorageService {
     this.stats$.subscribe(this.latestStats$);
   }
 
-  getRandomEntryBatch(batchSize: number = 1): Observable<Entry[]> {
+  getRandomEntryBatch(batchSize = 1): Observable<Entry[]> {
     return this.http
       .get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
       .pipe(map(response => response.batch.map(x => this.toEntry(x.id, x.data))));
   }
 
-  getEntriesStream(positionToken?: any, pageSize: number = DEFAULT_PAGE_SIZE): Observable<EntriesResult> {
+  getEntriesStream(positionToken?: unknown, pageSize: number = DEFAULT_PAGE_SIZE): Observable<EntriesResult> {
     const resultStream = new ReplaySubject<EntriesResult>(1);
 
     let unsubscribeListener: () => void = () => {};
 
-    let q = query(
+    const q = query(
       this.entryCollectionRef,
       orderBy('addedOn', 'desc'),
       ...(positionToken ? [startAt(positionToken)] : []),
@@ -290,7 +288,7 @@ export class EntryStorageService {
   private createStatsStream(): Observable<LearnedEntriesStats> {
     return this.authService.authStateChanged.pipe(
       filter(user => !!user),
-      switchMap(_ => this.serverStats$),
+      switchMap(() => this.serverStats$),
       map((serverStats: StatsServerData) => {
         return {
           totalEntryCount: (serverStats.entriesCount || 0) + (serverStats.entriesArchiveCount || 0),

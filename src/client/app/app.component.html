@@ -17,7 +17,7 @@
     <header class="toolbar__header">
       <button class="app-name-button" mat-button (click)="onLogoClick()">
         <div class="app-name-button__content">
-          <img src="assets/logo.png" />
+          <img ngSrc="assets/logo.png" alt="Logo" height="26" width="26"/>
           <span>LINQUA</span>
         </div>
       </button>
@@ -25,7 +25,7 @@
 
     <div class="toolbar__side-content toolbar__side-content-right">
       @if (isLoggedIn | async) {
-        <img class="avatar" [src]="user.photoURL || 'assets/generic-avatar.png'" [matMenuTriggerFor]="menu" />
+        <img class="avatar" [ngSrc]="user.photoURL || 'assets/generic-avatar.png'" [width]="32" [height]="32" alt="avatar" [matMenuTriggerFor]="menu" />
         <mat-menu #menu="matMenu" yPosition="below">
           <button mat-menu-item (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>

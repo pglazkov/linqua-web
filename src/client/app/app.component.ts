@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgOptimizedImage } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -25,7 +25,6 @@ export enum States {
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: true,
   imports: [
     MatToolbar,
     MatIcon,
@@ -37,6 +36,7 @@ export enum States {
     MatProgressSpinner,
     LoginComponent,
     AsyncPipe,
+    NgOptimizedImage,
   ],
 })
 export class AppComponent implements OnInit {
