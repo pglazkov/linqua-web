@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { CurrentDateProvider } from '../util';
 import { TimeGroup, TimeGroupKey } from './time-group';
 
-const locale: { [localeName: string]: Map<TimeGroupKey, string> } = {
+const locale: Record<string, Map<TimeGroupKey, string>> = {
   en: new Map([
     [TimeGroupKey.Older, 'Older'],
     [TimeGroupKey.LastMonth, 'Last month'],

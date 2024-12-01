@@ -87,8 +87,8 @@ export class LoginComponent {
     try {
       await this.af.loginWithEmailAndPassword(email, password);
       this.loginSuccess.emit();
-    } catch (error: any) {
-      this.errorMessage.set(error);
+    } catch (error) {
+      this.errorMessage.set(error as string);
     } finally {
       this.isLoggingIn.set(false);
     }

@@ -6,6 +6,7 @@ import {
   getRedirectResult,
   GoogleAuthProvider,
   linkWithCredential,
+  OAuthCredential,
   signInWithEmailAndPassword,
   signInWithRedirect,
 } from 'firebase/auth';
@@ -29,6 +30,13 @@ export interface User {
 
 const accountToLinkStorageKey = 'account-to-link';
 const loginWithRedirectInProgressKey = 'login-with-redirect-in-progress';
+
+// TODO: Update Firebase Auth error handling and use official types
+interface LegacyAuthError {
+  code: string;
+  email: string;
+  credential: unknown;
+}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -120,11 +128,13 @@ export class AuthService {
       }
 
       return undefined;
-    } catch (error: any) {
-      if (error.code === FirebaseAuthErrorCode.AccountExistsWithDifferentCredential) {
-        const availableProviders = await fetchSignInMethodsForEmail(this.auth, error.email);
+    } catch (error) {
+      const authError = error as LegacyAuthError;
 
-        sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(error.credential));
+      if (authError.code === FirebaseAuthErrorCode.AccountExistsWithDifferentCredential) {
+        const availableProviders = await fetchSignInMethodsForEmail(this.auth, authError.email);
+
+        sessionStorage.setItem(accountToLinkStorageKey, JSON.stringify(authError.credential));
 
         return {
           success: false,
@@ -149,10 +159,10 @@ export class AuthService {
     );
   }
 
-  private getCredentialInstance(credentialData: any) {
+  private getCredentialInstance(credentialData: OAuthCredential) {
     switch (credentialData.providerId) {
       case 'facebook.com':
-        return FacebookAuthProvider.credential(credentialData.accessToken);
+        return FacebookAuthProvider.credential(credentialData.accessToken!);
       case 'google.com':
         return GoogleAuthProvider.credential(credentialData.idToken, credentialData.accessToken);
       default:

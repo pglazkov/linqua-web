@@ -1,11 +1,11 @@
-@import '../../styles/variables';
+@use 'variables' as vars;
 
 :host {
   display: flex;
   flex-direction: column;
   min-width: 250px;
 
-  @media (min-width: $screen-tablet) {
+  @media (min-width: vars.$screen-tablet) {
     min-width: 350px;
   }
 }

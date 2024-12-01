@@ -7,8 +7,8 @@ export interface EntryConfig {
 }
 
 export class Entry implements EntryConfig {
-  id: string = '';
-  originalText: string = '';
+  id = '';
+  originalText = '';
   translation?: string;
   addedOn: Date = new Date();
   updatedOn?: Date;
