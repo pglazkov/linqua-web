@@ -47,7 +47,6 @@ interface EntryListState {
       transition('* => void', [animate('0.2s ease-in', style({ transform: 'translateX(100%)' }))]),
     ]),
   ],
-  standalone: true,
   imports: [
     MatList,
     RandomEntryComponent,
