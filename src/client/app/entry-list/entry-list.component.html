@@ -4,6 +4,7 @@
       <div class="random-entry">
         <app-random-entry
           [entry]="randomEntry"
+          [isLoading]="isLoadingRandomEntry"
           (nextEntryRequest)="onUpdateRandomEntryRequested()"
           (editRequest)="onEditRandomEntryRequested(randomEntry!)"
           (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"

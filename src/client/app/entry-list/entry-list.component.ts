@@ -231,6 +231,8 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
     const vms = this.listVm.findViewModelsForEntry(entry);
 
+    this.isLoadingRandomEntry = true;
+
     await this.onToggleIsLearnedRequested(vms ? vms.entryVm : entry);
   }
 
