@@ -96,6 +96,10 @@ export class EntryEditorDialogComponent {
       return;
     }
 
-    this.dialogRef.close(this.entryForm.value);
+    const result = this.dialogData.entry ? structuredClone(this.dialogData.entry) : new Entry();
+
+    Object.assign(result, this.entryForm.value);
+
+    this.dialogRef.close(result);
   }
 }

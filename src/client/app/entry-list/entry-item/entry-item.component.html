@@ -2,8 +2,8 @@
   <mat-card-content>
     <div class="entry-card">
       <div class="content">
-        <span matListItemTitle class="original-text" data-test-id="original-text">{{ entry.originalText }}</span>
-        <span matListItemLine class="translation mat-caption" data-test-id="translation">{{ entry.translation }}</span>
+        <span matListItemTitle class="original-text" data-test-id="original-text">{{ entry().originalText() }}</span>
+        <span matListItemLine class="translation mat-caption" data-test-id="translation">{{ entry().translation() }}</span>
       </div>
 
       <div class="toolbox">
@@ -19,7 +19,7 @@
           mat-icon-button
           [matMenuTriggerFor]="menu"
           data-test-id="open-action-menu-button"
-          [disabled]="entry.isLearned"
+          [disabled]="entry().isLearned()"
         >
           <mat-icon>more_vert</mat-icon>
         </button>

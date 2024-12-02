@@ -1,6 +1,6 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, viewChild, ViewContainerRef } from '@angular/core';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
@@ -76,7 +76,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   isLoadingRandomEntry = false;
   randomEntry: Entry | undefined;
 
-  @ViewChild('list', { read: ElementRef, static: false }) listElement: ElementRef | undefined;
+  readonly listElement = viewChild('list', { read: ElementRef });
 
   private readonly ngUnsubscribe: Unsubscribable[] = [];
 
@@ -138,18 +138,19 @@ export class EntryListComponent implements OnInit, OnDestroy {
     if (result) {
       result.id = this.storage.getNewId();
 
-      const entry = new EntryListItemViewModel(result);
+      const entryVm = new EntryListItemViewModel(result);
 
-      entry.isNew = true;
+      entryVm.isNew.set(true);
 
-      this.loadedEntries.unshift(result);
-      listVm.addEntry(entry);
+      this.loadedEntries.unshift(entryVm.model);
+      listVm.addEntry(entryVm);
 
-      if (this.listElement) {
-        this.listElement.nativeElement.scrollTop = 0;
+      const listElement = this.listElement();
+      if (listElement) {
+        listElement.nativeElement.scrollTop = 0;
       }
 
-      await this.storage.addOrUpdate(entry.model);
+      await this.storage.addOrUpdate(entryVm.model);
     }
   }
 
@@ -163,17 +164,16 @@ export class EntryListComponent implements OnInit, OnDestroy {
     const result: Entry = await firstValueFrom(editorDialog.afterClosed().pipe(first()));
 
     if (result) {
-      Object.assign(entry, result);
-      entry.updatedOn = this.currentDateProvider.getCurrentDate();
+      result.updatedOn = this.currentDateProvider.getCurrentDate();
 
       if (this.randomEntry && this.randomEntry.id === entry.id) {
-        this.randomEntry = entry;
+        this.randomEntry = result;
       }
 
-      this.listVm.onEntryUpdated(entry);
+      this.listVm.onEntryUpdated(result);
 
-      await this.storage.addOrUpdate(entry);
-      await this.randomEntryService.onEntryUpdated(entry);
+      await this.storage.addOrUpdate(result);
+      await this.randomEntryService.onEntryUpdated(result);
     }
   }
 
@@ -184,7 +184,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
     const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
 
-    const entryIndex = this.loadedEntries.findIndex(x => x.id === entry.id);
+    const entryIndex = this.loadedEntries.findIndex(x => x.id === entryModel.id);
 
     if (entryIndex >= 0) {
       this.loadedEntries.splice(entryIndex, 1);
@@ -194,10 +194,10 @@ export class EntryListComponent implements OnInit, OnDestroy {
       this.listVm.deleteEntry(entry, group);
     }
 
-    await this.storage.delete(entry.id);
+    await this.storage.delete(entryModel.id);
     await this.randomEntryService.onEntryDeleted(entryModel);
 
-    if (this.randomEntry && this.randomEntry.id === entry.id) {
+    if (this.randomEntry && this.randomEntry.id === entryModel.id) {
       await this.loadRandomEntry();
     }
   }
@@ -234,30 +234,22 @@ export class EntryListComponent implements OnInit, OnDestroy {
     await this.onToggleIsLearnedRequested(vms ? vms.entryVm : entry);
   }
 
-  trackByGroup(index: number, group: EntryListTimeGroupViewModel) {
-    return group.order;
-  }
-
-  trackByEntry(index: number, entry: EntryListItemViewModel) {
-    return entry.id;
-  }
-
   async onToggleIsLearnedRequested(entry: EntryListItemViewModel | Entry) {
     const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
-    const newIsLearned = entry instanceof EntryListItemViewModel ? !entry.isLearned : true;
+    const newIsLearned = entry instanceof EntryListItemViewModel ? !entry.isLearned() : true;
 
     if (entry instanceof EntryListItemViewModel) {
-      entry.isLearned = newIsLearned;
+      entry.isLearned.set(newIsLearned);
     }
 
     if (newIsLearned) {
-      await this.storage.archive(entry.id);
+      await this.storage.archive(entryModel.id);
       await this.randomEntryService.onEntryDeleted(entryModel);
     } else {
-      await this.storage.unarchive(entry.id);
+      await this.storage.unarchive(entryModel.id);
     }
 
-    if (!this.randomEntry || (this.randomEntry && this.randomEntry.id === entry.id)) {
+    if (!this.randomEntry || (this.randomEntry && this.randomEntry.id === entryModel.id)) {
       await this.loadRandomEntry();
     }
   }

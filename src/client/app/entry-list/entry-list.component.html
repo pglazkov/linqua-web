@@ -12,7 +12,7 @@
       </div>
     }
     @if (listVm.groups.length > 0) {
-      @for (group of listVm.groups; track trackByGroup($index, group)) {
+      @for (group of listVm.groups; track group.order) {
         <div class="entry-list__group">
           <div class="entry-list__group__header">
             <h3 mat-subheader>
@@ -20,16 +20,16 @@
             </h3>
             <mat-divider />
           </div>
-          @for (entry of group.entries; track trackByEntry($index, entry)) {
+          @for (entry of group.entries; track entry.id()) {
             <mat-list-item
               class="entry-list__list-item"
-              [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-              (@entryCardEnterLeave.done)="entry.isNew = false"
+              [@entryCardEnterLeave]="entry.isNew() ? 'new' : undefined"
+              (@entryCardEnterLeave.done)="entry.isNew.set(false)"
               data-test-id="entry-list-item"
             >
               <app-entry-item
                 [entry]="entry"
-                (editRequest)="onEditRequested(entry)"
+                (editRequest)="onEditRequested(entry.model)"
                 (deleteRequest)="onDeleteRequested(entry, group)"
                 (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
               >

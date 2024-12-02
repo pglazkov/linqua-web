@@ -1,25 +1,17 @@
 import { EntryListItemViewModel } from './entry-list-item.vm';
 
 export class EntryListTimeGroupViewModel {
-  order: number;
-  name: string;
-  entries: EntryListItemViewModel[];
-
   constructor(
     private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number,
-    order: number,
-    name: string,
-    entries: EntryListItemViewModel[],
-  ) {
-    this.order = order;
-    this.name = name;
-    this.entries = entries;
-  }
+    public readonly order: number,
+    public readonly name: string,
+    public readonly entries: EntryListItemViewModel[],
+  ) {}
 
   addEntry(entry: EntryListItemViewModel) {
     this.entries.unshift(entry);
 
-    this.entries.sort(this.entrySortCompareFunc);
+    this.sortEntries();
   }
 
   deleteEntry(entry: EntryListItemViewModel) {
@@ -32,7 +24,7 @@ export class EntryListTimeGroupViewModel {
 
   mergeFrom(otherGroup: EntryListTimeGroupViewModel) {
     for (const otherEntry of otherGroup.entries) {
-      const thisEntry = this.entries.find(e => e.id === otherEntry.id);
+      const thisEntry = this.entries.find(e => e.id() === otherEntry.id());
 
       if (thisEntry) {
         this.entries[this.entries.indexOf(thisEntry)] = otherEntry;
@@ -42,14 +34,14 @@ export class EntryListTimeGroupViewModel {
     }
 
     for (const thisEntry of this.entries) {
-      const otherEntry = this.entries.find(e => e.id === thisEntry.id);
+      const otherEntry = this.entries.find(e => e.id() === thisEntry.id());
 
       if (!otherEntry) {
         this.entries.splice(this.entries.indexOf(thisEntry), 1);
       }
     }
 
-    this.entries.sort(this.entrySortCompareFunc);
+    this.sortEntries();
   }
 
   equals(otherGroup: EntryListTimeGroupViewModel | undefined): boolean {
@@ -58,5 +50,9 @@ export class EntryListTimeGroupViewModel {
     }
 
     return this.name === otherGroup.name;
+  }
+
+  private sortEntries(): void {
+    this.entries.sort((a, b) => this.entrySortCompareFunc(a.model, b.model));
   }
 }

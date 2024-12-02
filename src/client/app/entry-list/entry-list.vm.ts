@@ -79,7 +79,7 @@ export class EntryListViewModel {
       }
     | undefined {
     for (const groupVm of this.groups) {
-      const entryVm = groupVm.entries.find(x => x.id === entry.id);
+      const entryVm = groupVm.entries.find(x => x.id() === entry.id);
 
       if (entryVm) {
         return { entryVm: entryVm, entryGroupVm: groupVm };
@@ -90,7 +90,7 @@ export class EntryListViewModel {
   }
 
   private findOrCreateTimeGroupForEntry(entry: EntryListItemViewModel) {
-    let entryDate = entry.addedOn;
+    let entryDate = entry.addedOn();
     if (!entryDate) {
       entryDate = this.currentDateProvider.getCurrentDate();
     }
