@@ -4,7 +4,6 @@ import uniqueId from 'lodash-es/uniqueId';
 import { Entry } from '../model';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
-import { TimeGroupService } from './time-group.service';
 
 const currentDate = new Date(2018, 3, 15, 12, 0, 0, 0);
 
@@ -25,17 +24,13 @@ function genEntry(addedOnDaysOffset?: number): Entry {
 }
 
 describe('EntryListViewModel', () => {
-  let timeGroupService!: TimeGroupService;
-
   beforeEach(() => {
     jasmine.clock().install();
     jasmine.clock().mockDate(currentDate);
 
     TestBed.configureTestingModule({
-      providers: [TimeGroupService],
+      providers: [],
     });
-
-    timeGroupService = TestBed.inject(TimeGroupService);
   });
 
   afterEach(() => {
@@ -51,7 +46,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(entries, timeGroupService);
+    const sut = new EntryListViewModel(entries);
 
     expect(sut.groups.length).toBe(5);
     expect(sut.groups[0].name).toBe('Today');
@@ -75,7 +70,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService);
+    const sut = new EntryListViewModel(initialEntries);
 
     expect(sut.groups.length).toBe(3);
     expect(sut.groups[0].name).toBe('Today');
@@ -89,7 +84,7 @@ describe('EntryListViewModel', () => {
       genEntry(-90), // Older
     ];
 
-    sut.mergeFrom(new EntryListViewModel(updatedEntries, timeGroupService));
+    sut.mergeFrom(new EntryListViewModel(updatedEntries));
 
     const orderedGroups = sut.groups.sort(EntryListViewModel.groupSortComparerFunc);
 
@@ -110,7 +105,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService);
+    const sut = new EntryListViewModel(initialEntries);
 
     expect(sut.groups.length).toBe(2);
     expect(sut.groups[0].name).toBe('Last month');
@@ -133,7 +128,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService);
+    const sut = new EntryListViewModel(initialEntries);
 
     expect(sut.groups.length).toBe(2);
     expect(sut.groups[0].name).toBe('Last month');

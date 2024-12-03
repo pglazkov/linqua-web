@@ -2,7 +2,7 @@ import { Entry } from '../model';
 import { createSortComparer } from '../util';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
-import { TimeGroupService } from './time-group.service';
+import { createTimeGroup } from './time-group';
 
 const entryDeletionAnimationDuration = 200;
 
@@ -13,10 +13,7 @@ export class EntryListViewModel {
 
   groups: EntryListTimeGroupViewModel[] = [];
 
-  constructor(
-    entries: Entry[],
-    private readonly timeGroupService: TimeGroupService,
-  ) {
+  constructor(entries: Entry[]) {
     const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
 
     for (const entry of sortedEntries) {
@@ -97,7 +94,7 @@ export class EntryListViewModel {
     const dateWithoutTime = new Date(entryDate);
     dateWithoutTime.setHours(0, 0, 0, 0);
 
-    const timeGroup = this.timeGroupService.getTimeGroup(dateWithoutTime);
+    const timeGroup = createTimeGroup(dateWithoutTime);
 
     let group = this.groups.find(g => g.name === timeGroup.englishName);
 

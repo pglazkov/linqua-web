@@ -29,7 +29,6 @@ import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
-import { TimeGroupService } from './time-group.service';
 
 interface EntryListState {
   loadedEntries: Entry[];
@@ -77,7 +76,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private readonly storage = inject(EntryStorageService);
   private readonly randomEntryService = inject(RandomEntryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly timeGroupService = inject(TimeGroupService);
   private readonly cd = inject(ChangeDetectorRef);
 
   protected readonly listVm = signal<EntryListViewModel | undefined>(undefined);
@@ -316,7 +314,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private onListStateChange(newState: EntryListState) {
-    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService);
+    const newListVm = new EntryListViewModel(newState.loadedEntries);
 
     if (this.listVm()) {
       this.listVm()!.mergeFrom(newListVm);
