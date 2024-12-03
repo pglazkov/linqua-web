@@ -31,7 +31,9 @@
               data-test-id="entry-list-item"
             >
               <app-entry-item
-                [entry]="entry"
+                [originalText]="entry.originalText()"
+                [translation]="entry.translation()"
+                [isLearned]="entry.isLearned()"
                 (editRequest)="onEditRequested(entry.model)"
                 (deleteRequest)="onDeleteRequested(entry, group)"
                 (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"

@@ -5,7 +5,7 @@ import { Entry } from '../model';
 export class EntryListItemViewModel {
   private readonly _id = signal<string>('');
   private readonly _originalText = signal('');
-  private readonly _translation = signal<string | undefined>(undefined);
+  private readonly _translation = signal<string>('');
   private readonly _addedOn = signal<Date>(new Date());
 
   readonly id = this._id.asReadonly();
