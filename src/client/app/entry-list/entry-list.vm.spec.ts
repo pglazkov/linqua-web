@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import uniqueId from 'lodash-es/uniqueId';
 
 import { Entry } from '../model';
+import { entryGroupSortComparer } from '../util';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 
@@ -86,7 +87,7 @@ describe('EntryListViewModel', () => {
 
     sut.mergeFrom(new EntryListViewModel(updatedEntries));
 
-    const orderedGroups = sut.groups.sort(EntryListViewModel.groupSortComparerFunc);
+    const orderedGroups = sut.groups.sort(entryGroupSortComparer);
 
     expect(orderedGroups.length).toBe(4);
     expect(orderedGroups[0].name).toBe('Today');

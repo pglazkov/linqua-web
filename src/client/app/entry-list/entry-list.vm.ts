@@ -1,5 +1,5 @@
 import { Entry } from '../model';
-import { createSortComparer } from '../util';
+import { entryGroupSortComparer, entrySortComparer } from '../util';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { createTimeGroup } from './time-group';
@@ -7,14 +7,10 @@ import { createTimeGroup } from './time-group';
 const entryDeletionAnimationDuration = 200;
 
 export class EntryListViewModel {
-  static readonly entrySortCompareFunc = createSortComparer((o: { addedOn: Date }) => o.addedOn, 'desc');
-
-  static readonly groupSortComparerFunc = createSortComparer((g: EntryListTimeGroupViewModel) => g.order, 'desc');
-
   groups: EntryListTimeGroupViewModel[] = [];
 
   constructor(entries: Entry[]) {
-    const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
+    const sortedEntries = entries.sort(entrySortComparer).reverse();
 
     for (const entry of sortedEntries) {
       this.addEntry(new EntryListItemViewModel(entry));
@@ -57,7 +53,7 @@ export class EntryListViewModel {
       }
     }
 
-    this.groups.sort(EntryListViewModel.groupSortComparerFunc);
+    this.groups.sort(entryGroupSortComparer);
   }
 
   onEntryUpdated(entry: Entry) {
@@ -99,15 +95,10 @@ export class EntryListViewModel {
     let group = this.groups.find(g => g.name === timeGroup.englishName);
 
     if (!group) {
-      group = new EntryListTimeGroupViewModel(
-        EntryListViewModel.entrySortCompareFunc,
-        timeGroup.order,
-        timeGroup.englishName,
-        [],
-      );
+      group = new EntryListTimeGroupViewModel(timeGroup.order, timeGroup.englishName, []);
 
       this.groups.unshift(group);
-      this.groups.sort(EntryListViewModel.groupSortComparerFunc);
+      this.groups.sort(entryGroupSortComparer);
     }
 
     return group;

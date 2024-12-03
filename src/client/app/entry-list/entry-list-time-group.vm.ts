@@ -1,8 +1,8 @@
+import { entrySortComparer } from '../util';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 
 export class EntryListTimeGroupViewModel {
   constructor(
-    private readonly entrySortCompareFunc: (a: { addedOn: Date }, b: { addedOn: Date }) => number,
     public readonly order: number,
     public readonly name: string,
     public readonly entries: EntryListItemViewModel[],
@@ -53,6 +53,6 @@ export class EntryListTimeGroupViewModel {
   }
 
   private sortEntries(): void {
-    this.entries.sort((a, b) => this.entrySortCompareFunc(a.model, b.model));
+    this.entries.sort((a, b) => entrySortComparer(a.model, b.model));
   }
 }
