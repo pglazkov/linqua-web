@@ -3,6 +3,7 @@ import uniqueId from 'lodash-es/uniqueId';
 
 import { Entry } from '../model';
 import { entryGroupSortComparer } from '../util';
+import { createEntry } from '../util/create-entry';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 
@@ -15,7 +16,7 @@ function genEntry(addedOnDaysOffset?: number): Entry {
     addedOn.setDate(addedOn.getDate() + addedOnDaysOffset);
   }
 
-  return new Entry({
+  return createEntry({
     id: uniqueId(),
     addedOn: addedOn,
     updatedOn: addedOn,

@@ -1,6 +1,6 @@
 import { signal } from '@angular/core';
 
-import { Entry, EntryConfig } from '../model';
+import { Entry } from '../model';
 
 export class EntryListItemViewModel {
   private readonly _id = signal<string>('');
@@ -18,8 +18,8 @@ export class EntryListItemViewModel {
 
   readonly model: Entry;
 
-  constructor(entry: Entry | EntryConfig) {
-    this.model = entry instanceof Entry ? entry : new Entry(entry);
+  constructor(entry: Entry) {
+    this.model = entry;
 
     this.syncFromModel(this.model);
     this.isNew.set(false);
@@ -31,7 +31,7 @@ export class EntryListItemViewModel {
   }
 
   equals(other: EntryListItemViewModel) {
-    return this.model.equals(other.model);
+    return this.model.id === other.model.id;
   }
 
   private syncFromModel(model: Entry): void {

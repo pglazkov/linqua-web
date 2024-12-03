@@ -30,6 +30,7 @@ import {
 import { AuthService } from '../auth';
 import { firestoreToken } from '../firebase';
 import { Entry } from '../model';
+import { createEntry } from '../util/create-entry';
 
 interface FirebaseEntry {
   originalText: string;
@@ -236,7 +237,7 @@ export class EntryStorageService {
   }
 
   private toEntry(id: string, data: FirebaseEntry) {
-    return new Entry({
+    return createEntry({
       id: id,
       originalText: data.originalText,
       translation: data.translation,

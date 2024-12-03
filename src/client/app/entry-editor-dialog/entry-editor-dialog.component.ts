@@ -9,6 +9,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 import { Entry } from '../model';
 import { TranslationService } from '../translation';
+import { createEntry } from '../util/create-entry';
 
 export interface EntryEditorDialogData {
   entry?: Entry;
@@ -96,7 +97,7 @@ export class EntryEditorDialogComponent {
       return;
     }
 
-    const result = this.dialogData.entry ? structuredClone(this.dialogData.entry) : new Entry();
+    const result = this.dialogData.entry ? structuredClone(this.dialogData.entry) : createEntry();
 
     Object.assign(result, this.entryForm.value);
 

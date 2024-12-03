@@ -25,6 +25,7 @@ import { filter, take } from 'rxjs';
 import { AuthService } from '../auth';
 import { firebaseAuthToken, firestoreToken } from '../firebase';
 import { Entry } from '../model';
+import { createEntry } from '../util/create-entry';
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -66,7 +67,7 @@ function genEntry(addedOnMinutesOffset?: number): Entry {
     addedOn.setMinutes(addedOn.getMinutes() + addedOnMinutesOffset);
   }
 
-  return new Entry({
+  return createEntry({
     addedOn: addedOn,
     updatedOn: addedOn,
     originalText: 'test',
