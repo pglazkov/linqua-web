@@ -4,8 +4,6 @@ import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { createTimeGroup } from './time-group';
 
-const entryDeletionAnimationDuration = 200;
-
 export class EntryListViewModel {
   groups: EntryListTimeGroupViewModel[] = [];
 
@@ -25,13 +23,10 @@ export class EntryListViewModel {
 
   deleteEntry(entry: EntryListItemViewModel, group: EntryListTimeGroupViewModel) {
     group.deleteEntry(entry);
+  }
 
-    if (group.entries.length === 0) {
-      // Delay the removal of the group to let the deletion animation finish
-      setTimeout(() => {
-        this.groups.splice(this.groups.indexOf(group), 1);
-      }, entryDeletionAnimationDuration);
-    }
+  deleteGroup(group: EntryListTimeGroupViewModel) {
+    this.groups.splice(this.groups.indexOf(group), 1);
   }
 
   mergeFrom(other: EntryListViewModel) {

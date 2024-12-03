@@ -30,6 +30,8 @@ import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
+const entryDeletionAnimationDuration = 200;
+
 interface EntryListState {
   loadedEntries: Entry[];
   canLoadMore: boolean;
@@ -203,6 +205,15 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
     if (entry instanceof EntryListItemViewModel && group) {
       this.listVm()?.deleteEntry(entry, group);
+
+      if (group.entries.length === 0) {
+        // Delay the removal of the group to let the deletion animation finish
+        setTimeout(() => {
+          this.listVm()?.deleteGroup(group);
+          this.cd.markForCheck();
+        }, entryDeletionAnimationDuration);
+      }
+
       this.cd.markForCheck();
     }
 
