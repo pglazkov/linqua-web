@@ -1,6 +1,5 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { CurrentDateProvider } from '../util';
 import { TimeGroup, TimeGroupKey } from './time-group';
 
 const locale: Record<string, Map<TimeGroupKey, string>> = {
@@ -73,10 +72,8 @@ const indexOfToday = groupTimeScale.indexOf(TimeGroupKey.Today);
 
 @Injectable({ providedIn: 'root' })
 export class TimeGroupService {
-  private readonly currentDateProvider = inject(CurrentDateProvider);
-
   getTimeGroup(target: Date, reference?: Date): TimeGroup {
-    reference = reference || this.currentDateProvider.getCurrentDate();
+    reference = reference || new Date();
 
     const result = (relativeToToday: number): TimeGroup => {
       const group = groupTimeScale[relativeToToday + indexOfToday];

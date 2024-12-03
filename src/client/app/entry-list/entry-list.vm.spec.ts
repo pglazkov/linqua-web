@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import uniqueId from 'lodash-es/uniqueId';
 
 import { Entry } from '../model';
-import { CurrentDateProvider } from '../util';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { TimeGroupService } from './time-group.service';
@@ -26,18 +25,21 @@ function genEntry(addedOnDaysOffset?: number): Entry {
 }
 
 describe('EntryListViewModel', () => {
-  let currentDateProvider!: jasmine.SpyObj<CurrentDateProvider>;
   let timeGroupService!: TimeGroupService;
 
   beforeEach(() => {
-    currentDateProvider = jasmine.createSpyObj('CurrentDateProvider', ['getCurrentDate']);
-    currentDateProvider.getCurrentDate.and.returnValue(currentDate);
+    jasmine.clock().install();
+    jasmine.clock().mockDate(currentDate);
 
     TestBed.configureTestingModule({
-      providers: [{ provide: CurrentDateProvider, useValue: currentDateProvider }, TimeGroupService],
+      providers: [TimeGroupService],
     });
 
     timeGroupService = TestBed.inject(TimeGroupService);
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
   });
 
   it('should create correct time groups', () => {
@@ -49,7 +51,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(entries, timeGroupService, currentDateProvider);
+    const sut = new EntryListViewModel(entries, timeGroupService);
 
     expect(sut.groups.length).toBe(5);
     expect(sut.groups[0].name).toBe('Today');
@@ -73,7 +75,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
+    const sut = new EntryListViewModel(initialEntries, timeGroupService);
 
     expect(sut.groups.length).toBe(3);
     expect(sut.groups[0].name).toBe('Today');
@@ -87,7 +89,7 @@ describe('EntryListViewModel', () => {
       genEntry(-90), // Older
     ];
 
-    sut.mergeFrom(new EntryListViewModel(updatedEntries, timeGroupService, currentDateProvider));
+    sut.mergeFrom(new EntryListViewModel(updatedEntries, timeGroupService));
 
     const orderedGroups = sut.groups.sort(EntryListViewModel.groupSortComparerFunc);
 
@@ -108,7 +110,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
+    const sut = new EntryListViewModel(initialEntries, timeGroupService);
 
     expect(sut.groups.length).toBe(2);
     expect(sut.groups[0].name).toBe('Last month');
@@ -131,7 +133,7 @@ describe('EntryListViewModel', () => {
       genEntry(-60), // Older
     ];
 
-    const sut = new EntryListViewModel(initialEntries, timeGroupService, currentDateProvider);
+    const sut = new EntryListViewModel(initialEntries, timeGroupService);
 
     expect(sut.groups.length).toBe(2);
     expect(sut.groups[0].name).toBe('Last month');

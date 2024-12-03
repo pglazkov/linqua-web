@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  DestroyRef,
   ElementRef,
   inject,
   OnDestroy,
@@ -24,7 +23,6 @@ import { filter, first, firstValueFrom, map, Subject, take, Unsubscribable } fro
 import { EntryEditorDialogComponent, EntryEditorDialogData } from '../entry-editor-dialog';
 import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
-import { CurrentDateProvider } from '../util';
 import { EntryItemComponent } from './entry-item/entry-item.component';
 import { EntryListViewModel } from './entry-list.vm';
 import { EntryListItemViewModel } from './entry-list-item.vm';
@@ -80,9 +78,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private readonly randomEntryService = inject(RandomEntryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly timeGroupService = inject(TimeGroupService);
-  private readonly currentDateProvider = inject(CurrentDateProvider);
   private readonly cd = inject(ChangeDetectorRef);
-  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly listVm = signal<EntryListViewModel | undefined>(undefined);
   protected readonly canLoadMore = signal(false);
@@ -181,7 +177,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
     const result: Entry = await firstValueFrom(editorDialog.afterClosed().pipe(first()));
 
     if (result) {
-      result.updatedOn = this.currentDateProvider.getCurrentDate();
+      result.updatedOn = new Date();
 
       if (this.randomEntry()?.id === entry.id) {
         this.randomEntry.set(result);
@@ -320,7 +316,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private onListStateChange(newState: EntryListState) {
-    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService, this.currentDateProvider);
+    const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService);
 
     if (this.listVm()) {
       this.listVm()!.mergeFrom(newListVm);

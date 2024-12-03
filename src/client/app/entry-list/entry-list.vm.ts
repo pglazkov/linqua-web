@@ -1,5 +1,5 @@
 import { Entry } from '../model';
-import { createSortComparer, CurrentDateProvider } from '../util';
+import { createSortComparer } from '../util';
 import { EntryListItemViewModel } from './entry-list-item.vm';
 import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { TimeGroupService } from './time-group.service';
@@ -16,7 +16,6 @@ export class EntryListViewModel {
   constructor(
     entries: Entry[],
     private readonly timeGroupService: TimeGroupService,
-    private readonly currentDateProvider: CurrentDateProvider,
   ) {
     const sortedEntries = entries.sort(EntryListViewModel.entrySortCompareFunc).reverse();
 
@@ -92,7 +91,7 @@ export class EntryListViewModel {
   private findOrCreateTimeGroupForEntry(entry: EntryListItemViewModel) {
     let entryDate = entry.addedOn();
     if (!entryDate) {
-      entryDate = this.currentDateProvider.getCurrentDate();
+      entryDate = new Date();
     }
 
     const dateWithoutTime = new Date(entryDate);
