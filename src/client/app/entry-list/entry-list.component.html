@@ -1,19 +1,21 @@
-@if (listVm) {
+@let vm = listVm();
+
+@if (vm) {
   <mat-list #list class="entry-list" data-test-id="entry-list">
-    @if (randomEntry || isLoadingRandomEntry) {
+    @if (randomEntry() || isLoadingRandomEntry()) {
       <div class="random-entry">
         <app-random-entry
-          [entry]="randomEntry"
-          [isLoading]="isLoadingRandomEntry"
+          [entry]="randomEntry()"
+          [isLoading]="isLoadingRandomEntry()"
           (nextEntryRequest)="onUpdateRandomEntryRequested()"
-          (editRequest)="onEditRandomEntryRequested(randomEntry!)"
-          (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
-          (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
+          (editRequest)="onEditRandomEntryRequested(randomEntry()!)"
+          (deleteRequest)="onDeleteRandomEntryRequested(randomEntry()!)"
+          (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry()!)"
         />
       </div>
     }
-    @if (listVm.groups.length > 0) {
-      @for (group of listVm.groups; track group.order) {
+    @if (vm.groups.length > 0) {
+      @for (group of vm.groups; track group.order) {
         <div class="entry-list__group">
           <div class="entry-list__group__header">
             <h3 mat-subheader>
@@ -40,8 +42,8 @@
         </div>
       }
       <div class="entry-list__footer">
-        @if (canLoadMore) {
-          @if (!isLoadingMore) {
+        @if (canLoadMore()) {
+          @if (!isLoadingMore()) {
             <button mat-raised-button (click)="loadMore()">load more</button>
           } @else {
             <div class="loading-spinner-container">

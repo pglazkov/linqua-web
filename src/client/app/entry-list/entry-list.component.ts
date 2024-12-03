@@ -1,6 +1,18 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
 import { AsyncPipe } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit, viewChild, ViewContainerRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  viewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
@@ -60,6 +72,7 @@ interface EntryListState {
     MatIcon,
     AsyncPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryListComponent implements OnInit, OnDestroy {
   private readonly dialog = inject(MatDialog);
@@ -68,15 +81,17 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly timeGroupService = inject(TimeGroupService);
   private readonly currentDateProvider = inject(CurrentDateProvider);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
-  listVm: EntryListViewModel | undefined;
-  canLoadMore = false;
-  loadMoreToken: unknown;
-  isLoadingMore = false;
-  isLoadingRandomEntry = false;
-  randomEntry: Entry | undefined;
+  protected readonly listVm = signal<EntryListViewModel | undefined>(undefined);
+  protected readonly canLoadMore = signal(false);
+  protected readonly loadMoreToken = signal<unknown>(undefined);
+  protected readonly isLoadingMore = signal(false);
+  protected readonly isLoadingRandomEntry = signal(false);
+  protected readonly randomEntry = signal<Entry | undefined>(undefined);
 
-  readonly listElement = viewChild('list', { read: ElementRef });
+  protected readonly listElement = viewChild('list', { read: ElementRef });
 
   private readonly ngUnsubscribe: Unsubscribable[] = [];
 
@@ -98,7 +113,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async loadMore() {
-    this.isLoadingMore = true;
+    this.isLoadingMore.set(true);
 
     try {
       const result = await firstValueFrom(
@@ -114,7 +129,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
         loadMoreToken: result.loadMoreToken,
       });
     } finally {
-      this.isLoadingMore = false;
+      this.isLoadingMore.set(false);
     }
   }
 
@@ -125,9 +140,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async addNewEntry() {
-    const listVm = this.listVm;
-
-    if (listVm === undefined) {
+    if (this.listVm() === undefined) {
       return;
     }
 
@@ -143,7 +156,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
       entryVm.isNew.set(true);
 
       this.loadedEntries.unshift(entryVm.model);
-      listVm.addEntry(entryVm);
+
+      this.listVm()?.addEntry(entryVm);
+      this.cd.markForCheck();
 
       const listElement = this.listElement();
       if (listElement) {
@@ -155,7 +170,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async onEditRequested(entry: Entry) {
-    if (this.listVm === undefined) {
+    const listVm = this.listVm();
+
+    if (listVm === undefined) {
       return;
     }
 
@@ -166,11 +183,11 @@ export class EntryListComponent implements OnInit, OnDestroy {
     if (result) {
       result.updatedOn = this.currentDateProvider.getCurrentDate();
 
-      if (this.randomEntry && this.randomEntry.id === entry.id) {
-        this.randomEntry = result;
+      if (this.randomEntry()?.id === entry.id) {
+        this.randomEntry.set(result);
       }
 
-      this.listVm.onEntryUpdated(result);
+      listVm.onEntryUpdated(result);
 
       await this.storage.addOrUpdate(result);
       await this.randomEntryService.onEntryUpdated(result);
@@ -178,7 +195,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async onDeleteRequested(entry: Entry | EntryListItemViewModel, group?: EntryListTimeGroupViewModel) {
-    if (this.listVm === undefined) {
+    if (this.listVm() === undefined) {
       return;
     }
 
@@ -191,31 +208,34 @@ export class EntryListComponent implements OnInit, OnDestroy {
     }
 
     if (entry instanceof EntryListItemViewModel && group) {
-      this.listVm.deleteEntry(entry, group);
+      this.listVm()?.deleteEntry(entry, group);
+      this.cd.markForCheck();
     }
 
     await this.storage.delete(entryModel.id);
     await this.randomEntryService.onEntryDeleted(entryModel);
 
-    if (this.randomEntry && this.randomEntry.id === entryModel.id) {
+    if (this.randomEntry()?.id === entryModel.id) {
       await this.loadRandomEntry();
     }
   }
 
-  async onUpdateRandomEntryRequested() {
-    await this.loadRandomEntry();
+  onUpdateRandomEntryRequested() {
+    return this.loadRandomEntry();
   }
 
-  async onEditRandomEntryRequested(entry: Entry) {
-    await this.onEditRequested(entry);
+  onEditRandomEntryRequested(entry: Entry) {
+    return this.onEditRequested(entry);
   }
 
   async onDeleteRandomEntryRequested(entry: Entry) {
-    if (!this.listVm) {
+    const listVm = this.listVm();
+
+    if (!listVm) {
       return;
     }
 
-    const vms = this.listVm.findViewModelsForEntry(entry);
+    const vms = listVm.findViewModelsForEntry(entry);
 
     if (vms) {
       await this.onDeleteRequested(vms.entryVm, vms.entryGroupVm);
@@ -225,13 +245,15 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async onMarkLearnedRandomEntryRequested(entry: Entry) {
-    if (!this.listVm) {
+    const listVm = this.listVm();
+
+    if (!listVm) {
       return;
     }
 
-    const vms = this.listVm.findViewModelsForEntry(entry);
+    const vms = listVm.findViewModelsForEntry(entry);
 
-    this.isLoadingRandomEntry = true;
+    this.isLoadingRandomEntry.set(true);
 
     await this.onToggleIsLearnedRequested(vms ? vms.entryVm : entry);
   }
@@ -251,9 +273,11 @@ export class EntryListComponent implements OnInit, OnDestroy {
       await this.storage.unarchive(entryModel.id);
     }
 
-    if (!this.randomEntry || (this.randomEntry && this.randomEntry.id === entryModel.id)) {
+    if (!this.randomEntry() || this.randomEntry()!.id === entryModel.id) {
       await this.loadRandomEntry();
     }
+
+    this.cd.markForCheck();
   }
 
   get emptyListInfo$() {
@@ -298,15 +322,16 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private onListStateChange(newState: EntryListState) {
     const newListVm = new EntryListViewModel(newState.loadedEntries, this.timeGroupService, this.currentDateProvider);
 
-    if (this.listVm) {
-      this.listVm.mergeFrom(newListVm);
+    if (this.listVm()) {
+      this.listVm()!.mergeFrom(newListVm);
+      this.cd.markForCheck();
     } else {
-      this.listVm = newListVm;
+      this.listVm.set(newListVm);
     }
 
     this.loadedEntries = newState.loadedEntries;
-    this.canLoadMore = newState.canLoadMore;
-    this.loadMoreToken = newState.loadMoreToken;
+    this.canLoadMore.set(newState.canLoadMore);
+    this.loadMoreToken.set(newState.loadMoreToken);
   }
 
   private createEntryDialogConfig(config: { entry?: Entry } = {}): MatDialogConfig {
@@ -340,12 +365,12 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private async loadRandomEntry() {
-    this.isLoadingRandomEntry = true;
+    this.isLoadingRandomEntry.set(true);
 
     try {
       const getRandomEntry = () => firstValueFrom(this.randomEntryService.getRandomEntry());
 
-      const prevEntry = this.randomEntry;
+      const prevEntry = this.randomEntry();
       let newEntry = await getRandomEntry();
 
       if (prevEntry && newEntry && prevEntry.id === newEntry.id) {
@@ -353,9 +378,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
         newEntry = await getRandomEntry();
       }
 
-      this.randomEntry = newEntry;
+      this.randomEntry.set(newEntry);
     } finally {
-      this.isLoadingRandomEntry = false;
+      this.isLoadingRandomEntry.set(false);
     }
   }
 }
