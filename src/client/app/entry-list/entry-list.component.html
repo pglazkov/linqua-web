@@ -1,6 +1,4 @@
-@let vm = listVm();
-
-@if (vm) {
+@if (isLoaded()) {
   <mat-list #list class="entry-list" data-test-id="entry-list">
     @if (randomEntry() || isLoadingRandomEntry()) {
       <div class="random-entry">
@@ -9,13 +7,13 @@
           [isLoading]="isLoadingRandomEntry()"
           (nextEntryRequest)="onUpdateRandomEntryRequested()"
           (editRequest)="onEditRandomEntryRequested(randomEntry()!)"
-          (deleteRequest)="onDeleteRandomEntryRequested(randomEntry()!)"
+          (deleteRequest)="onDeleteRequested(randomEntry()!)"
           (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry()!)"
         />
       </div>
     }
-    @if (vm.groups.length > 0) {
-      @for (group of vm.groups; track group.order) {
+    @if (timeGroups().length > 0) {
+      @for (group of timeGroups(); track group.order) {
         <div class="entry-list__group">
           <div class="entry-list__group__header">
             <h3 mat-subheader>
@@ -23,20 +21,20 @@
             </h3>
             <mat-divider />
           </div>
-          @for (entry of group.entries; track entry.id()) {
+          @for (entryState of group.entries; track entryState.model.id) {
             <mat-list-item
               class="entry-list__list-item"
-              [@entryCardEnterLeave]="entry.isNew() ? 'new' : undefined"
-              (@entryCardEnterLeave.done)="entry.isNew.set(false)"
+              [@entryCardEnterLeave]="entryState.isNew ? 'new' : undefined"
+              (@entryCardEnterLeave.done)="markAsNotNew(entryState.model);"
               data-test-id="entry-list-item"
             >
               <app-entry-item
-                [originalText]="entry.originalText()"
-                [translation]="entry.translation()"
-                [isLearned]="entry.isLearned()"
-                (editRequest)="onEditRequested(entry.model)"
-                (deleteRequest)="onDeleteRequested(entry, group)"
-                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
+                [originalText]="entryState.model.originalText"
+                [translation]="entryState.model.translation"
+                [isLearned]="entryState.isLearned"
+                (editRequest)="onEditRequested(entryState.model)"
+                (deleteRequest)="onDeleteRequested(entryState.model)"
+                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entryState.model)"
               >
               </app-entry-item>
             </mat-list-item>

@@ -30,10 +30,6 @@ export class EntryListItemViewModel {
     this.syncFromModel(this.model);
   }
 
-  equals(other: EntryListItemViewModel) {
-    return this.model.id === other.model.id;
-  }
-
   private syncFromModel(model: Entry): void {
     this._id.set(model.id);
     this._originalText.set(model.originalText);

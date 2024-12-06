@@ -15,7 +15,7 @@ export class EntryListTimeGroupViewModel {
   }
 
   deleteEntry(entry: EntryListItemViewModel) {
-    const entryIndex = this.entries.findIndex(x => x.equals(entry));
+    const entryIndex = this.entries.findIndex(x => x.id() === entry.id());
 
     if (entryIndex >= 0) {
       this.entries.splice(entryIndex, 1);

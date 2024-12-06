@@ -24,15 +24,14 @@ import { EntryEditorDialogComponent, EntryEditorDialogData } from '../entry-edit
 import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
 import { EntryItemComponent } from './entry-item/entry-item.component';
-import { EntryListViewModel } from './entry-list.vm';
+import { EntryStore } from './entry-list.state';
 import { EntryListItemViewModel } from './entry-list-item.vm';
-import { EntryListTimeGroupViewModel } from './entry-list-time-group.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
 const entryDeletionAnimationDuration = 200;
 
-interface EntryListState {
+interface EntryListRawData {
   loadedEntries: Entry[];
   canLoadMore: boolean;
   loadMoreToken: unknown;
@@ -71,6 +70,7 @@ interface EntryListState {
     MatIcon,
     AsyncPipe,
   ],
+  providers: [EntryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryListComponent implements OnInit, OnDestroy {
@@ -80,7 +80,10 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly cd = inject(ChangeDetectorRef);
 
-  protected readonly listVm = signal<EntryListViewModel | undefined>(undefined);
+  private readonly entryStore = inject(EntryStore);
+
+  protected readonly isLoaded = this.entryStore.isLoaded;
+  protected readonly timeGroups = this.entryStore.groupsComputed;
   protected readonly canLoadMore = signal(false);
   protected readonly loadMoreToken = signal<unknown>(undefined);
   protected readonly isLoadingMore = signal(false);
@@ -91,12 +94,12 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
   private readonly ngUnsubscribe: Unsubscribable[] = [];
 
-  private readonly listStateSubject = new Subject<EntryListState>();
+  private readonly dataSubject = new Subject<EntryListRawData>();
 
   private loadedEntries: Entry[] = [];
 
   constructor() {
-    this.listStateSubject.subscribe(s => this.onListStateChange(s));
+    this.dataSubject.subscribe(s => this.onDataChanges(s));
   }
 
   ngOnInit() {
@@ -119,7 +122,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
         ),
       );
 
-      this.listStateSubject.next({
+      this.dataSubject.next({
         loadedEntries: this.loadedEntries.concat(result.entries),
         canLoadMore: result.hasMore,
         loadMoreToken: result.loadMoreToken,
@@ -136,10 +139,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async addNewEntry() {
-    if (this.listVm() === undefined) {
-      return;
-    }
-
     const result: Entry = await firstValueFrom(
       this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig()).afterClosed().pipe(first()),
     );
@@ -153,8 +152,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
       this.loadedEntries.unshift(entryVm.model);
 
-      this.listVm()?.addEntry(entryVm);
-      this.cd.markForCheck();
+      this.entryStore.addEntry(result);
 
       const listElement = this.listElement();
       if (listElement) {
@@ -166,12 +164,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async onEditRequested(entry: Entry) {
-    const listVm = this.listVm();
-
-    if (listVm === undefined) {
-      return;
-    }
-
     const editorDialog = this.dialog.open(EntryEditorDialogComponent, this.createEntryDialogConfig({ entry }));
 
     const result: Entry = await firstValueFrom(editorDialog.afterClosed().pipe(first()));
@@ -183,44 +175,29 @@ export class EntryListComponent implements OnInit, OnDestroy {
         this.randomEntry.set(result);
       }
 
-      listVm.onEntryUpdated(result);
+      this.entryStore.updateEntry(result);
 
       await this.storage.addOrUpdate(result);
       await this.randomEntryService.onEntryUpdated(result);
     }
   }
 
-  async onDeleteRequested(entry: Entry | EntryListItemViewModel, group?: EntryListTimeGroupViewModel) {
-    if (this.listVm() === undefined) {
-      return;
-    }
-
-    const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
-
-    const entryIndex = this.loadedEntries.findIndex(x => x.id === entryModel.id);
+  async onDeleteRequested(entry: Entry) {
+    const entryIndex = this.loadedEntries.findIndex(x => x.id === entry.id);
 
     if (entryIndex >= 0) {
       this.loadedEntries.splice(entryIndex, 1);
     }
 
-    if (entry instanceof EntryListItemViewModel && group) {
-      this.listVm()?.deleteEntry(entry, group);
+    this.entryStore.deleteEntry(entry.id);
+    // setTimeout(() => {
+    //   this.entryStore.deleteEmptyGroups();
+    // }, entryDeletionAnimationDuration);
 
-      if (group.entries.length === 0) {
-        // Delay the removal of the group to let the deletion animation finish
-        setTimeout(() => {
-          this.listVm()?.deleteGroup(group);
-          this.cd.markForCheck();
-        }, entryDeletionAnimationDuration);
-      }
+    await this.storage.delete(entry.id);
+    await this.randomEntryService.onEntryDeleted(entry);
 
-      this.cd.markForCheck();
-    }
-
-    await this.storage.delete(entryModel.id);
-    await this.randomEntryService.onEntryDeleted(entryModel);
-
-    if (this.randomEntry()?.id === entryModel.id) {
+    if (this.randomEntry()?.id === entry.id) {
       await this.loadRandomEntry();
     }
   }
@@ -233,52 +210,23 @@ export class EntryListComponent implements OnInit, OnDestroy {
     return this.onEditRequested(entry);
   }
 
-  async onDeleteRandomEntryRequested(entry: Entry) {
-    const listVm = this.listVm();
-
-    if (!listVm) {
-      return;
-    }
-
-    const vms = listVm.findViewModelsForEntry(entry);
-
-    if (vms) {
-      await this.onDeleteRequested(vms.entryVm, vms.entryGroupVm);
-    } else {
-      await this.onDeleteRequested(entry);
-    }
-  }
-
   async onMarkLearnedRandomEntryRequested(entry: Entry) {
-    const listVm = this.listVm();
-
-    if (!listVm) {
-      return;
-    }
-
-    const vms = listVm.findViewModelsForEntry(entry);
-
     this.isLoadingRandomEntry.set(true);
 
-    await this.onToggleIsLearnedRequested(vms ? vms.entryVm : entry);
+    await this.onToggleIsLearnedRequested(entry);
   }
 
-  async onToggleIsLearnedRequested(entry: EntryListItemViewModel | Entry) {
-    const entryModel = entry instanceof EntryListItemViewModel ? entry.model : entry;
-    const newIsLearned = entry instanceof EntryListItemViewModel ? !entry.isLearned() : true;
-
-    if (entry instanceof EntryListItemViewModel) {
-      entry.isLearned.set(newIsLearned);
-    }
+  async onToggleIsLearnedRequested(entry: Entry) {
+    const newIsLearned = this.entryStore.toggleIsLearned(entry.id);
 
     if (newIsLearned) {
-      await this.storage.archive(entryModel.id);
-      await this.randomEntryService.onEntryDeleted(entryModel);
+      await this.storage.archive(entry.id);
+      await this.randomEntryService.onEntryDeleted(entry);
     } else {
-      await this.storage.unarchive(entryModel.id);
+      await this.storage.unarchive(entry.id);
     }
 
-    if (!this.randomEntry() || this.randomEntry()!.id === entryModel.id) {
+    if (!this.randomEntry() || this.randomEntry()!.id === entry.id) {
       await this.loadRandomEntry();
     }
 
@@ -310,7 +258,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
     };
 
     sub = this.storage.getEntriesStream().subscribe(result => {
-      this.listStateSubject.next({
+      this.dataSubject.next({
         loadedEntries: result.entries,
         canLoadMore: result.hasMore,
         loadMoreToken: result.loadMoreToken,
@@ -324,19 +272,12 @@ export class EntryListComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.push(sub);
   }
 
-  private onListStateChange(newState: EntryListState) {
-    const newListVm = new EntryListViewModel(newState.loadedEntries);
+  private onDataChanges(newData: EntryListRawData) {
+    this.entryStore.setEntries(newData.loadedEntries);
 
-    if (this.listVm()) {
-      this.listVm()!.mergeFrom(newListVm);
-      this.cd.markForCheck();
-    } else {
-      this.listVm.set(newListVm);
-    }
-
-    this.loadedEntries = newState.loadedEntries;
-    this.canLoadMore.set(newState.canLoadMore);
-    this.loadMoreToken.set(newState.loadMoreToken);
+    this.loadedEntries = newData.loadedEntries;
+    this.canLoadMore.set(newData.canLoadMore);
+    this.loadMoreToken.set(newData.loadMoreToken);
   }
 
   private createEntryDialogConfig(config: { entry?: Entry } = {}): MatDialogConfig {
@@ -387,5 +328,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
     } finally {
       this.isLoadingRandomEntry.set(false);
     }
+  }
+
+  protected markAsNotNew(entry: Entry) {
+    this.entryStore.setIsNew(entry.id, false);
   }
 }
