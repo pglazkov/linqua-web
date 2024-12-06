@@ -2,23 +2,23 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
 import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  DestroyRef,
   ElementRef,
   inject,
-  OnDestroy,
   OnInit,
   signal,
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { filter, first, firstValueFrom, map, Subject, take, Unsubscribable } from 'rxjs';
+import { filter, first, firstValueFrom, map, Subject, take, takeWhile } from 'rxjs';
 
 import { EntryEditorDialogComponent, EntryEditorDialogData } from '../entry-editor-dialog';
 import { Entry } from '../model';
@@ -63,12 +63,12 @@ interface EntryListRawData {
   providers: [EntryStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EntryListComponent implements OnInit, OnDestroy {
+export class EntryListComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly storage = inject(EntryStorageService);
   private readonly randomEntryService = inject(RandomEntryService);
   private readonly viewContainer = inject(ViewContainerRef);
-  private readonly cd = inject(ChangeDetectorRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly entryListState = inject(EntryStore);
 
@@ -81,8 +81,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
   protected readonly randomEntry = signal<Entry | undefined>(undefined);
 
   protected readonly listElement = viewChild('list', { read: ElementRef });
-
-  private readonly ngUnsubscribe: Unsubscribable[] = [];
 
   private readonly dataSubject = new Subject<EntryListRawData>();
 
@@ -119,12 +117,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
       });
     } finally {
       this.isLoadingMore.set(false);
-    }
-  }
-
-  ngOnDestroy(): void {
-    for (const sub of this.ngUnsubscribe) {
-      sub.unsubscribe();
     }
   }
 
@@ -212,8 +204,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
     if (!this.randomEntry() || this.randomEntry()!.id === entry.id) {
       await this.loadRandomEntry();
     }
-
-    this.cd.markForCheck();
   }
 
   get emptyListInfo$() {
@@ -236,23 +226,19 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private loadEntryList() {
-    let sub: Unsubscribable = {
-      unsubscribe: () => {},
-    };
-
-    sub = this.storage.getEntriesStream().subscribe(result => {
-      this.dataSubject.next({
-        loadedEntries: result.entries,
-        canLoadMore: result.hasMore,
-        loadMoreToken: result.loadMoreToken,
+    this.storage
+      .getEntriesStream()
+      .pipe(
+        takeWhile(r => r.fromCache, true),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(result => {
+        this.dataSubject.next({
+          loadedEntries: result.entries,
+          canLoadMore: result.hasMore,
+          loadMoreToken: result.loadMoreToken,
+        });
       });
-
-      if (!result.fromCache) {
-        sub.unsubscribe();
-      }
-    });
-
-    this.ngUnsubscribe.push(sub);
   }
 
   private onDataChanges(newData: EntryListRawData) {
