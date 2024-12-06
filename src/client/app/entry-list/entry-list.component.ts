@@ -25,7 +25,6 @@ import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
 import { EntryItemComponent } from './entry-item/entry-item.component';
 import { EntryStore } from './entry-list.state';
-import { EntryListItemViewModel } from './entry-list-item.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
@@ -137,11 +136,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
     if (result) {
       result.id = this.storage.getNewId();
 
-      const entryVm = new EntryListItemViewModel(result);
-
-      entryVm.isNew.set(true);
-
-      this.loadedEntries.unshift(entryVm.model);
+      this.loadedEntries.unshift(result);
 
       this.entryListState.addEntry(result);
 
@@ -150,7 +145,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
         listElement.nativeElement.scrollTop = 0;
       }
 
-      await this.storage.addOrUpdate(entryVm.model);
+      await this.storage.addOrUpdate(result);
     }
   }
 
