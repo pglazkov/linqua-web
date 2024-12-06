@@ -80,10 +80,10 @@ export class EntryListComponent implements OnInit, OnDestroy {
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly cd = inject(ChangeDetectorRef);
 
-  private readonly entryStore = inject(EntryStore);
+  private readonly entryListState = inject(EntryStore);
 
-  protected readonly isLoaded = this.entryStore.isLoaded;
-  protected readonly timeGroups = this.entryStore.groupsComputed;
+  protected readonly isLoaded = this.entryListState.isLoaded;
+  protected readonly timeGroups = this.entryListState.timeGroups;
   protected readonly canLoadMore = signal(false);
   protected readonly loadMoreToken = signal<unknown>(undefined);
   protected readonly isLoadingMore = signal(false);
@@ -152,7 +152,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
 
       this.loadedEntries.unshift(entryVm.model);
 
-      this.entryStore.addEntry(result);
+      this.entryListState.addEntry(result);
 
       const listElement = this.listElement();
       if (listElement) {
@@ -175,7 +175,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
         this.randomEntry.set(result);
       }
 
-      this.entryStore.updateEntry(result);
+      this.entryListState.updateEntry(result);
 
       await this.storage.addOrUpdate(result);
       await this.randomEntryService.onEntryUpdated(result);
@@ -189,9 +189,9 @@ export class EntryListComponent implements OnInit, OnDestroy {
       this.loadedEntries.splice(entryIndex, 1);
     }
 
-    this.entryStore.deleteEntry(entry.id);
+    this.entryListState.deleteEntry(entry.id);
     // setTimeout(() => {
-    //   this.entryStore.deleteEmptyGroups();
+    //   this.entryListState.deleteEmptyGroups();
     // }, entryDeletionAnimationDuration);
 
     await this.storage.delete(entry.id);
@@ -217,7 +217,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   async onToggleIsLearnedRequested(entry: Entry) {
-    const newIsLearned = this.entryStore.toggleIsLearned(entry.id);
+    const newIsLearned = this.entryListState.toggleIsLearned(entry.id);
 
     if (newIsLearned) {
       await this.storage.archive(entry.id);
@@ -273,7 +273,7 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   private onDataChanges(newData: EntryListRawData) {
-    this.entryStore.setEntries(newData.loadedEntries);
+    this.entryListState.setEntries(newData.loadedEntries);
 
     this.loadedEntries = newData.loadedEntries;
     this.canLoadMore.set(newData.canLoadMore);
@@ -331,6 +331,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
   }
 
   protected markAsNotNew(entry: Entry) {
-    this.entryStore.setIsNew(entry.id, false);
+    this.entryListState.setIsNew(entry.id, false);
   }
 }

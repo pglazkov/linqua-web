@@ -21,8 +21,7 @@ interface EntryListGroupState {
 }
 
 interface EntryListState {
-  _entryMap: Map<string, EntryState>;
-  // groups: EntryListGroupState[];
+  _entryStateMap: Map<string, EntryState>;
   isLoaded: boolean;
 }
 
@@ -30,16 +29,16 @@ export const entrySortComparer = createSortComparer((o: EntryState) => o.model.a
 export const groupSortComparer = createSortComparer((g: EntryListGroupState) => g.order, 'desc');
 
 const initialState: EntryListState = {
-  _entryMap: new Map<string, EntryState>(),
+  _entryStateMap: new Map<string, EntryState>(),
   // groups: [],
   isLoaded: false,
 };
 
 export const EntryStore = signalStore(
   withState(initialState),
-  withComputed(({ _entryMap }) => ({
-    groupsComputed: computed(() => {
-      const entryStateList = Array.from(_entryMap().values());
+  withComputed(({ _entryStateMap }) => ({
+    timeGroups: computed(() => {
+      const entryStateList = Array.from(_entryStateMap().values());
 
       const groupMap = new Map<TimeGroupKey, EntryListGroupState>();
 
@@ -73,115 +72,77 @@ export const EntryStore = signalStore(
   })),
   withMethods(store => ({
     setEntries(entries: Entry[]): void {
-      patchState(store, state => {
-        return produce(state, draft => {
-          const entryStateList: EntryState[] = entries.map(e => ({ model: e, isNew: false, isLearned: false }));
-
-          draft._entryMap = new Map(entryStateList.map(e => [e.model.id, e]));
-          // draft.groups = [];
-          //
-          // const sortedEntries = entryStateList.sort(entrySortComparer).reverse();
-          //
-          // for (const entry of sortedEntries) {
-          //   addEntry(draft, entry);
-          // }
+      patchState(
+        store,
+        produce(draft => {
+          draft._entryStateMap = new Map(
+            entries.map(e => ({ model: e, isNew: false, isLearned: false })).map(e => [e.model.id, e]),
+          );
 
           draft.isLoaded = true;
-        });
-      });
+        }),
+      );
     },
 
     addEntry(entry: Entry): void {
-      patchState(store, state => {
-        return produce(state, draft => {
+      patchState(
+        store,
+        produce(draft => {
           const entryState: EntryState = { model: entry, isNew: true, isLearned: false };
 
-          draft._entryMap.set(entry.id, entryState);
-
-          //addEntry(draft, entryState);
-        });
-      });
+          draft._entryStateMap.set(entry.id, entryState);
+        }),
+      );
     },
 
     deleteEntry(entryId: string): void {
-      patchState(store, state => {
-        return produce(state, draft => {
-          draft._entryMap.delete(entryId);
-          // const { entryState, entryGroupState } = findStateForEntry(draft, entryId);
-          //
-          // if (entryGroupState && entryState) {
-          //   deleteEntry(draft, entryGroupState, entryState);
-          // }
-        });
-      });
+      patchState(
+        store,
+        produce(draft => {
+          draft._entryStateMap.delete(entryId);
+        }),
+      );
     },
 
     toggleIsLearned(entryId: string): boolean {
-      const newValue = !store._entryMap().get(entryId)!.isLearned;
+      const newValue = !store._entryStateMap().get(entryId)!.isLearned;
 
-      patchState(store, state => {
-        return produce(state, draft => {
-          draft._entryMap.get(entryId)!.isLearned = newValue;
-
-          // const { entryState, entryGroupState } = findStateForEntry(draft, entryId);
-          //
-          // if (entryGroupState && entryState) {
-          //   entryState.isLearned = newValue;
-          // }
-        });
-      });
+      patchState(
+        store,
+        produce(draft => {
+          draft._entryStateMap.get(entryId)!.isLearned = newValue;
+        }),
+      );
 
       return newValue;
     },
 
     setIsNew(entryId: string, isNew: boolean): void {
-      patchState(store, state => {
-        return produce(state, draft => {
-          const entryState = draft._entryMap.get(entryId);
+      patchState(
+        store,
+        produce(draft => {
+          const entryState = draft._entryStateMap.get(entryId);
           if (entryState) {
             entryState.isNew = isNew;
           }
-
-          // const stateInsideGroup = findStateForEntry(draft, entryId);
-          //
-          // if (stateInsideGroup.entryGroupState && stateInsideGroup.entryState) {
-          //   stateInsideGroup.entryState.isNew = isNew;
-          // }
-        });
-      });
+        }),
+      );
     },
 
-    // deleteEmptyGroups(): void {
-    //   patchState(store, state => {
-    //     return produce(state, draft => {
-    //       let groupIndexToDelete: number;
-    //       while ((groupIndexToDelete = draft.groups.findIndex(group => group.entries.length === 0)) >= 0) {
-    //         draft.groups.splice(groupIndexToDelete, 1);
-    //       }
-    //     });
-    //   });
-    // },
-
     updateEntry(entry: Entry): void {
-      patchState(store, state => {
-        return produce(state, draft => {
-          const existingEntryState = draft._entryMap.get(entry.id);
+      patchState(
+        store,
+        produce(draft => {
+          const existingEntryState = draft._entryStateMap.get(entry.id);
           if (existingEntryState) {
-            draft._entryMap.set(entry.id, {
+            draft._entryStateMap.set(entry.id, {
               model: entry,
               isLearned: existingEntryState.isLearned,
               isNew: existingEntryState.isNew,
             });
           }
-
-          // const { entryState } = findStateForEntry(draft, entry.id);
-          //
-          // if (entryState) {
-          //   entryState.model = entry;
-          //   draft._entryMap.set(entry.id, entryState);
-          // }
-        });
-      });
+        }),
+      );
     },
   })),
   withHooks({
@@ -191,64 +152,8 @@ export const EntryStore = signalStore(
       });
 
       effect(() => {
-        console.log('[effect]', store.groupsComputed());
+        console.log('[effect]', store.timeGroups());
       });
     },
   }),
 );
-
-// function findOrCreateTimeGroupForEntry(state: EntryListState, entry: EntryState): EntryListGroupState {
-//   const timeGroup = createTimeGroup(getDateWithoutTime(entry.model.addedOn));
-//
-//   let group = state.groups.find(g => g.name === timeGroup.englishName);
-//
-//   if (!group) {
-//     group = {
-//       order: timeGroup.order,
-//       name: timeGroup.englishName,
-//       entries: [],
-//     };
-//
-//     state.groups.unshift(group);
-//     state.groups.sort(groupSortComparer);
-//   }
-//
-//   return group;
-// }
-
-// function addEntry(state: EntryListState, entry: EntryState): void {
-//   state._entryMap.set(entry.model.id, entry);
-//
-//   const group = findOrCreateTimeGroupForEntry(state, entry);
-//
-//   group.entries.unshift(entry);
-//   group.entries.sort(entrySortComparer);
-// }
-//
-// function deleteEntry(state: EntryListState, entryGroupState: EntryListGroupState, entry: EntryState): void {
-//   const entryIndex = entryGroupState.entries.findIndex(x => x.model.id === entry.model.id);
-//
-//   if (entryIndex >= 0) {
-//     entryGroupState.entries.splice(entryIndex, 1);
-//   }
-//
-//   state._entryMap.delete(entry.model.id);
-// }
-//
-// function findStateForEntry(
-//   state: EntryListState,
-//   entryId: string,
-// ): {
-//   entryState: EntryState | undefined;
-//   entryGroupState: EntryListGroupState | undefined;
-// } {
-//   for (const groupState of state.groups) {
-//     const entryState = groupState.entries.find(x => x.model.id === entryId);
-//
-//     if (entryState) {
-//       return { entryState: entryState, entryGroupState: groupState };
-//     }
-//   }
-//
-//   return { entryState: undefined, entryGroupState: undefined };
-// }
