@@ -29,8 +29,6 @@ import { EntryListItemViewModel } from './entry-list-item.vm';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
-const entryDeletionAnimationDuration = 200;
-
 interface EntryListRawData {
   loadedEntries: Entry[];
   canLoadMore: boolean;
@@ -43,16 +41,9 @@ interface EntryListRawData {
   styleUrls: ['./entry-list.component.scss'],
   animations: [
     trigger('entryCardEnterLeave', [
-      state('in', style({ opacity: 1, height: '*' })),
+      state('in', style({ opacity: 1 })),
       transition('void => new', [
-        animate(
-          '0.4s',
-          keyframes([
-            style({ opacity: 0, height: 0, offset: 0 }),
-            style({ opacity: 0, height: '*', offset: 0.3 }),
-            style({ opacity: 1, height: '*', offset: 1.0 }),
-          ]),
-        ),
+        animate('0.2s', keyframes([style({ opacity: 0, offset: 0 }), style({ opacity: 1, offset: 1.0 })])),
       ]),
       transition('* => void', [animate('0.2s ease-in', style({ transform: 'translateX(100%)' }))]),
     ]),
@@ -190,9 +181,6 @@ export class EntryListComponent implements OnInit, OnDestroy {
     }
 
     this.entryListState.deleteEntry(entry.id);
-    // setTimeout(() => {
-    //   this.entryListState.deleteEmptyGroups();
-    // }, entryDeletionAnimationDuration);
 
     await this.storage.delete(entry.id);
     await this.randomEntryService.onEntryDeleted(entry);
