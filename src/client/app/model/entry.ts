@@ -1,7 +1,7 @@
 export interface Entry {
-  id: string;
-  originalText: string;
-  translation: string;
-  addedOn: Date;
-  updatedOn: Date;
+  readonly id: string;
+  readonly originalText: string;
+  readonly translation: string;
+  readonly addedOn: Date;
+  readonly updatedOn: Date;
 }

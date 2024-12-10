@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, NgZone } from '@angular/core';
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -161,12 +160,7 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined,
     };
 
-    if (entry.id) {
-      await setDoc(doc(this.entryCollectionRef, entry.id), entryData);
-    } else {
-      const newEntryRef = await addDoc(this.entryCollectionRef, entryData);
-      entry.id = newEntryRef.id;
-    }
+    await setDoc(doc(this.entryCollectionRef, entry.id), entryData);
   }
 
   async delete(id: string): Promise<void> {

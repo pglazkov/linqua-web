@@ -1,4 +1,4 @@
-@if (isLoaded()) {
+@if (isInitialListLoaded()) {
   <mat-list #list class="entry-list" data-test-id="entry-list">
     @if (randomEntry() || isLoadingRandomEntry()) {
       <div class="random-entry">
@@ -25,7 +25,7 @@
             <mat-list-item
               class="entry-list__list-item"
               [@entryCardEnterLeave]="entryState.isNew ? 'new' : undefined"
-              (@entryCardEnterLeave.done)="markAsNotNew(entryState.model);"
+              (@entryCardEnterLeave.done)="onAddAnimationFinished(entryState.model);"
               data-test-id="entry-list-item"
             >
               <app-entry-item

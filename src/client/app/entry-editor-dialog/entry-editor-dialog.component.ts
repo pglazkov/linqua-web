@@ -6,13 +6,13 @@ import { MatFormField, MatHint, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { produce } from 'immer';
 
 import { Entry } from '../model';
 import { TranslationService } from '../translation';
-import { createEntry } from '../util/create-entry';
 
 export interface EntryEditorDialogData {
-  entry?: Entry;
+  entry: Entry;
 }
 
 @Component({
@@ -97,9 +97,9 @@ export class EntryEditorDialogComponent {
       return;
     }
 
-    const result = this.dialogData.entry ? structuredClone(this.dialogData.entry) : createEntry();
-
-    Object.assign(result, this.entryForm.value);
+    const result = produce(this.dialogData.entry, draft => {
+      Object.assign(draft, this.entryForm.value);
+    });
 
     this.dialogRef.close(result);
   }
