@@ -12,7 +12,7 @@ export interface EntryState {
   readonly data: Entry;
   readonly uiState: {
     readonly isLearned: boolean;
-    readonly isNew: boolean;
+    readonly animationTrigger: 'new' | undefined;
   };
 }
 
@@ -44,7 +44,7 @@ export const EntryListStore = signalStore(
             draft._entryById.set(entry.id, {
               data: entry,
               uiState: {
-                isNew: false,
+                animationTrigger: undefined,
                 isLearned: false,
               },
             });
@@ -57,7 +57,7 @@ export const EntryListStore = signalStore(
       patchState(
         store,
         produce<EntryListState>(draft => {
-          const entryState: EntryState = { data: entry, uiState: { isNew: true, isLearned: false } };
+          const entryState: EntryState = { data: entry, uiState: { animationTrigger: 'new', isLearned: false } };
 
           draft._entryById.set(entry.id, entryState);
         }),
@@ -94,13 +94,13 @@ export const EntryListStore = signalStore(
       return newValue;
     },
 
-    setIsNew(entryId: string, isNew: boolean): void {
+    setEntryAnimationTrigger(entryId: string, animationState: EntryState['uiState']['animationTrigger']): void {
       patchState(
         store,
         produce<EntryListState>(draft => {
           const entryState = draft._entryById.get(entryId);
           if (entryState) {
-            entryState.uiState.isNew = isNew;
+            entryState.uiState.animationTrigger = animationState;
           }
         }),
       );

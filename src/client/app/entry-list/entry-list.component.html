@@ -24,7 +24,7 @@
           @for (entryState of group.entries; track entryState.data.id) {
             <mat-list-item
               class="entry-list__list-item"
-              [@entryCardEnterLeave]="entryState.uiState.isNew ? 'new' : undefined"
+              [@entryCardEnterLeave]="entryState.uiState.animationTrigger"
               (@entryCardEnterLeave.done)="onAddAnimationFinished(entryState.data);"
               data-test-id="entry-list-item"
             >

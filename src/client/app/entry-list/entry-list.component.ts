@@ -246,6 +246,6 @@ export class EntryListComponent implements OnInit {
   }
 
   protected onAddAnimationFinished(entry: Entry) {
-    this.entryListStore.setIsNew(entry.id, false);
+    this.entryListStore.setEntryAnimationTrigger(entry.id, undefined);
   }
 }
