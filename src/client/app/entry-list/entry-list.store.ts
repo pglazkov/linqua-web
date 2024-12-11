@@ -8,30 +8,26 @@ import { createTimeGroup, TimeGroupKey } from './time-group';
 
 enableMapSet();
 
-interface EntryUiState {
-  readonly isLearned: boolean;
-  readonly isNew: boolean;
+export interface EntryState {
+  readonly data: Entry;
+  readonly uiState: {
+    readonly isLearned: boolean;
+    readonly isNew: boolean;
+  };
 }
 
-interface EntryModelWithUiState extends EntryUiState {
-  readonly model: Entry;
-}
-
-interface EntryListGroupState {
+export interface EntryListGroupState {
   readonly order: number;
   readonly name: string;
-  readonly entries: EntryModelWithUiState[];
+  readonly entries: EntryState[];
 }
 
-interface EntryListStore {
-  readonly _entryById: Map<string, EntryModelWithUiState>;
+interface EntryListState {
+  readonly _entryById: Map<string, EntryState>;
 }
 
-export const entrySortComparer = createSortComparer((o: EntryModelWithUiState) => o.model.addedOn, 'desc');
-export const groupSortComparer = createSortComparer((g: EntryListGroupState) => g.order, 'desc');
-
-const initialState: EntryListStore = {
-  _entryById: new Map<string, EntryModelWithUiState>(),
+const initialState: EntryListState = {
+  _entryById: new Map<string, EntryState>(),
 };
 
 export const EntryListStore = signalStore(
@@ -43,9 +39,15 @@ export const EntryListStore = signalStore(
     setEntries(entries: Entry[]): void {
       patchState(
         store,
-        produce(draft => {
+        produce<EntryListState>(draft => {
           for (const entry of entries) {
-            draft._entryById.set(entry.id, withUiState(entry));
+            draft._entryById.set(entry.id, {
+              data: entry,
+              uiState: {
+                isNew: false,
+                isLearned: false,
+              },
+            });
           }
         }),
       );
@@ -54,8 +56,8 @@ export const EntryListStore = signalStore(
     addEntry(entry: Entry): void {
       patchState(
         store,
-        produce(draft => {
-          const entryState: EntryModelWithUiState = withUiState(entry, { isNew: true, isLearned: false });
+        produce<EntryListState>(draft => {
+          const entryState: EntryState = { data: entry, uiState: { isNew: true, isLearned: false } };
 
           draft._entryById.set(entry.id, entryState);
         }),
@@ -65,7 +67,7 @@ export const EntryListStore = signalStore(
     deleteEntry(entryId: string): void {
       patchState(
         store,
-        produce(draft => {
+        produce<EntryListState>(draft => {
           draft._entryById.delete(entryId);
         }),
       );
@@ -78,12 +80,14 @@ export const EntryListStore = signalStore(
         throw new Error(`Entry with id ${entryId} not found`);
       }
 
-      const newValue = !entry.isLearned;
+      const newValue = !entry.uiState.isLearned;
 
       patchState(
         store,
-        produce(draft => {
-          draft._entryById.get(entryId)!.isLearned = newValue;
+        produce<EntryListState>(draft => {
+          const entryState = draft._entryById.get(entryId)!;
+
+          entryState.uiState.isLearned = newValue;
         }),
       );
 
@@ -93,10 +97,10 @@ export const EntryListStore = signalStore(
     setIsNew(entryId: string, isNew: boolean): void {
       patchState(
         store,
-        produce(draft => {
+        produce<EntryListState>(draft => {
           const entryState = draft._entryById.get(entryId);
           if (entryState) {
-            entryState.isNew = isNew;
+            entryState.uiState.isNew = isNew;
           }
         }),
       );
@@ -105,10 +109,10 @@ export const EntryListStore = signalStore(
     updateEntry(entry: Entry): void {
       patchState(
         store,
-        produce(draft => {
+        produce<EntryListState>(draft => {
           const currentState = draft._entryById.get(entry.id);
           if (currentState) {
-            draft._entryById.set(entry.id, withUiState(entry, currentState));
+            draft._entryById.set(entry.id, { ...currentState, data: entry });
           }
         }),
       );
@@ -116,21 +120,11 @@ export const EntryListStore = signalStore(
   })),
 );
 
-function withUiState(
-  entry: Entry,
-  uiState: EntryUiState = {
-    isNew: false,
-    isLearned: false,
-  },
-): EntryModelWithUiState {
-  return { model: entry, ...uiState };
-}
-
-function createTimeGroups(entries: EntryModelWithUiState[]): EntryListGroupState[] {
+function createTimeGroups(entries: EntryState[]): EntryListGroupState[] {
   const groupMap = new Map<TimeGroupKey, EntryListGroupState>();
 
   for (const entry of entries) {
-    const timeGroup = createTimeGroup(getDateWithoutTime(entry.model.addedOn));
+    const timeGroup = createTimeGroup(getDateWithoutTime(entry.data.addedOn));
 
     let group = groupMap.get(timeGroup.key);
 
@@ -156,3 +150,6 @@ function createTimeGroups(entries: EntryModelWithUiState[]): EntryListGroupState
 
   return result;
 }
+
+export const entrySortComparer = createSortComparer((o: EntryState) => o.data.addedOn, 'desc');
+export const groupSortComparer = createSortComparer((g: EntryListGroupState) => g.order, 'desc');

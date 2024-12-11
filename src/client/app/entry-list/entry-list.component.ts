@@ -7,6 +7,7 @@ import {
   ElementRef,
   inject,
   OnInit,
+  Signal,
   signal,
   viewChild,
   ViewContainerRef,
@@ -25,7 +26,7 @@ import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
 import { createEntry } from '../util/create-entry';
 import { EntryItemComponent } from './entry-item/entry-item.component';
-import { EntryListStore } from './entry-list.store';
+import { EntryListGroupState, EntryListStore } from './entry-list.store';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
@@ -67,7 +68,7 @@ export class EntryListComponent implements OnInit {
 
   private readonly entryListStore = inject(EntryListStore);
 
-  protected readonly timeGroups = this.entryListStore.timeGroups;
+  protected readonly timeGroups = this.entryListStore.timeGroups as Signal<EntryListGroupState[]>;
   protected readonly canLoadMore = signal(false);
   protected readonly loadMoreToken = signal<unknown>(undefined);
   protected readonly isInitialListLoaded = signal(false);

@@ -21,20 +21,20 @@
             </h3>
             <mat-divider />
           </div>
-          @for (entryState of group.entries; track entryState.model.id) {
+          @for (entryState of group.entries; track entryState.data.id) {
             <mat-list-item
               class="entry-list__list-item"
-              [@entryCardEnterLeave]="entryState.isNew ? 'new' : undefined"
-              (@entryCardEnterLeave.done)="onAddAnimationFinished(entryState.model);"
+              [@entryCardEnterLeave]="entryState.uiState.isNew ? 'new' : undefined"
+              (@entryCardEnterLeave.done)="onAddAnimationFinished(entryState.data);"
               data-test-id="entry-list-item"
             >
               <app-entry-item
-                [originalText]="entryState.model.originalText"
-                [translation]="entryState.model.translation"
-                [isLearned]="entryState.isLearned"
-                (editRequest)="onEditRequested(entryState.model)"
-                (deleteRequest)="onDeleteRequested(entryState.model)"
-                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entryState.model)"
+                [originalText]="entryState.data.originalText"
+                [translation]="entryState.data.translation"
+                [isLearned]="entryState.uiState.isLearned"
+                (editRequest)="onEditRequested(entryState.data)"
+                (deleteRequest)="onDeleteRequested(entryState.data)"
+                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entryState.data)"
               >
               </app-entry-item>
             </mat-list-item>
