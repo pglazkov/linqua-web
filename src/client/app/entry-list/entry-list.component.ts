@@ -1,5 +1,4 @@
 import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
-import { AsyncPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,14 +11,14 @@ import {
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButton, MatFabButton } from '@angular/material/button';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
 import { MatList, MatListItem, MatListSubheaderCssMatStyler } from '@angular/material/list';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { filter, first, firstValueFrom, map, take, takeWhile } from 'rxjs';
+import { filter, first, firstValueFrom, takeWhile } from 'rxjs';
 
 import { EntryEditorDialogComponent, EntryEditorDialogData } from '../entry-editor-dialog';
 import { Entry } from '../model';
@@ -54,7 +53,6 @@ import { RandomEntryService } from './random-entry/random-entry.service';
     MatProgressSpinner,
     MatFabButton,
     MatIcon,
-    AsyncPipe,
   ],
   providers: [EntryListStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,7 +63,6 @@ export class EntryListComponent implements OnInit {
   private readonly randomEntryService = inject(RandomEntryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly destroyRef = inject(DestroyRef);
-
   private readonly entryListStore = inject(EntryListStore);
 
   protected readonly timeGroups = this.entryListStore.timeGroups as Signal<EntryListGroupState[]>;
@@ -75,12 +72,9 @@ export class EntryListComponent implements OnInit {
   protected readonly isLoadingMore = signal(false);
   protected readonly isLoadingRandomEntry = signal(false);
   protected readonly randomEntry = signal<Entry | undefined>(undefined);
+  protected readonly stats = toSignal(this.storage.stats$);
 
   protected readonly listElement = viewChild('list', { read: ElementRef });
-
-  get stats$() {
-    return this.storage.stats$;
-  }
 
   ngOnInit() {
     this.loadRandomEntry();
@@ -199,25 +193,6 @@ export class EntryListComponent implements OnInit {
     if (!this.randomEntry() || this.randomEntry()!.id === entry.id) {
       await this.loadRandomEntry();
     }
-  }
-
-  get emptyListInfo$() {
-    return this.stats$.pipe(
-      map(s => {
-        if (!s || !s.totalEntryCount) {
-          return {
-            mainMessage: 'It is lonely here...',
-            extendedMessage: 'Start by adding a word or phrase in a foreign language that you would like to learn.',
-          };
-        }
-
-        return {
-          mainMessage: 'All done',
-          extendedMessage: 'Congratulations!',
-        };
-      }),
-      take(1),
-    );
   }
 
   private createEntryDialogConfig(config: { entry: Entry }): MatDialogConfig {

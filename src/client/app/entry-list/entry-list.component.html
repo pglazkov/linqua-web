@@ -53,14 +53,15 @@
         }
       </div>
     } @else {
-      <div class="empty-list-container mat-typography">
-        @if (emptyListInfo$ | async; as emptyListInfo) {
+      @if (stats(); as statsValue) {
+        @let allLearned = statsValue.totalEntryCount > 0;
+        <div class="empty-list-container mat-typography">
           <p class="mat-subtitle-2" data-test-id="empty-list-main-message">
-            {{ emptyListInfo.mainMessage }}
+            {{ allLearned ? 'All done' : 'It is lonely here...' }}
           </p>
-          <p>{{ emptyListInfo.extendedMessage }}</p>
-        }
-      </div>
+          <p>{{ allLearned ? 'Congratulations!' : 'Start by adding a word or phrase in a foreign language that you would like to learn.' }}</p>
+        </div>
+      }
     }
   </mat-list>
 } @else {
