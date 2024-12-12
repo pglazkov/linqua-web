@@ -1,18 +1,19 @@
-@if (listVm) {
+@if (isInitialListLoaded()) {
   <mat-list #list class="entry-list" data-test-id="entry-list">
-    @if (randomEntry || isLoadingRandomEntry) {
+    @if (randomEntry() || isLoadingRandomEntry()) {
       <div class="random-entry">
         <app-random-entry
-          [entry]="randomEntry"
+          [entry]="randomEntry()"
+          [isLoading]="isLoadingRandomEntry()"
           (nextEntryRequest)="onUpdateRandomEntryRequested()"
-          (editRequest)="onEditRandomEntryRequested(randomEntry!)"
-          (deleteRequest)="onDeleteRandomEntryRequested(randomEntry!)"
-          (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry!)"
+          (editRequest)="onEditRandomEntryRequested(randomEntry()!)"
+          (deleteRequest)="onDeleteRequested(randomEntry()!)"
+          (markLearnedRequest)="onMarkLearnedRandomEntryRequested(randomEntry()!)"
         />
       </div>
     }
-    @if (listVm.groups.length > 0) {
-      @for (group of listVm.groups; track trackByGroup($index, group)) {
+    @if (timeGroups().length > 0) {
+      @for (group of timeGroups(); track group.order) {
         <div class="entry-list__group">
           <div class="entry-list__group__header">
             <h3 mat-subheader>
@@ -20,18 +21,20 @@
             </h3>
             <mat-divider />
           </div>
-          @for (entry of group.entries; track trackByEntry($index, entry)) {
+          @for (entryState of group.entries; track entryState.data.id) {
             <mat-list-item
               class="entry-list__list-item"
-              [@entryCardEnterLeave]="entry.isNew ? 'new' : undefined"
-              (@entryCardEnterLeave.done)="entry.isNew = false"
+              [@entryCardEnterLeave]="entryState.uiState.animationTrigger"
+              (@entryCardEnterLeave.done)="onAddAnimationFinished(entryState.data);"
               data-test-id="entry-list-item"
             >
               <app-entry-item
-                [entry]="entry"
-                (editRequest)="onEditRequested(entry)"
-                (deleteRequest)="onDeleteRequested(entry, group)"
-                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entry)"
+                [originalText]="entryState.data.originalText"
+                [translation]="entryState.data.translation"
+                [isLearned]="entryState.uiState.isLearned"
+                (editRequest)="onEditRequested(entryState.data)"
+                (deleteRequest)="onDeleteRequested(entryState.data)"
+                (toggleIsLearnedRequest)="onToggleIsLearnedRequested(entryState.data)"
               >
               </app-entry-item>
             </mat-list-item>
@@ -39,8 +42,8 @@
         </div>
       }
       <div class="entry-list__footer">
-        @if (canLoadMore) {
-          @if (!isLoadingMore) {
+        @if (canLoadMore()) {
+          @if (!isLoadingMore()) {
             <button mat-raised-button (click)="loadMore()">load more</button>
           } @else {
             <div class="loading-spinner-container">
@@ -50,14 +53,15 @@
         }
       </div>
     } @else {
-      <div class="empty-list-container mat-typography">
-        @if (emptyListInfo$ | async; as emptyListInfo) {
+      @if (stats(); as statsValue) {
+        @let allLearned = statsValue.totalEntryCount > 0;
+        <div class="empty-list-container mat-typography">
           <p class="mat-subtitle-2" data-test-id="empty-list-main-message">
-            {{ emptyListInfo.mainMessage }}
+            {{ allLearned ? 'All done' : 'It is lonely here...' }}
           </p>
-          <p>{{ emptyListInfo.extendedMessage }}</p>
-        }
-      </div>
+          <p>{{ allLearned ? 'Congratulations!' : 'Start by adding a word or phrase in a foreign language that you would like to learn.' }}</p>
+        </div>
+      }
     }
   </mat-list>
 } @else {

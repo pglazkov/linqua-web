@@ -1,11 +1,9 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatListItemLine, MatListItemTitle } from '@angular/material/list';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
-
-import { EntryListItemViewModel } from '../entry-list-item.vm';
 
 @Component({
   selector: 'app-entry-item',
@@ -22,28 +20,29 @@ import { EntryListItemViewModel } from '../entry-list-item.vm';
     MatMenu,
     MatMenuItem,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.learned]': 'isLearned()',
+  },
 })
 export class EntryItemComponent {
-  @Input() entry!: EntryListItemViewModel;
+  readonly originalText = input.required<string>();
+  readonly translation = input.required<string>();
+  readonly isLearned = input.required<boolean>();
 
-  @Output() editRequest = new EventEmitter();
-  @Output() deleteRequest = new EventEmitter();
-  @Output() toggleIsLearnedRequest = new EventEmitter();
+  readonly editRequest = output();
+  readonly deleteRequest = output();
+  readonly toggleIsLearnedRequest = output();
 
-  @HostBinding('class.learned')
-  get isLearned(): boolean {
-    return this.entry.isLearned;
-  }
-
-  edit() {
+  protected edit() {
     this.editRequest.emit();
   }
 
-  delete() {
+  protected delete() {
     this.deleteRequest.emit();
   }
 
-  toggleIsLearned() {
+  protected toggleIsLearned() {
     this.toggleIsLearnedRequest.emit();
   }
 }

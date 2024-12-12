@@ -1,5 +1,5 @@
 import { animate, keyframes, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
@@ -27,41 +27,30 @@ import { Entry } from '../../model';
     ]),
   ],
   imports: [MatCard, MatCardContent, MatIconButton, MatIcon, MatProgressSpinner, MatMenuTrigger, MatMenu, MatMenuItem],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RandomEntryComponent {
-  @Input()
-  get entry(): Entry | undefined {
-    return this._entry;
-  }
-  set entry(value: Entry | undefined) {
-    this._entry = value;
-    this.nextRequested = false;
-  }
+  readonly entry = input.required<Entry | undefined>();
+  readonly isLoading = input.required<boolean>();
 
-  @Output() nextEntryRequest = new EventEmitter<void>();
-  @Output() editRequest = new EventEmitter();
-  @Output() deleteRequest = new EventEmitter();
-  @Output() markLearnedRequest = new EventEmitter();
+  readonly nextEntryRequest = output();
+  readonly editRequest = output();
+  readonly deleteRequest = output();
+  readonly markLearnedRequest = output();
 
-  private _entry: Entry | undefined;
-
-  nextRequested = false;
-
-  requestNext() {
-    this.nextRequested = true;
+  protected requestNext() {
     this.nextEntryRequest.emit();
   }
 
-  edit() {
+  protected edit() {
     this.editRequest.emit();
   }
 
-  delete() {
+  protected delete() {
     this.deleteRequest.emit();
   }
 
-  markLearned() {
-    this.nextRequested = true;
+  protected markLearned() {
     this.markLearnedRequest.emit();
   }
 }

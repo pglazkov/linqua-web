@@ -11,13 +11,13 @@ import {
   UserCredential,
 } from 'firebase/auth';
 import {
-  addDoc,
   collection,
   connectFirestoreEmulator,
   doc,
   getFirestore,
   initializeFirestore,
   memoryLocalCache,
+  setDoc,
 } from 'firebase/firestore';
 import uniqueId from 'lodash-es/uniqueId';
 import { filter, take } from 'rxjs';
@@ -25,6 +25,7 @@ import { filter, take } from 'rxjs';
 import { AuthService } from '../auth';
 import { firebaseAuthToken, firestoreToken } from '../firebase';
 import { Entry } from '../model';
+import { createEntry } from '../util/create-entry';
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -41,22 +42,20 @@ connectFirestoreEmulator(db, 'localhost', 5002);
 
 const currentDate = new Date(2018, 4, 1, 12, 0, 0, 0);
 
-async function createTestUserData(uid: string, entries: Entry[]): Promise<Entry[]> {
+async function createTestUserData(uid: string, entries: Entry[]): Promise<void> {
   const entryCollectionRef = collection(doc(collection(db, 'users'), uid), 'entries');
 
   for (const entry of entries) {
     const entryData = {
+      id: entry.id,
       addedOn: entry.addedOn.getTime(),
       updatedOn: entry.addedOn.getTime(),
       originalText: entry.originalText,
       translation: entry.translation,
     };
 
-    const newEntryRef = await addDoc(entryCollectionRef, entryData);
-    entry.id = newEntryRef.id;
+    await setDoc(doc(entryCollectionRef, entry.id), entryData);
   }
-
-  return entries;
 }
 
 function genEntry(addedOnMinutesOffset?: number): Entry {
@@ -66,7 +65,8 @@ function genEntry(addedOnMinutesOffset?: number): Entry {
     addedOn.setMinutes(addedOn.getMinutes() + addedOnMinutesOffset);
   }
 
-  return new Entry({
+  return createEntry({
+    id: uniqueId(),
     addedOn: addedOn,
     updatedOn: addedOn,
     originalText: 'test',

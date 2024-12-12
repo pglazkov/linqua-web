@@ -2,14 +2,14 @@ import { inject, Injectable } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 
 import { AuthService } from '../../auth';
-import { Entry, EntryConfig } from '../../model';
+import { Entry } from '../../model';
 import { EntryStorageService } from '../../storage';
 
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
 const BATCH_SIZE = 10;
 
 interface CacheEntry {
-  entries: EntryConfig[];
+  entries: Entry[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -105,7 +105,7 @@ export class RandomEntryService {
 
     const cacheEntry: CacheEntry = JSON.parse(rawStorageValue);
 
-    return cacheEntry.entries.map(x => new Entry(x));
+    return cacheEntry.entries;
   }
 
   private saveInPersistentCache(entries: Entry[] | undefined) {

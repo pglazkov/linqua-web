@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, NgZone } from '@angular/core';
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -30,6 +29,7 @@ import {
 import { AuthService } from '../auth';
 import { firestoreToken } from '../firebase';
 import { Entry } from '../model';
+import { createEntry } from '../util/create-entry';
 
 interface FirebaseEntry {
   originalText: string;
@@ -160,12 +160,7 @@ export class EntryStorageService {
       updatedOn: entry.updatedOn ? entry.updatedOn.valueOf() : undefined,
     };
 
-    if (entry.id) {
-      await setDoc(doc(this.entryCollectionRef, entry.id), entryData);
-    } else {
-      const newEntryRef = await addDoc(this.entryCollectionRef, entryData);
-      entry.id = newEntryRef.id;
-    }
+    await setDoc(doc(this.entryCollectionRef, entry.id), entryData);
   }
 
   async delete(id: string): Promise<void> {
@@ -236,7 +231,7 @@ export class EntryStorageService {
   }
 
   private toEntry(id: string, data: FirebaseEntry) {
-    return new Entry({
+    return createEntry({
       id: id,
       originalText: data.originalText,
       translation: data.translation,

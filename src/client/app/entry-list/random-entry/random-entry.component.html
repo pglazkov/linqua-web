@@ -1,21 +1,23 @@
+@let entryValue = entry();
+
 <mat-card appearance="outlined">
   <mat-card-content>
     <div class="entry-card">
       <h2 class="title mat-headline-6">word of the day</h2>
 
-      <div class="content" [@entryChange]="entry ? entry.id : undefined">
-        @if (entry) {
-          <span class="original-text">{{ entry.originalText }}</span>
-          <span class="translation mdc-list-item__secondary-text">{{ entry.translation }}</span>
+      <div class="content" [@entryChange]="entryValue?.id">
+        @if (entryValue) {
+          <span class="original-text">{{ entryValue.originalText }}</span>
+          <span class="translation mdc-list-item__secondary-text">{{ entryValue.translation }}</span>
         } @else {
           <mat-spinner mode="indeterminate" [diameter]="30" [strokeWidth]="3" />
         }
       </div>
 
-      @if (entry) {
+      @if (entryValue) {
         <div class="toolbox">
           <div class="center-content">
-            @if (!nextRequested) {
+            @if (!isLoading()) {
               <button class="loading-next-button" mat-icon-button (click)="requestNext()">
                 <mat-icon aria-label="Refresh word of the day">autorenew</mat-icon>
               </button>
@@ -24,10 +26,10 @@
             }
           </div>
           <div class="right-content">
-            <button mat-icon-button (click)="markLearned()" [disabled]="nextRequested">
+            <button mat-icon-button (click)="markLearned()" [disabled]="isLoading()">
               <mat-icon>done</mat-icon>
             </button>
-            <button mat-icon-button [matMenuTriggerFor]="menu" [disabled]="nextRequested">
+            <button mat-icon-button [matMenuTriggerFor]="menu" [disabled]="isLoading()">
               <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
