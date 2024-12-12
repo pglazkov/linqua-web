@@ -3,7 +3,7 @@ import uniqueId from 'lodash-es/uniqueId';
 
 import { Entry } from '../model';
 import { createEntry } from '../util/create-entry';
-import { EntryListStore } from './entry-list.store';
+import { EntryListState } from './entry-list.state';
 
 const currentDate = new Date(2018, 3, 15, 12, 0, 0, 0);
 
@@ -23,7 +23,7 @@ function genEntry(addedOnDaysOffset?: number): Entry {
   });
 }
 
-describe('EntryStore', () => {
+describe('EntryListState', () => {
   beforeEach(() => {
     jasmine.clock().install();
     jasmine.clock().mockDate(currentDate);
@@ -35,14 +35,14 @@ describe('EntryStore', () => {
 
   const setup = () => {
     TestBed.configureTestingModule({
-      providers: [EntryListStore],
+      providers: [EntryListState],
     });
 
-    return TestBed.inject(EntryListStore);
+    return TestBed.inject(EntryListState);
   };
 
   it('should create correct time groups', () => {
-    const store = setup();
+    const state = setup();
 
     const entries = [
       genEntry(), // Today
@@ -52,9 +52,9 @@ describe('EntryStore', () => {
       genEntry(-60), // Older
     ];
 
-    store.setEntries(entries);
+    state.setEntries(entries);
 
-    const groups = store.timeGroups();
+    const groups = state.timeGroups();
 
     expect(groups.length).toBe(5);
     expect(groups[0].name).toBe('Today');

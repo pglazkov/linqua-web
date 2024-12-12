@@ -6,7 +6,6 @@ import {
   ElementRef,
   inject,
   OnInit,
-  Signal,
   signal,
   viewChild,
   ViewContainerRef,
@@ -25,7 +24,7 @@ import { Entry } from '../model';
 import { EntryStorageService } from '../storage';
 import { createEntry } from '../util/create-entry';
 import { EntryItemComponent } from './entry-item/entry-item.component';
-import { EntryListGroupState, EntryListStore } from './entry-list.store';
+import { EntryListState } from './entry-list.state';
 import { RandomEntryComponent } from './random-entry/random-entry.component';
 import { RandomEntryService } from './random-entry/random-entry.service';
 
@@ -54,7 +53,7 @@ import { RandomEntryService } from './random-entry/random-entry.service';
     MatFabButton,
     MatIcon,
   ],
-  providers: [EntryListStore],
+  providers: [EntryListState],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EntryListComponent implements OnInit {
@@ -63,9 +62,9 @@ export class EntryListComponent implements OnInit {
   private readonly randomEntryService = inject(RandomEntryService);
   private readonly viewContainer = inject(ViewContainerRef);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly entryListStore = inject(EntryListStore);
+  private readonly entryListState = inject(EntryListState);
 
-  protected readonly timeGroups = this.entryListStore.timeGroups as Signal<EntryListGroupState[]>;
+  protected readonly timeGroups = this.entryListState.timeGroups;
   protected readonly canLoadMore = signal(false);
   protected readonly loadMoreToken = signal<unknown>(undefined);
   protected readonly isInitialListLoaded = signal(false);
@@ -89,7 +88,7 @@ export class EntryListComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(result => {
-        this.entryListStore.setEntries(result.entries);
+        this.entryListState.setEntries(result.entries);
         this.canLoadMore.set(result.hasMore);
         this.loadMoreToken.set(result.loadMoreToken);
         this.isInitialListLoaded.set(true);
@@ -107,7 +106,7 @@ export class EntryListComponent implements OnInit {
         ),
       );
 
-      this.entryListStore.setEntries(result.entries);
+      this.entryListState.setEntries(result.entries);
       this.canLoadMore.set(result.hasMore);
       this.loadMoreToken.set(result.loadMoreToken);
     } finally {
@@ -125,7 +124,7 @@ export class EntryListComponent implements OnInit {
     );
 
     if (result) {
-      this.entryListStore.addEntry(result);
+      this.entryListState.addEntry(result);
 
       const listElement = this.listElement();
       if (listElement) {
@@ -148,7 +147,7 @@ export class EntryListComponent implements OnInit {
         this.randomEntry.set(result);
       }
 
-      this.entryListStore.updateEntry(result);
+      this.entryListState.updateEntry(result);
 
       await this.storage.addOrUpdate(result);
       await this.randomEntryService.onEntryUpdated(result);
@@ -156,7 +155,7 @@ export class EntryListComponent implements OnInit {
   }
 
   async onDeleteRequested(entry: Entry) {
-    this.entryListStore.deleteEntry(entry.id);
+    this.entryListState.deleteEntry(entry.id);
 
     await this.storage.delete(entry.id);
     await this.randomEntryService.onEntryDeleted(entry);
@@ -181,7 +180,7 @@ export class EntryListComponent implements OnInit {
   }
 
   async onToggleIsLearnedRequested(entry: Entry) {
-    const newIsLearned = this.entryListStore.toggleIsLearned(entry.id);
+    const newIsLearned = this.entryListState.toggleIsLearned(entry.id);
 
     if (newIsLearned) {
       await this.storage.archive(entry.id);
@@ -246,6 +245,6 @@ export class EntryListComponent implements OnInit {
   }
 
   protected onAddAnimationFinished(entry: Entry) {
-    this.entryListStore.setEntryAnimationTrigger(entry.id, undefined);
+    this.entryListState.setEntryAnimationTrigger(entry.id, undefined);
   }
 }

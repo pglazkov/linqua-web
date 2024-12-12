@@ -1,6 +1,6 @@
 {
   "name": "linqua",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -46,8 +46,6 @@
     "@angular/platform-browser-dynamic": "^19.0.1",
     "@angular/router": "^19.0.1",
     "@angular/service-worker": "^19.0.1",
-    "@ngrx/operators": "^19.0.0-rc.0",
-    "@ngrx/signals": "^19.0.0-rc.0",
     "firebase": "~11.0.2",
     "immer": "^10.1.1",
     "lodash-es": "^4.17.21",
