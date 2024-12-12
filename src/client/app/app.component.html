@@ -1,8 +1,8 @@
 <div class="container">
   <mat-toolbar class="toolbar" color="primary">
     <div class="toolbar__side-content">
-      @if (isLoggedIn | async) {
-        @if (stats$ | async; as statItem) {
+      @if (isLoggedIn()) {
+        @if (stats(); as statItem) {
           <div class="stats">
             <mat-icon class="stats__icon">done_all</mat-icon>
             <div class="stats__numbers">
@@ -24,8 +24,8 @@
     </header>
 
     <div class="toolbar__side-content toolbar__side-content-right">
-      @if (isLoggedIn | async) {
-        <img class="avatar" [ngSrc]="user.photoURL || 'assets/generic-avatar.png'" [width]="32" [height]="32" alt="avatar" [matMenuTriggerFor]="menu" />
+      @if (user(); as userData) {
+        <img class="avatar" [ngSrc]="userData.photoURL || 'assets/generic-avatar.png'" [width]="32" [height]="32" alt="avatar" [matMenuTriggerFor]="menu" />
         <mat-menu #menu="matMenu" yPosition="below">
           <button mat-menu-item (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>
@@ -37,11 +37,11 @@
   </mat-toolbar>
 
   <main>
-    @switch (state) {
-      @case (states.LoggedIn) {
+    @switch (userLoginState()) {
+      @case (UserLoginState.LoggedIn) {
         <app-entry-list />
       }
-      @case (states.HandleLoginRedirect) {
+      @case (UserLoginState.HandleLoginRedirect) {
         <div class="handle-login-redirect-container">
           Just a moment, verifying login...
           <div class="spinner">
@@ -49,8 +49,8 @@
           </div>
         </div>
       }
-      @case (states.LoginNeeded) {
-        <app-login [redirectAuthResult]="redirectAuthResult" (loginSuccess)="onLoginSuccess()" />
+      @case (UserLoginState.LoginNeeded) {
+        <app-login [redirectAuthResult]="redirectAuthResult()" (loginSuccess)="onLoginSuccess()" />
       }
       @default {}
     }

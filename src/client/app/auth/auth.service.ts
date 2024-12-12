@@ -42,11 +42,11 @@ interface LegacyAuthError {
 export class AuthService {
   private readonly auth = inject(firebaseAuthToken);
 
-  private readonly authStateChangedSubject: ReplaySubject<User | null> = new ReplaySubject<User | null>();
+  private readonly userSubject: ReplaySubject<User | undefined> = new ReplaySubject<User | undefined>(1);
 
   constructor() {
     this.auth.onAuthStateChanged(() => {
-      this.authStateChangedSubject.next(this.auth.currentUser);
+      this.userSubject.next(this.getCurrentUser());
     });
   }
 
@@ -60,39 +60,12 @@ export class AuthService {
     return this.auth.currentUser.uid;
   }
 
-  get user(): User {
-    if (!this.auth.currentUser) {
-      throw new Error('User is not logged in (yet). Please check "isLoggedIn"` before accessing the "user" property.');
-    }
-
-    const user = this.auth.currentUser;
-
-    let photoURL: string | null = user.photoURL;
-    const providerId: string = user.providerData.map(p => (p ? p.providerId : '')).join('/');
-
-    if (user.providerData.length > 0) {
-      const providerUserInfo = user.providerData[0];
-
-      if (providerUserInfo) {
-        photoURL = providerUserInfo.photoURL;
-      }
-    }
-
-    return {
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: photoURL,
-      providerId: providerId,
-      uid: user.uid,
-    };
+  get user$(): Observable<User | undefined> {
+    return this.userSubject.asObservable();
   }
 
-  get authStateChanged(): Observable<User | null> {
-    return this.authStateChangedSubject.asObservable();
-  }
-
-  get isLoggedIn(): Observable<boolean> {
-    return this.authStateChangedSubject.asObservable().pipe(map(user => !!user));
+  get isLoggedIn$(): Observable<boolean> {
+    return this.user$.pipe(map(user => !!user));
   }
 
   get shouldHandleRedirectResult() {
@@ -150,6 +123,10 @@ export class AuthService {
     }
   }
 
+  async logout() {
+    await this.auth.signOut();
+  }
+
   private login(provider: AuthProvider): void {
     sessionStorage.setItem(loginWithRedirectInProgressKey, 'true');
 
@@ -170,7 +147,30 @@ export class AuthService {
     }
   }
 
-  async logout() {
-    await this.auth.signOut();
+  private getCurrentUser(): User | undefined {
+    if (!this.auth.currentUser) {
+      return undefined;
+    }
+
+    const user = this.auth.currentUser;
+
+    let photoURL: string | null = user.photoURL;
+    const providerId: string = user.providerData.map(p => (p ? p.providerId : '')).join('/');
+
+    if (user.providerData.length > 0) {
+      const providerUserInfo = user.providerData[0];
+
+      if (providerUserInfo) {
+        photoURL = providerUserInfo.photoURL;
+      }
+    }
+
+    return {
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: photoURL,
+      providerId: providerId,
+      uid: user.uid,
+    };
   }
 }

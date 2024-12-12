@@ -1,5 +1,6 @@
-import { AsyncPipe, NgOptimizedImage } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { NgOptimizedImage } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIcon } from '@angular/material/icon';
@@ -14,7 +15,7 @@ import { LoginComponent } from './auth/login.component';
 import { EntryListComponent } from './entry-list';
 import { EntryStorageService } from './storage';
 
-export enum States {
+export enum UserLoginState {
   Unknown,
   LoginNeeded,
   HandleLoginRedirect,
@@ -35,67 +36,49 @@ export enum States {
     EntryListComponent,
     MatProgressSpinner,
     LoginComponent,
-    AsyncPipe,
     NgOptimizedImage,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   private readonly af = inject(AuthService);
   private readonly entryStorageService = inject(EntryStorageService);
   private readonly dialog = inject(MatDialog);
 
-  states = States;
+  protected readonly UserLoginState = UserLoginState;
 
-  state: States = States.Unknown;
-
-  redirectAuthResult: AuthResult | undefined;
+  protected readonly userLoginState = signal(UserLoginState.Unknown);
+  protected readonly redirectAuthResult = signal<AuthResult | undefined>(undefined);
+  protected readonly isLoggedIn = toSignal(this.af.isLoggedIn$);
+  protected readonly stats = toSignal(this.entryStorageService.stats$);
+  protected readonly user = toSignal(this.af.user$);
 
   async ngOnInit() {
-    await this.initState();
-  }
-
-  get user() {
-    return this.af.user;
-  }
-
-  get isLoggedIn() {
-    return this.af.isLoggedIn;
-  }
-
-  get stats$() {
-    return this.entryStorageService.stats$;
-  }
-
-  logout() {
-    return this.af.logout().then(r => {
-      window.location.reload();
-      return r;
-    });
-  }
-
-  onLoginSuccess() {
-    this.state = States.LoggedIn;
-  }
-
-  onLogoClick() {
-    this.dialog.open(AboutDialogComponent);
-  }
-
-  private async initState(): Promise<void> {
-    this.state = States.Unknown;
-
     if (this.af.shouldHandleRedirectResult) {
-      this.state = States.HandleLoginRedirect;
+      this.userLoginState.set(UserLoginState.HandleLoginRedirect);
 
-      this.redirectAuthResult = await this.af.handleRedirectResult();
+      this.redirectAuthResult.set(await this.af.handleRedirectResult());
     }
 
-    const isLoggedIn = await firstValueFrom(this.af.isLoggedIn.pipe(first()));
+    const isLoggedIn = await firstValueFrom(this.af.isLoggedIn$.pipe(first()));
 
     if (!isLoggedIn) {
-      this.state = States.LoginNeeded;
+      this.userLoginState.set(UserLoginState.LoginNeeded);
     } else {
-      this.state = States.LoggedIn;
+      this.userLoginState.set(UserLoginState.LoggedIn);
     }
+  }
+
+  protected async logout() {
+    await this.af.logout();
+    window.location.reload();
+  }
+
+  protected onLoginSuccess() {
+    this.userLoginState.set(UserLoginState.LoggedIn);
+  }
+
+  protected onLogoClick() {
+    this.dialog.open(AboutDialogComponent);
   }
 }

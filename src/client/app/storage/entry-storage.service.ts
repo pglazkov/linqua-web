@@ -73,7 +73,7 @@ export class EntryStorageService {
   private readonly zone = inject(NgZone);
   private readonly db = inject(firestoreToken);
 
-  stats$!: Observable<LearnedEntriesStats>;
+  readonly stats$!: Observable<LearnedEntriesStats>;
 
   private latestStats$ = new ReplaySubject<LearnedEntriesStats>(1);
   private clientCalculatedStats$ = new Subject<LearnedEntriesStats>();
@@ -281,7 +281,7 @@ export class EntryStorageService {
   }
 
   private createStatsStream(): Observable<LearnedEntriesStats> {
-    return this.authService.authStateChanged.pipe(
+    return this.authService.user$.pipe(
       filter(user => !!user),
       switchMap(() => this.serverStats$),
       map((serverStats: StatsServerData) => {
