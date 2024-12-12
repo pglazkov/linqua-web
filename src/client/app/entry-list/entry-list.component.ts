@@ -228,7 +228,7 @@ export class EntryListComponent implements OnInit {
     this.isLoadingRandomEntry.set(true);
 
     try {
-      const getRandomEntry = () => firstValueFrom(this.randomEntryService.getRandomEntry());
+      const getRandomEntry = () => this.randomEntryService.getRandomEntry();
 
       const prevEntry = this.randomEntry();
       let newEntry = await getRandomEntry();

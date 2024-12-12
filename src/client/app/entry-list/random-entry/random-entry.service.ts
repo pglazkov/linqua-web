@@ -17,30 +17,19 @@ export class RandomEntryService {
   private readonly storage = inject(EntryStorageService);
   private readonly authService = inject(AuthService);
 
-  private batch$ = this.loadBatch();
+  private batch$ = this.getBatch();
 
-  getRandomEntry(): Observable<Entry | undefined> {
-    const result = new ReplaySubject<Entry | undefined>(1);
+  async getRandomEntry(): Promise<Entry | undefined> {
+    const batch = await firstValueFrom(this.batch$);
 
-    this.batch$.subscribe({
-      next: batch => {
-        const nextEntry = batch.pop();
-        this.saveInPersistentCache(batch);
+    const nextEntry = batch.pop();
+    this.saveInPersistentCache(batch);
 
-        result.next(nextEntry);
-        result.complete();
+    if (batch.length === 0) {
+      this.batch$ = this.getBatch();
+    }
 
-        if (batch.length === 0) {
-          this.batch$ = this.loadBatch();
-        }
-      },
-      error: err => {
-        result.error(err);
-        result.complete();
-      },
-    });
-
-    return result;
+    return nextEntry;
   }
 
   async onEntryUpdated(entry: Entry): Promise<void> {
@@ -72,7 +61,7 @@ export class RandomEntryService {
           // trying to load the next batch.
           this.saveInPersistentCache([]);
 
-          this.batch$ = this.loadBatch();
+          this.batch$ = this.getBatch();
         }
       }
     }
@@ -84,19 +73,19 @@ export class RandomEntryService {
     return PERSISTENT_CACHE_KEY_PREFIX + this.authService.userId;
   }
 
-  private loadBatch(): Observable<Entry[]> {
+  private getBatch(): Observable<Entry[]> {
     let result: Observable<Entry[]>;
 
     const cached = this.loadFromPersistentCache();
 
     if (cached && cached.length > 0) {
-      const batchSubject = new ReplaySubject<Entry[]>();
+      const batchSubject = new ReplaySubject<Entry[]>(1);
       batchSubject.next(cached);
       batchSubject.complete();
 
       result = batchSubject;
     } else {
-      result = this.preloadNextBatch();
+      result = this.loadNextBatchAndSaveInPersistentCache();
     }
 
     return result;
@@ -128,15 +117,19 @@ export class RandomEntryService {
     return window.localStorage;
   }
 
-  private preloadNextBatch(): Observable<Entry[]> {
-    const resultSubject = new ReplaySubject<Entry[]>();
+  private loadNextBatchAndSaveInPersistentCache(): Observable<Entry[]> {
+    const resultSubject = new ReplaySubject<Entry[]>(1);
 
-    this.storage.getRandomEntryBatch(BATCH_SIZE).subscribe(resultSubject);
+    this.loadBatchFromStorage().subscribe(resultSubject);
 
     resultSubject.subscribe(batch => {
       this.saveInPersistentCache(batch);
     });
 
     return resultSubject;
+  }
+
+  private loadBatchFromStorage(): Observable<Entry[]> {
+    return this.storage.getRandomEntryBatch(BATCH_SIZE);
   }
 }
