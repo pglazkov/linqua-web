@@ -1,5 +1,6 @@
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideServiceWorker } from '@angular/service-worker';
 import { firebaseConfig } from '@linqua/firebase-config';
@@ -7,6 +8,7 @@ import { firebaseConfig } from '@linqua/firebase-config';
 import { environment } from '../environments/environment';
 import { AuthTokenInterceptor } from './auth';
 import { provideFirebase } from './firebase';
+import { MatDialogOverride } from './mat-dialog-override/mat-dialog.override';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +26,10 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthTokenInterceptor,
       multi: true,
+    },
+    {
+      provide: MatDialog,
+      useClass: MatDialogOverride,
     },
   ],
 };
