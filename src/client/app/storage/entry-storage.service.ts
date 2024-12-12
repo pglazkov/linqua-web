@@ -83,7 +83,7 @@ export class EntryStorageService {
     this.stats$.subscribe(this.latestStats$);
   }
 
-  getRandomEntryBatch(batchSize = 1): Observable<Entry[]> {
+  getRandomEntryBatch(batchSize = 1): Observable<readonly Entry[]> {
     return this.http
       .get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
       .pipe(map(response => response.batch.map(x => this.toEntry(x.id, x.data))));

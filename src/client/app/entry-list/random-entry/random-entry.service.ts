@@ -8,8 +8,13 @@ import { EntryStorageService } from '../../storage';
 const PERSISTENT_CACHE_KEY_PREFIX = 'random-entry-batch-';
 const BATCH_SIZE = 10;
 
-interface CacheEntry {
-  entries: Entry[];
+type EntryCacheDto = {
+  // Change the Date properties to `number`
+  [Property in keyof Entry]: Entry[Property] extends Date ? number : Entry[Property];
+};
+
+interface CacheValue {
+  entries: readonly EntryCacheDto[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,12 +27,12 @@ export class RandomEntryService {
   async getRandomEntry(): Promise<Entry | undefined> {
     const batch = await firstValueFrom(this.batch$);
 
-    const nextEntry = batch.pop();
-    this.saveInPersistentCache(batch);
+    const updatedBatch = [...batch];
 
-    if (batch.length === 0) {
-      this.batch$ = this.getBatch();
-    }
+    const nextEntry = updatedBatch.pop();
+
+    this.saveInPersistentCache(updatedBatch);
+    this.batch$ = this.getBatch();
 
     return nextEntry;
   }
@@ -41,7 +46,11 @@ export class RandomEntryService {
       if (entryInBatch) {
         const idx = batch.indexOf(entryInBatch);
 
-        batch[idx] = entry;
+        const updatedBatch = [...batch];
+        updatedBatch[idx] = entry;
+
+        this.saveInPersistentCache(updatedBatch);
+        this.batch$ = this.getBatch();
       }
     }
   }
@@ -53,16 +62,11 @@ export class RandomEntryService {
       const entryInBatch = batch.find(x => x.id === entry.id);
 
       if (entryInBatch) {
-        batch.splice(batch.indexOf(entryInBatch), 1);
+        const updatedBatch = [...batch];
+        updatedBatch.splice(updatedBatch.indexOf(entryInBatch), 1);
 
-        if (batch.length === 0) {
-          // We deleted last entry from the loaded batch, so
-          // we also need to make sure that persistent cache is also empty before
-          // trying to load the next batch.
-          this.saveInPersistentCache([]);
-
-          this.batch$ = this.getBatch();
-        }
+        this.saveInPersistentCache(updatedBatch);
+        this.batch$ = this.getBatch();
       }
     }
 
@@ -73,13 +77,13 @@ export class RandomEntryService {
     return PERSISTENT_CACHE_KEY_PREFIX + this.authService.userId;
   }
 
-  private getBatch(): Observable<Entry[]> {
-    let result: Observable<Entry[]>;
+  private getBatch(): Observable<readonly Entry[]> {
+    let result: Observable<readonly Entry[]>;
 
     const cached = this.loadFromPersistentCache();
 
     if (cached && cached.length > 0) {
-      const batchSubject = new ReplaySubject<Entry[]>(1);
+      const batchSubject = new ReplaySubject<readonly Entry[]>(1);
       batchSubject.next(cached);
       batchSubject.complete();
 
@@ -91,21 +95,21 @@ export class RandomEntryService {
     return result;
   }
 
-  private loadFromPersistentCache(): Entry[] | undefined {
+  private loadFromPersistentCache(): readonly Entry[] | undefined {
     const rawStorageValue = this.persistentCacheStorage.getItem(this.persistentCacheKey);
 
     if (!rawStorageValue) {
       return undefined;
     }
 
-    const cacheEntry: CacheEntry = JSON.parse(rawStorageValue);
+    const cacheEntry: CacheValue = JSON.parse(rawStorageValue);
 
-    return cacheEntry.entries;
+    return cacheEntry.entries.map(this.fromCacheDto);
   }
 
-  private saveInPersistentCache(entries: Entry[] | undefined) {
+  private saveInPersistentCache(entries: readonly Entry[] | undefined) {
     if (entries) {
-      const cacheEntry: CacheEntry = { entries: entries };
+      const cacheEntry: CacheValue = { entries: entries.map(this.toCacheDto) };
 
       this.persistentCacheStorage.setItem(this.persistentCacheKey, JSON.stringify(cacheEntry));
     } else {
@@ -117,8 +121,8 @@ export class RandomEntryService {
     return window.localStorage;
   }
 
-  private loadNextBatchAndSaveInPersistentCache(): Observable<Entry[]> {
-    const resultSubject = new ReplaySubject<Entry[]>(1);
+  private loadNextBatchAndSaveInPersistentCache(): Observable<readonly Entry[]> {
+    const resultSubject = new ReplaySubject<readonly Entry[]>(1);
 
     this.loadBatchFromStorage().subscribe(resultSubject);
 
@@ -129,7 +133,27 @@ export class RandomEntryService {
     return resultSubject;
   }
 
-  private loadBatchFromStorage(): Observable<Entry[]> {
+  private loadBatchFromStorage(): Observable<readonly Entry[]> {
     return this.storage.getRandomEntryBatch(BATCH_SIZE);
+  }
+
+  private toCacheDto(entry: Entry): EntryCacheDto {
+    return {
+      id: entry.id,
+      originalText: entry.originalText,
+      translation: entry.translation,
+      addedOn: entry.addedOn.valueOf(),
+      updatedOn: entry.updatedOn.valueOf(),
+    };
+  }
+
+  private fromCacheDto(entryDto: EntryCacheDto): Entry {
+    return {
+      id: entryDto.id,
+      originalText: entryDto.originalText,
+      translation: entryDto.translation,
+      addedOn: new Date(entryDto.addedOn),
+      updatedOn: new Date(entryDto.updatedOn),
+    };
   }
 }
