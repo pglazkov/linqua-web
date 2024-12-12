@@ -20,18 +20,24 @@ export class RandomEntryService {
   private batch$ = this.loadBatch();
 
   getRandomEntry(): Observable<Entry | undefined> {
-    const result = new ReplaySubject<Entry | undefined>();
+    const result = new ReplaySubject<Entry | undefined>(1);
 
-    this.batch$.subscribe(batch => {
-      const nextEntry = batch.pop();
-      this.saveInPersistentCache(batch);
+    this.batch$.subscribe({
+      next: batch => {
+        const nextEntry = batch.pop();
+        this.saveInPersistentCache(batch);
 
-      result.next(nextEntry);
-      result.complete();
+        result.next(nextEntry);
+        result.complete();
 
-      if (batch.length === 0) {
-        this.batch$ = this.loadBatch();
-      }
+        if (batch.length === 0) {
+          this.batch$ = this.loadBatch();
+        }
+      },
+      error: err => {
+        result.error(err);
+        result.complete();
+      },
     });
 
     return result;
