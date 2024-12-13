@@ -42,6 +42,7 @@
   .entry-list__group {
     .entry-list__group__header {
       display: flex;
+      margin-inline: 16px;
       h3 {
         color: mat.m2-get-color-from-palette(vars.$primary);
       }

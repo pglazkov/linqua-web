@@ -9,13 +9,14 @@
 .entry-card {
   display: flex;
   align-items: center;
-  margin: 2px;
 
   .content {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-inline: 16px;
+    margin-block: 2px;
 
     span {
       word-wrap: break-word;
@@ -27,7 +28,7 @@
     }
 
     .translation {
-      margin-top: 8px;
+      margin-top: 4px;
     }
   }
 
