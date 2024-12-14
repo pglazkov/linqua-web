@@ -85,12 +85,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "linqua:build:production",
-              "proxyConfig": "proxy.conf.prod.json"
+              "buildTarget": "linqua:build:production"
             },
             "development": {
-              "buildTarget": "linqua:build:development",
-              "proxyConfig": "proxy.conf.local.json"
+              "buildTarget": "linqua:build:development"
             }
           },
           "defaultConfiguration": "development"

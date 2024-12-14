@@ -7,5 +7,4 @@ exports.values = {
 };
 exports.keys = {
   translateApiKey: TRANSLATE_API_KEY,
-  all: [TRANSLATE_API_KEY],
 };

@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, NgZone } from '@angular/core';
 import {
   collection,
@@ -12,10 +11,12 @@ import {
   setDoc,
   startAt,
 } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
 import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  from,
   map,
   Observable,
   ReplaySubject,
@@ -27,19 +28,23 @@ import {
 } from 'rxjs';
 
 import { AuthService } from '../auth';
-import { firestoreToken } from '../firebase';
+import { firestoreToken, functionsToken } from '../firebase';
 import { Entry } from '../model';
 import { createEntry } from '../util/create-entry';
+
+interface RandomEntryRequest {
+  batchSize: number;
+}
+
+interface RandomEntryResponse {
+  batch: { id: string; data: FirebaseEntry }[];
+}
 
 interface FirebaseEntry {
   originalText: string;
   translation?: string;
   addedOn?: number;
   updatedOn?: number;
-}
-
-interface RandomEntryResponse {
-  batch: { id: string; data: FirebaseEntry }[];
 }
 
 export interface EntriesResult {
@@ -69,9 +74,14 @@ export interface LearnedEntriesStats {
 @Injectable({ providedIn: 'root' })
 export class EntryStorageService {
   private readonly authService = inject(AuthService);
-  private readonly http = inject(HttpClient);
   private readonly zone = inject(NgZone);
   private readonly db = inject(firestoreToken);
+  private readonly firebaseFunctions = inject(functionsToken);
+
+  private readonly getRandomEntryFn = httpsCallable<RandomEntryRequest, RandomEntryResponse>(
+    this.firebaseFunctions,
+    'getRandomEntriesBatch',
+  );
 
   readonly stats$!: Observable<LearnedEntriesStats>;
 
@@ -84,9 +94,9 @@ export class EntryStorageService {
   }
 
   getRandomEntryBatch(batchSize = 1): Observable<readonly Entry[]> {
-    return this.http
-      .get<RandomEntryResponse>(`/api/random?batch_size=${batchSize}`)
-      .pipe(map(response => response.batch.map(x => this.toEntry(x.id, x.data))));
+    return from(this.getRandomEntryFn({ batchSize })).pipe(
+      map(result => result.data.batch.map(x => this.toEntry(x.id, x.data))),
+    );
   }
 
   getEntriesStream(positionToken?: unknown, pageSize: number = DEFAULT_PAGE_SIZE): Observable<EntriesResult> {

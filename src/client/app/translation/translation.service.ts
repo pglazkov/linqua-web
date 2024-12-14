@@ -1,14 +1,20 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { httpsCallable } from 'firebase/functions';
 
+import { functionsToken } from '../firebase';
 import { Translation } from './translation';
+
+interface TranslateRequest {
+  q: string;
+  target: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TranslationService {
-  private readonly http = inject(HttpClient);
+  private readonly firebaseFunctions = inject(functionsToken);
+  private readonly getTranslationFn = httpsCallable<TranslateRequest, Translation>(this.firebaseFunctions, 'translate');
 
-  translate(text: string): Promise<Translation> {
-    return firstValueFrom(this.http.get<Translation>(`/api/translate?q=${text}`));
+  async translate(text: string): Promise<Translation> {
+    return (await this.getTranslationFn({ q: text, target: 'en' })).data;
   }
 }

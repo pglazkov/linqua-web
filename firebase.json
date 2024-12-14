@@ -3,10 +3,6 @@
     "public": "dist/wwwroot",
     "rewrites": [
       {
-        "source": "/api/**",
-        "function": "main"
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }

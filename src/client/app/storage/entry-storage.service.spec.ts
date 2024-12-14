@@ -1,5 +1,3 @@
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firebaseConfig } from '@linqua/firebase-config';
 import { initializeApp } from 'firebase/app';
@@ -19,11 +17,12 @@ import {
   memoryLocalCache,
   setDoc,
 } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import uniqueId from 'lodash-es/uniqueId';
 import { filter, take } from 'rxjs';
 
 import { AuthService } from '../auth';
-import { firebaseAuthToken, firestoreToken } from '../firebase';
+import { firebaseAuthToken, firestoreToken, functionsToken } from '../firebase';
 import { Entry } from '../model';
 import { createEntry } from '../util/create-entry';
 import { EntriesResult, EntryStorageService } from './entry-storage.service';
@@ -39,6 +38,9 @@ connectAuthEmulator(auth, 'http://localhost:9099');
 
 const db = getFirestore(firebaseApp);
 connectFirestoreEmulator(db, 'localhost', 5002);
+
+const functions = getFunctions(firebaseApp);
+connectFunctionsEmulator(functions, 'localhost', 5001);
 
 const currentDate = new Date(2018, 4, 1, 12, 0, 0, 0);
 
@@ -113,8 +115,7 @@ describe('EntryStorageService', () => {
         EntryStorageService,
         { provide: firebaseAuthToken, useValue: auth },
         { provide: firestoreToken, useValue: db },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
+        { provide: functionsToken, useValue: functions },
       ],
     });
 
