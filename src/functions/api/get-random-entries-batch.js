@@ -6,7 +6,7 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-module.exports = onCall(async (req) => {
+module.exports = onCall({ enforceAppCheck: true }, async (req) => {
   let batchSize = req.data.batchSize;
 
   // prettier-ignore
