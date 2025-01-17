@@ -27,11 +27,6 @@
     width: 100%;
     margin-top: 24px;
 
-    .translation-spinner {
-      text-align: right;
-      top: 8px;
-    }
-
     .translation-button {
       text-align: right;
     }
@@ -47,5 +42,11 @@
     flex-direction: row;
     justify-content: space-between;
     margin-top: 10px;
+
+    .translate-spinner {
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
   }
 }

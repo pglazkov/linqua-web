@@ -24,9 +24,6 @@
         (keypress)="onTranslationTextKeyPress($event)"
         data-test-id="translation-text-input"
       ></textarea>
-      @if (isTranslating()) {
-        <mat-spinner matSuffix class="translation-spinner" color="accent" [diameter]="25" [strokeWidth]="2" />
-      }
     </mat-form-field>
 
     <div class="footer">
@@ -48,6 +45,7 @@
           <span>retry</span>
         }
         @if (isTranslating()) {
+          <mat-spinner class="translate-spinner" [diameter]="20" [strokeWidth]="2" />
           <span>translating...</span>
         }
       </button>
