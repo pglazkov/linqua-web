@@ -55,11 +55,15 @@ export class EntryListState {
     });
   }
 
+  hasEntry(entryId: string): boolean {
+    return this.entryById().has(entryId);
+  }
+
   toggleIsLearned(entryId: string): boolean {
     const entry = this.entryById().get(entryId);
 
     if (!entry) {
-      throw new Error(`Entry with id ${entryId} not found`);
+      throw new Error(`Entry with id ${entryId} not found. Please use hasEntry() to check if the entry exists before calling toggleIsLearned().`);
     }
 
     const newValue = !entry.uiState.isLearned;

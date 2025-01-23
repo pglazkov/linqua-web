@@ -176,12 +176,20 @@ export class EntryListComponent implements OnInit {
   async onMarkLearnedRandomEntryRequested(entry: Entry) {
     this.isLoadingRandomEntry.set(true);
 
-    await this.onToggleIsLearnedRequested(entry);
+    if (this.entryListState.hasEntry(entry.id)) {
+      this.entryListState.toggleIsLearned(entry.id);
+    }
+
+    await this.updateIsLearned(entry, true);
   }
 
   async onToggleIsLearnedRequested(entry: Entry) {
     const newIsLearned = this.entryListState.toggleIsLearned(entry.id);
 
+    await this.updateIsLearned(entry, newIsLearned);
+  }
+
+  private async updateIsLearned(entry: Entry, newIsLearned: boolean) {
     if (newIsLearned) {
       await this.storage.archive(entry.id);
       await this.randomEntryService.onEntryDeleted(entry);

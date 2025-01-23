@@ -169,4 +169,27 @@ describe('EntryListState', () => {
     expect(groups[1].entries.length).toBe(1);
     expect(groups[2].entries.length).toBe(1);
   });
+
+  describe('toggleIsLearned', () => {
+    it('should toggle isLearned state of an entry', () => {
+      const state = setup();
+
+      const entry = genEntry();
+      state.setEntries([entry]);
+
+      const firstToggleResult = state.toggleIsLearned(entry.id);
+      expect(firstToggleResult).toBe(true);      
+      expect(state.timeGroups()[0].entries[0].uiState.isLearned).toBe(true);
+
+      const secondToggleResult = state.toggleIsLearned(entry.id);
+      expect(secondToggleResult).toBe(false);
+      expect(state.timeGroups()[0].entries[0].uiState.isLearned).toBe(false);
+    });
+
+    it('should throw error when toggling non-existent entry', () => {
+      const state = setup();
+
+      expect(() => state.toggleIsLearned('non-existent-id')).toThrow();
+    });
+  });
 });
