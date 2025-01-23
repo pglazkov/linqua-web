@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal, viewChi
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { MatFormField, MatHint, MatSuffix } from '@angular/material/form-field';
+import { MatFormField, MatHint } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -27,7 +27,6 @@ export interface EntryEditorDialogData {
     MatInput,
     MatHint,
     MatProgressSpinner,
-    MatSuffix,
     MatButton,
     MatIcon,
   ],
