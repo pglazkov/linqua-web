@@ -4,7 +4,7 @@ const { onCall } = require('firebase-functions/v2/https');
 const fetch = require('node-fetch');
 const secrets = require('../util/secrets');
 
-module.exports = onCall({ secrets: [secrets.keys.translateApiKey], enforceAppCheck: true }, async (req) => {
+module.exports = onCall({ secrets: [secrets.keys.translateApiKey], enforceAppCheck: process.env.FUNCTIONS_EMULATOR !== 'true' }, async (req) => {
   const original = req.data.q;
 
   if (!original) {

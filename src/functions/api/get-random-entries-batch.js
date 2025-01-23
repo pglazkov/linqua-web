@@ -6,7 +6,7 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-module.exports = onCall({ enforceAppCheck: true }, async (req) => {
+module.exports = onCall({ enforceAppCheck: process.env.FUNCTIONS_EMULATOR !== 'true' }, async (req) => {
   let batchSize = req.data.batchSize;
 
   // prettier-ignore
