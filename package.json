@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "run-p --race start:firebase-emulators:backend start:ng:development",
+    "start": "./scripts/start-dev-with-test-data.sh",
     "start:ng:development": "ng serve --configuration development",
     "start:ng:production": "ng serve --configuration production",
     "start:prod": "http-server dist/wwwroot -p 8080 --proxy https://linqua-app.com",
@@ -66,6 +66,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "firebase-admin": "^13.0.2",
     "http-server": "^14.1.0",
     "jasmine-core": "~5.4.0",
     "karma": "~6.4.0",
