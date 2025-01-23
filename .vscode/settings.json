@@ -1,6 +1,5 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-  "tslint.autoFixOnSave": true,
   "typescript.tsdk": "./node_modules/typescript/lib",
   "search.exclude": {
     "**/node_modules": true,
@@ -10,5 +9,11 @@
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true
+  },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
   }
 }
