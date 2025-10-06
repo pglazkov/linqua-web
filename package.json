@@ -7,7 +7,7 @@
     "start": "./scripts/start-dev-with-test-data.sh",
     "start:ng:development": "ng serve --configuration development",
     "start:ng:production": "ng serve --configuration production",
-    "start:prod": "http-server dist/wwwroot -p 8080 --proxy https://linqua-app.com",
+    "start:prod": "http-server dist/wwwroot -p 8080 --proxy https://linqua.app",
     "start:prod:e2e": "run-p --race start:prod e2e:watch",
     "start:firebase-emulators:only-functions": "firebase emulators:start --only functions",
     "start:firebase-emulators:backend": "firebase emulators:start --only functions,auth,firestore --inspect-functions 9229",

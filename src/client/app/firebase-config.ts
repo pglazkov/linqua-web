@@ -2,7 +2,7 @@ import { FirebaseOptions } from 'firebase/app';
 
 export const firebaseConfig: FirebaseOptions = {
   apiKey: 'AIzaSyCQCJ3YqdQRsIXDxSo_I0nR0x3UkbokhoM',
-  authDomain: 'linqua-app.com',
+  authDomain: 'linqua.app',
   databaseURL: 'https://linqua-cab88.firebaseio.com',
   projectId: 'linqua-cab88',
   storageBucket: 'linqua-cab88.appspot.com',
