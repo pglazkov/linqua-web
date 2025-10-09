@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Linqua is a modern web application for learning foreign language vocabulary, built with Angular 19 and Firebase. It provides real-time synchronization, offline support (PWA), and automatic English translations via Google Cloud Translate API.
+Linqua is a modern web application for learning foreign language vocabulary, built with Angular and Firebase. It provides real-time synchronization, offline support (PWA), and automatic English translations via Google Cloud Translate API.
 
 ## Development Commands
 
@@ -46,7 +46,7 @@ npm run deploy:firebase:hosting      # Deploy hosting only
 
 ## Architecture
 
-### Frontend Structure (Angular 19 Standalone)
+### Frontend Structure (Angular Standalone)
 ```
 src/client/app/
 ├── about-dialog/           # About dialog component

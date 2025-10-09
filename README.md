@@ -17,7 +17,7 @@ A modern web application for learning foreign language vocabulary, built with An
 ![Demo Animation](demo.gif)
 
 ## Tech Stack
-- Frontend: Angular 19
+- Frontend: Angular
 - Backend: Firebase (Authentication, Firestore, Cloud Functions)
 - Translation: Google Cloud Translate API
 - PWA (Progressive Web App)
